@@ -43,7 +43,7 @@ export class HomePage {
                 this.dismissLoading();
               }, error => {
                 console.log('Register User error: ' + error);
-                console.log('Register User error: ' + error.header);
+                console.log('Register User error: ' + error.status);
                 console.log('Register User error: ' + error.error);
                 this.dismissLoading();
               });
@@ -52,7 +52,7 @@ export class HomePage {
               this.dismissLoading();
             });//getAccessToken
           }, error => {
-            console.log("GetIdAndSecret", "Something went wrong");
+            console.log("GetIdAndSecret", error);
             this.dismissLoading();
           });//GetIdAndSecret
         });//loading

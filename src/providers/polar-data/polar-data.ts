@@ -28,18 +28,18 @@ export class PolarDataProvider {
     console.log('Register User UserToken:', user_token);
 
 
-    let body = new HttpParams()
+    let bodys = new HttpParams()
       .set("member-id", user_id.toString());
-    let bodys = {
-      'member\-id': user_id.toString()
+    const body = {
+      "member-id": user_id.toString()
     };
     let bodyss = {};
-    body['member-id'] = user_id.toString();
+    bodyss['members-id'] = user_id.toString();
 
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + user_token)
-      .set('Accept', 'application/json; charset=utf-8')
-      .set('Content-Type', 'application/json; charset=utf-8');
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json');
 
     console.log('Register User Body:', body);
     console.log('Register User Header:', headers);
@@ -77,13 +77,13 @@ export class PolarDataProvider {
     console.log('getAccessToken Body:', body);
     console.log('getAccessToken Header:', headers);
 
-    return this.http.post(url, body,{headers: headers});
+    return this.http.post(url, body, {headers: headers});
   }
 
   getAuthorizationCode(): Promise<any> {
     return new Promise((resolve, reject) => {
       // Client-ID.
-      let clientId = '59c76763-db24-4d9e-9d1e-9f7b4ca99814';
+      let clientId = 'e46dd017-20a0-4df5-9363-51a095453585';
 
       // Url to authorization.
       let authUrl = `https://flow.polar.com/oauth2/authorization?` +
@@ -98,7 +98,7 @@ export class PolarDataProvider {
         console.log('In App Browser', 'Event \'Loadstart\' is called');
 
         // Check if URL contains callback url.
-        if ((event.url).indexOf("http://localhost:8100/callback") === 0) {
+        if ((event.url).indexOf("https://www.getpostman.com/oauth2/callback") === 0) {
           // Get the URL.
           let url_string = event.url;
           let url = new URL(url_string);
