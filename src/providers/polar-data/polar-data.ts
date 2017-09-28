@@ -28,12 +28,12 @@ export class PolarDataProvider {
     console.log('Register User UserToken:', user_token);
 
 
-    let bodyss = new HttpParams()
-      .set("member\-id", user_id.toString());
+    let body = new HttpParams()
+      .set("member-id", user_id.toString());
     let bodys = {
       'member\-id': user_id.toString()
     };
-    let body = {};
+    let bodyss = {};
     body['member-id'] = user_id.toString();
 
     let headers = new HttpHeaders()
