@@ -29,9 +29,9 @@ export class PolarDataProvider {
 
 
     let bodyss = new HttpParams()
-      .set("member-id", user_id.toString());
+      .set("member\-id", user_id.toString());
     let bodys = {
-      'member-id': user_id.toString()
+      'member\-id': user_id.toString()
     };
     let body = {};
     body['member-id'] = user_id.toString();
@@ -46,6 +46,17 @@ export class PolarDataProvider {
 
     return this.http.post(url, body, {headers: headers});
   }
+
+  /*
+  With HttpParams:
+  Status 400
+  Unrecognized token 'member': was expecting ('true', 'false' or 'null')
+  at [Source: org.glassfish.jersey.message.internal.ReaderInterceptorExecutor$UnCloseableInputStream@bd275dc; line: 1, column: 8]
+
+  With JSON
+  Status 409
+  null
+   */
 
   getAccessToken(code: string, creds: any) {
     // Base64 encoding of secret and id: clientId:clientSecret.
