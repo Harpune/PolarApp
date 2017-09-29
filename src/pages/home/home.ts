@@ -8,7 +8,7 @@ import {PolarDataProvider} from "../../providers/polar-data/polar-data";
   templateUrl: 'home.html'
 })
 export class HomePage {
-  data: any;
+  token: any;
   loading: Loading;
 
   constructor(public navCtrl: NavController,
@@ -21,22 +21,23 @@ export class HomePage {
   start() {
     // Triggered when Platform is ready.
     this.platform.ready().then(() => {
-      // Start Authorization Process.
-      this.polarData.getAuthorizationCode().then(code => {
+      // Get Secret and Id from local json file.
+      this.localData.getIdAndSecret().subscribe(creds => {
+        // Start Authorization Process.
+        this.polarData.getAuthorizationCode().then(code => {
 
-        this.loading = this.loadingCtrl.create({
-          content: 'micro momentito',
-          dismissOnPageChange: true
-        });
+          this.loading = this.loadingCtrl.create({
+            content: 'micro momentito',
+            dismissOnPageChange: true
+          });
 
-        // Presents the loading Icon.
-        this.loading.present().then(() => {
-          // Get Secret and Id from local json file.
-          this.localData.getIdAndSecret().subscribe(creds => {
+          // Presents the loading Icon.
+          this.loading.present().then(() => {
             // Get the Access-Token.
             this.polarData.getAccessToken(code, creds).subscribe(tokenData => {
               // Parse data to Json and read.
               console.log('AccessToken', tokenData);
+              localStorage.setItem('currentUser', JSON.stringify(tokenData));
               // Register the User. ionic-native.
               this.polarData.registerUser(tokenData).subscribe(success => {
                 console.log('Register User Success: ' + success);
@@ -47,23 +48,63 @@ export class HomePage {
                 console.log('Register User error: ' + error.error);
                 this.dismissLoading();
               });
-            }, error => {
-              console.log("getAccessToken", error);
+            }, accessTokenError => {
+              console.log('Get Access Token', accessTokenError);
               this.dismissLoading();
             });//getAccessToken
-          }, error => {
-            console.log("GetIdAndSecret", error);
+          }, loadingError => {
+            console.log('Present Loading', loadingError);
             this.dismissLoading();
-          });//GetIdAndSecret
-        });//loading
-      }, (error) => {
-        alert(error);
-      });//getAuthorizationCode
+          });//loading
+        }, authError => {
+          console.log('Get Authorization Code', authError);
+        });//getAuthorizationCode
+      }, idSecretError => {
+        console.log('Get ID and secret', idSecretError);
+      });//GetIdAndSecret
     });//platform.
   }
 
+  getUserData(){
+    this.loading = this.loadingCtrl.create({
+      content: 'Search for user information',
+    });
+
+    this.loading.present().then(() => {
+      this.polarData.getUserInformation().subscribe(success => {
+        console.log('Get User Information', success);
+      }, error => {
+        console.log('Get User Information', error);
+      },() => {
+        this.dismissLoading();
+      });
+    });
+
+  }
+
+  deleteUser(){
+    this.loading = this.loadingCtrl.create({
+      content: 'I\'m sorry to see you leave',
+    });
+
+    this.loading.present().then(() => {
+      this.polarData.deleteCurrentUser().subscribe(success => {
+        console.log('Delete User Success', success);
+        localStorage.removeItem('currentUser');
+      }, error => {
+        console.log('Delete User Error', error);
+      },() => {
+        this.dismissLoading();
+      });
+    });
+  }
+
   dismissLoading() {
-    this.loading.dismiss();
+    this.loading.dismiss().then(success => {
+      console.log('Dismiss Loading', success);
+    }, loadingError => {
+      console.log('Present Loading', loadingError);
+    });
     this.loading = null;
   }
 

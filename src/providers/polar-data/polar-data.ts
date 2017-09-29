@@ -6,7 +6,8 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 
 @Injectable()
 export class PolarDataProvider {
-  baseVariable: string;
+  v3Url: string;
+  token: any;
   creds_id: string;
   creds_secret: string;
 
@@ -14,27 +15,74 @@ export class PolarDataProvider {
               private localData: LocalDataProvider,
               private iab: InAppBrowser) {
     console.log('Hello PolarDataProvider Provider');
-    this.baseVariable = 'https://www.polaraccesslink.com';
-    // TODO User id and secret at start
+
+    // URL fpr v3 transactions.
+    this.v3Url = 'https://www.polaraccesslink.com';
+
+    // Get local stored token if possible;
+    this.token = JSON.parse(localStorage.getItem('currentUser'));
+
+    // Get the id and secret.
+    this.localData.getIdAndSecret().subscribe(creds => {
+      this.creds_id = creds.client_id;
+      this.creds_secret = creds.client_secret;
+    });
   }
 
-  registerUser(jsonData: any) {
-    let url = this.baseVariable + '/v3/users';
+  /**
+   * Deletes user from own registration.
+   * @returns {Observable<Object>}
+   */
+  deleteCurrentUser() {
+    let token = JSON.parse(localStorage.getItem('currentUser'));
 
-    let user_id = jsonData.x_user_id;
-    let user_token = jsonData.access_token;
+    let url = this.v3Url + '/v3/users/' + token.x_user_id;
+
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token.access_token)
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    return this.http.delete(url, {headers: headers});
+  }
+
+  /**
+   * Get all user information provided by Polar.
+   * @returns {Observable<Object>}
+   */
+  getUserInformation() {
+    let token = JSON.parse(localStorage.getItem('currentUser'));
+
+    let url = this.v3Url + '/v3/users/' + token.x_user_id;
+
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token.access_token)
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json');
+
+    return this.http.get(url, {headers: headers});
+  }
+
+  /**
+   * Register user with own member ID.
+   * @param token
+   * @returns {Observable<Object>}
+   */
+  registerUser(token: any) {
+    let url = this.v3Url + '/v3/users';
+
+    let user_id = token.x_user_id;
+    let user_token = token.access_token;
 
     console.log('Register User UserId:', user_id);
     console.log('Register User UserToken:', user_token);
 
 
-    let bodys = new HttpParams()
-      .set("member-id", user_id.toString());
-    const body = {
-      "member-id": user_id.toString()
-    };
-    let bodyss = {};
-    bodyss['members-id'] = user_id.toString();
+    let member_id = '' + performance.now() + Math.random();
+    console.log('Register User MemberId', member_id);
+
+    let body = {};
+    body['members-id'] = user_id.toString();
 
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + user_token)
@@ -47,19 +95,15 @@ export class PolarDataProvider {
     return this.http.post(url, body, {headers: headers});
   }
 
-  /*
-  With HttpParams:
-  Status 400
-  Unrecognized token 'member': was expecting ('true', 'false' or 'null')
-  at [Source: org.glassfish.jersey.message.internal.ReaderInterceptorExecutor$UnCloseableInputStream@bd275dc; line: 1, column: 8]
-
-  With JSON
-  Status 409
-  null
+  /**
+   * Get the access-token with the code and client credentials.
+   * @param code
+   * @param creds
+   * @returns {Observable<Object>}
    */
-
   getAccessToken(code: string, creds: any) {
     // Base64 encoding of secret and id: clientId:clientSecret.
+    //TODO remove local creds and use this.user_id and this.client_id.
     let base64_auth = 'Basic ' + btoa(creds.client_id + ':' + creds.client_secret);
 
     // Authorization URL.
@@ -80,6 +124,10 @@ export class PolarDataProvider {
     return this.http.post(url, body, {headers: headers});
   }
 
+  /**
+   * Get authorization code.
+   * @returns {Promise<T>}
+   */
   getAuthorizationCode(): Promise<any> {
     return new Promise((resolve, reject) => {
       // Client-ID.
@@ -92,7 +140,9 @@ export class PolarDataProvider {
         `client_id=${clientId}`;
 
       console.log(authUrl);
+      // TODO don't build auth url like this. Use params header!
 
+      // Open InAppBrowser to Login user.
       const browser = this.iab.create(authUrl, '_self', 'location=no');
       browser.on('loadstart').subscribe(event => {
         console.log('In App Browser', 'Event \'Loadstart\' is called');
