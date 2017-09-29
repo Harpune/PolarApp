@@ -1,8 +1,10 @@
 import {Injectable} from '@angular/core';
 import 'rxjs/add/operator/map';
+
 import {InAppBrowser} from '@ionic-native/in-app-browser';
 import {LocalDataProvider} from "../local-data/local-data";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class PolarDataProvider {
@@ -35,15 +37,18 @@ export class PolarDataProvider {
    */
   deleteCurrentUser() {
     let token = JSON.parse(localStorage.getItem('currentUser'));
+    console.log("Delete current user Token: ", token);
 
-    let url = this.v3Url + '/v3/users/' + token.x_user_id;
+    if (token) {
+      let url = this.v3Url + '/v3/users/' + token.x_user_id;
 
-    let headers = new HttpHeaders()
-      .set('Authorization', 'Bearer ' + token.access_token)
-      .set('Accept', 'application/json')
-      .set('Content-Type', 'application/json');
+      let headers = new HttpHeaders()
+        .set('Authorization', 'Bearer ' + token.access_token)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
 
-    return this.http.delete(url, {headers: headers});
+      return this.http.delete(url, {headers: headers});
+    }
   }
 
   /**
@@ -52,15 +57,18 @@ export class PolarDataProvider {
    */
   getUserInformation() {
     let token = JSON.parse(localStorage.getItem('currentUser'));
+    console.log("Get user Information Token: ", token);
 
-    let url = this.v3Url + '/v3/users/' + token.x_user_id;
+    if (token) {
+      let url = this.v3Url + '/v3/users/' + token.x_user_id;
 
-    let headers = new HttpHeaders()
-      .set('Authorization', 'Bearer ' + token.access_token)
-      .set('Accept', 'application/json')
-      .set('Content-Type', 'application/json');
+      let headers = new HttpHeaders()
+        .set('Authorization', 'Bearer ' + token.access_token)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
 
-    return this.http.get(url, {headers: headers});
+      return this.http.get(url, {headers: headers});
+    }
   }
 
   /**
@@ -101,10 +109,10 @@ export class PolarDataProvider {
    * @param creds
    * @returns {Observable<Object>}
    */
-  getAccessToken(code: string, creds: any) {
+  getAccessToken(code: string){
     // Base64 encoding of secret and id: clientId:clientSecret.
     //TODO remove local creds and use this.user_id and this.client_id.
-    let base64_auth = 'Basic ' + btoa(creds.client_id + ':' + creds.client_secret);
+    let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
 
     // Authorization URL.
     const url = 'https://polarremote.com/v2/oauth2/token';
@@ -130,14 +138,11 @@ export class PolarDataProvider {
    */
   getAuthorizationCode(): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Client-ID.
-      let clientId = 'e46dd017-20a0-4df5-9363-51a095453585';
-
       // Url to authorization.
       let authUrl = `https://flow.polar.com/oauth2/authorization?` +
         `response_type=code&` +
         `scope=accesslink.read_all&` +
-        `client_id=${clientId}`;
+        `client_id=${this.creds_id}`;
 
       console.log(authUrl);
       // TODO don't build auth url like this. Use params header!
@@ -146,6 +151,7 @@ export class PolarDataProvider {
       const browser = this.iab.create(authUrl, '_self', 'location=no');
       browser.on('loadstart').subscribe(event => {
         console.log('In App Browser', 'Event \'Loadstart\' is called');
+        console.log(event.url);
 
         // Check if URL contains callback url.
         if ((event.url).indexOf("https://www.getpostman.com/oauth2/callback") === 0) {

@@ -21,51 +21,48 @@ export class HomePage {
   start() {
     // Triggered when Platform is ready.
     this.platform.ready().then(() => {
-      // Get Secret and Id from local json file.
-      this.localData.getIdAndSecret().subscribe(creds => {
-        // Start Authorization Process.
-        this.polarData.getAuthorizationCode().then(code => {
+      // Start Authorization Process.
+      this.polarData.getAuthorizationCode().then(code => {
 
-          this.loading = this.loadingCtrl.create({
-            content: 'micro momentito',
-            dismissOnPageChange: true
-          });
+        this.loading = this.loadingCtrl.create({
+          content: 'micro momentito',
+          dismissOnPageChange: true
+        });
 
-          // Presents the loading Icon.
-          this.loading.present().then(() => {
-            // Get the Access-Token.
-            this.polarData.getAccessToken(code, creds).subscribe(tokenData => {
-              // Parse data to Json and read.
-              console.log('AccessToken', tokenData);
-              localStorage.setItem('currentUser', JSON.stringify(tokenData));
-              // Register the User. ionic-native.
-              this.polarData.registerUser(tokenData).subscribe(success => {
-                console.log('Register User Success: ' + success);
-                this.dismissLoading();
-              }, error => {
-                console.log('Register User error: ' + error);
-                console.log('Register User error: ' + error.status);
-                console.log('Register User error: ' + error.error);
-                this.dismissLoading();
-              });
-            }, accessTokenError => {
-              console.log('Get Access Token', accessTokenError);
+        // Presents the loading Icon.
+        this.loading.present().then(() => {
+          // Get the Access-Token.
+          this.polarData.getAccessToken(code).subscribe(tokenData => {
+            // Parse data to Json and read.
+            console.log('AccessToken', tokenData);
+            localStorage.setItem('currentUser', JSON.stringify(tokenData));
+            // Register the User. ionic-native.
+            this.polarData.registerUser(tokenData).subscribe(success => {
+              console.log('Register User Success: ' + success);
               this.dismissLoading();
-            });//getAccessToken
-          }, loadingError => {
-            console.log('Present Loading', loadingError);
+            }, error => {
+              console.log('Register User error: ' + error);
+              console.log('Register User error: ' + error.status);
+              console.log('Register User error: ' + error.error);
+              this.dismissLoading();
+            });
+          }, accessTokenError => {
+            console.log('Get Access Token', accessTokenError);
             this.dismissLoading();
-          });//loading
-        }, authError => {
-          console.log('Get Authorization Code', authError);
-        });//getAuthorizationCode
-      }, idSecretError => {
-        console.log('Get ID and secret', idSecretError);
-      });//GetIdAndSecret
+          });//getAccessToken
+        }, loadingError => {
+          console.log('Present Loading', loadingError);
+          this.dismissLoading();
+        });//loading
+      }, authError => {
+        console.log('Get Authorization Code', authError);
+      });//getAuthorizationCode
+    }, idSecretError => {
+      console.log('Get ID and secret', idSecretError);
     });//platform.
   }
 
-  getUserData(){
+  getUserData() {
     this.loading = this.loadingCtrl.create({
       content: 'Search for user information',
     });
@@ -75,14 +72,14 @@ export class HomePage {
         console.log('Get User Information', success);
       }, error => {
         console.log('Get User Information', error);
-      },() => {
+      }, () => {
         this.dismissLoading();
       });
     });
 
   }
 
-  deleteUser(){
+  deleteUser() {
     this.loading = this.loadingCtrl.create({
       content: 'I\'m sorry to see you leave',
     });
@@ -93,7 +90,7 @@ export class HomePage {
         localStorage.removeItem('currentUser');
       }, error => {
         console.log('Delete User Error', error);
-      },() => {
+      }, () => {
         this.dismissLoading();
       });
     });
