@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
-import 'rxjs/add/operator/map';
-
 import {InAppBrowser} from '@ionic-native/in-app-browser';
 import {LocalDataProvider} from "../local-data/local-data";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {Observable} from "rxjs/Observable";
+
+import 'rxjs/add/operator/timeout';
 
 @Injectable()
 export class PolarDataProvider {
@@ -35,40 +34,60 @@ export class PolarDataProvider {
    * Deletes user from own registration.
    * @returns {Observable<Object>}
    */
-  deleteCurrentUser() {
-    let token = JSON.parse(localStorage.getItem('currentUser'));
-    console.log("Delete current user Token: ", token);
+  deleteCurrentUser(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+      console.log("Delete current user Token: ", token);
 
-    if (token) {
-      let url = this.v3Url + '/v3/users/' + token.x_user_id;
+      if (token) {
+        let url = this.v3Url + '/v3/users/' + token.x_user_id;
 
-      let headers = new HttpHeaders()
-        .set('Authorization', 'Bearer ' + token.access_token)
-        .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
 
-      return this.http.delete(url, {headers: headers});
-    }
+        this.http.delete(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Delete user complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
   }
 
   /**
    * Get all user information provided by Polar.
    * @returns {Observable<Object>}
    */
-  getUserInformation() {
-    let token = JSON.parse(localStorage.getItem('currentUser'));
-    console.log("Get user Information Token: ", token);
+  getUserInformation(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+      console.log("Get user Information Token: ", token);
 
-    if (token) {
-      let url = this.v3Url + '/v3/users/' + token.x_user_id;
+      if (token) {
+        let url = this.v3Url + '/v3/users/' + token.x_user_id;
 
-      let headers = new HttpHeaders()
-        .set('Authorization', 'Bearer ' + token.access_token)
-        .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
 
-      return this.http.get(url, {headers: headers});
-    }
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Get user information complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
   }
 
   /**
@@ -76,31 +95,39 @@ export class PolarDataProvider {
    * @param token
    * @returns {Observable<Object>}
    */
-  registerUser(token: any) {
-    let url = this.v3Url + '/v3/users';
+  registerUser(token: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url = this.v3Url + '/v3/users';
 
-    let user_id = token.x_user_id;
-    let user_token = token.access_token;
+      let user_id = token.x_user_id;
+      let user_token = token.access_token;
 
-    console.log('Register User UserId:', user_id);
-    console.log('Register User UserToken:', user_token);
+      console.log('Register User UserId:', user_id);
+      console.log('Register User UserToken:', user_token);
 
 
-    let member_id = '' + performance.now() + Math.random();
-    console.log('Register User MemberId', member_id);
+      let member_id = '' + performance.now() + Math.random();
+      console.log('Register User MemberId', member_id);
 
-    let body = {};
-    body['members-id'] = user_id.toString();
+      let body = {};
+      body['members-id'] = member_id;
 
-    let headers = new HttpHeaders()
-      .set('Authorization', 'Bearer ' + user_token)
-      .set('Accept', 'application/json')
-      .set('Content-Type', 'application/json');
+      let headers = new HttpHeaders()
+        .set('Authorization', 'Bearer ' + user_token)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
 
-    console.log('Register User Body:', body);
-    console.log('Register User Header:', headers);
+      console.log('Register User Body:', body);
+      console.log('Register User Header:', headers);
 
-    return this.http.post(url, body, {headers: headers});
+      this.http.post(url, body, {headers: headers}).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Register user complete');
+      });
+    });
   }
 
   /**
@@ -109,32 +136,40 @@ export class PolarDataProvider {
    * @param creds
    * @returns {Observable<Object>}
    */
-  getAccessToken(code: string){
-    // Base64 encoding of secret and id: clientId:clientSecret.
-    //TODO remove local creds and use this.user_id and this.client_id.
-    let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
+  getAccessToken(code: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Base64 encoding of secret and id: clientId:clientSecret.
+      //TODO remove local creds and use this.user_id and this.client_id.
+      let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
 
-    // Authorization URL.
-    const url = 'https://polarremote.com/v2/oauth2/token';
+      // Authorization URL.
+      const url = 'https://polarremote.com/v2/oauth2/token';
 
-    let body = new HttpParams()
-      .set('grant_type', 'authorization_code')
-      .set('code', code);
+      let body = new HttpParams()
+        .set('grant_type', 'authorization_code')
+        .set('code', code);
 
-    let headers = new HttpHeaders()
-      .set('Authorization', base64_auth)
-      .set('Accept', 'application/json;charset=UTF-8')
-      .set('Content-Type', 'application/x-www-form-urlencoded');
+      let headers = new HttpHeaders()
+        .set('Authorization', base64_auth)
+        .set('Accept', 'application/json;charset=UTF-8')
+        .set('Content-Type', 'application/x-www-form-urlencoded');
 
-    console.log('getAccessToken Body:', body);
-    console.log('getAccessToken Header:', headers);
+      console.log('getAccessToken Body:', body);
+      console.log('getAccessToken Header:', headers);
 
-    return this.http.post(url, body, {headers: headers});
+      this.http.post(url, body, {headers: headers}).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Register user complete');
+      });
+    });
   }
 
   /**
    * Get authorization code.
-   * @returns {Promise<T>}
+   * @returns {Promise<Json>}
    */
   getAuthorizationCode(): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -180,5 +215,4 @@ export class PolarDataProvider {
       });
     });
   }
-
 }

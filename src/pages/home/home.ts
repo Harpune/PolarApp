@@ -14,7 +14,6 @@ export class HomePage {
   constructor(public navCtrl: NavController,
               private platform: Platform,
               private polarData: PolarDataProvider,
-              private localData: LocalDataProvider,
               public loadingCtrl: LoadingController) {
   }
 
@@ -32,12 +31,12 @@ export class HomePage {
         // Presents the loading Icon.
         this.loading.present().then(() => {
           // Get the Access-Token.
-          this.polarData.getAccessToken(code).subscribe(tokenData => {
+          this.polarData.getAccessToken(code).then(tokenData => {
             // Parse data to Json and read.
             console.log('AccessToken', tokenData);
             localStorage.setItem('currentUser', JSON.stringify(tokenData));
             // Register the User. ionic-native.
-            this.polarData.registerUser(tokenData).subscribe(success => {
+            this.polarData.registerUser(tokenData).then(success => {
               console.log('Register User Success: ' + success);
               this.dismissLoading();
             }, error => {
@@ -68,15 +67,14 @@ export class HomePage {
     });
 
     this.loading.present().then(() => {
-      this.polarData.getUserInformation().subscribe(success => {
+      this.polarData.getUserInformation().then(success => {
         console.log('Get User Information', success);
+        this.dismissLoading();
       }, error => {
         console.log('Get User Information', error);
-      }, () => {
         this.dismissLoading();
       });
     });
-
   }
 
   deleteUser() {
@@ -85,12 +83,12 @@ export class HomePage {
     });
 
     this.loading.present().then(() => {
-      this.polarData.deleteCurrentUser().subscribe(success => {
+      this.polarData.deleteCurrentUser().then(success => {
         console.log('Delete User Success', success);
         localStorage.removeItem('currentUser');
+        this.dismissLoading();
       }, error => {
-        console.log('Delete User Error', error);
-      }, () => {
+        console.log('Delete User Error', error.status);
         this.dismissLoading();
       });
     });
@@ -104,5 +102,4 @@ export class HomePage {
     });
     this.loading = null;
   }
-
 }
