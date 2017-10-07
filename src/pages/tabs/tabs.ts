@@ -31,7 +31,6 @@ export class TabsPage {
   logout() {
     this.loading = this.loadingCtrl.create({
       content: 'Logging out ... ',
-      dismissOnPageChange: true
     });
 
     this.loading.present().then(() => {

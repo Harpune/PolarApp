@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {Loading, LoadingController, NavController, Platform} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {TabsPage} from "../tabs/tabs";
+import {InAppBrowser} from "@ionic-native/in-app-browser";
 
 @Component({
   selector: 'page-login',
@@ -13,7 +14,8 @@ export class LoginPage {
   constructor(public navCtrl: NavController,
               private platform: Platform,
               public polarData: PolarDataProvider,
-              public loadingCtrl: LoadingController) {
+              public loadingCtrl: LoadingController,
+              public iab: InAppBrowser) {
   }
 
   login() {
@@ -61,6 +63,21 @@ export class LoginPage {
     }, idSecretError => {
       console.log('Get ID and secret', idSecretError);
     });//platform.
+  }
+
+  register(){
+    this.platform.ready().then(() => {
+      let browser = this.iab.create('https://flow.polar.com/register', '_self', 'location=no');
+      browser.on('loadstart').subscribe(event => {
+        console.log('In App Browser', 'Event \'Loadstart\' is called');
+        console.log(event.url);
+
+        // Check if URL isn't to register a user. In this case close the browser.
+        if ((event.url).indexOf("https://flow.polar.com/register") != 0) {
+          browser.close();
+        }
+      });
+    })
   }
 
   dismissLoading() {

@@ -7,7 +7,7 @@ import 'rxjs/add/operator/timeout';
 
 @Injectable()
 export class PolarDataProvider {
-  v3Url: string;
+  v3User: string;
   token: any;
   creds_id: string;
   creds_secret: string;
@@ -18,7 +18,7 @@ export class PolarDataProvider {
     console.log('Hello PolarDataProvider Provider');
 
     // URL fpr v3 transactions.
-    this.v3Url = 'https://www.polaraccesslink.com';
+    this.v3User = 'https://www.polaraccesslink.com';
 
     // Get local stored token if possible;
     this.token = JSON.parse(localStorage.getItem('currentUser'));
@@ -36,12 +36,12 @@ export class PolarDataProvider {
    */
   deleteCurrentUser(): Promise<any> {
     return new Promise((resolve, reject) => {
+      // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
       console.log("Delete current user Token: ", token);
 
       if (token) {
-        let url = this.v3Url + '/v3/users/' + token.x_user_id;
-        //let url = this.v3Url + '/v3/users/40003147';
+        let url = this.v3User + '/v3/users/' + token.x_user_id;
 
         let headers = new HttpHeaders()
           .set('Authorization', 'Bearer ' + token.access_token)
@@ -61,23 +61,80 @@ export class PolarDataProvider {
     });
   }
 
-  /**
-   * Get all user information provided by Polar.
-   * @returns {Observable<Object>}
-   */
-  getUserInformation(): Promise<any> {
+  initiateExerciseTransaction() {
     return new Promise((resolve, reject) => {
+      // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
-      console.log("Get user Information Token: ", token);
+      console.log("Delete current user Token: ", token);
 
       if (token) {
-        let url = this.v3Url + '/v3/users/' + token.x_user_id;
+        let url = this.v3User + '/v3/users/' + token.x_user_id + '/exercise-transactions';
 
         let headers = new HttpHeaders()
           .set('Authorization', 'Bearer ' + token.access_token)
           .set('Accept', 'application/json')
           .set('Content-Type', 'application/json');
 
+        this.http.post(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Initiate exercise transaction complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  listAvailableData() {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/notifications';
+
+        let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
+
+        let headers = new HttpHeaders()
+          .set('Authorization', base64_auth)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('List available data complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  /**
+   * Get all user information provided by Polar.
+   * @returns {Observable<Object>}
+   */
+  getUserInformation(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+      console.log("Get user Information Token: ", token);
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id;
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        // Start request.
         this.http.get(url, {headers: headers}).subscribe(success => {
           resolve(success);
         }, error => {
@@ -98,7 +155,7 @@ export class PolarDataProvider {
    */
   registerUser(token: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url = this.v3Url + '/v3/users';
+      let url = this.v3User + '/v3/users';
 
       let user_id = token.x_user_id;
       let user_token = token.access_token;
@@ -134,7 +191,6 @@ export class PolarDataProvider {
   /**
    * Get the access-token with the code and client credentials.
    * @param code
-   * @param creds
    * @returns {Observable<Object>}
    */
   getAccessToken(code: string): Promise<any> {
