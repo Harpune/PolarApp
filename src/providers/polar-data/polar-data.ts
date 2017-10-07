@@ -41,6 +41,7 @@ export class PolarDataProvider {
 
       if (token) {
         let url = this.v3Url + '/v3/users/' + token.x_user_id;
+        //let url = this.v3Url + '/v3/users/40003147';
 
         let headers = new HttpHeaders()
           .set('Authorization', 'Bearer ' + token.access_token)

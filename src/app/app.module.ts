@@ -1,32 +1,48 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { HttpModule } from '@angular/http';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
+import { SuperTabsModule } from 'ionic2-super-tabs';
+
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
+import { LoginPage } from '../pages/login/login';
+import { UserPage } from '../pages/user/user';
+import { TrainingPage } from '../pages/training/training';
+import { TabsPage } from '../pages/tabs/tabs';
+
 import { PolarDataProvider } from '../providers/polar-data/polar-data';
 import { LocalDataProvider } from '../providers/local-data/local-data';
 
 @NgModule({
   declarations: [
     MyApp,
-    HomePage
+    HomePage,
+    LoginPage,
+    UserPage,
+    TrainingPage,
+    TabsPage
   ],
   imports: [
     BrowserModule,
     HttpModule,
     HttpClientModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    SuperTabsModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage
+    HomePage,
+    LoginPage,
+    UserPage,
+    TrainingPage,
+    TabsPage
   ],
   providers: [
     StatusBar,
