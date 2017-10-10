@@ -30,52 +30,28 @@ export class PolarDataProvider {
     });
   }
 
-  /**
-   * Deletes user from own registration.
-   * @returns {Observable<Object>}
+  /*
+  Training data
    */
-  deleteCurrentUser(): Promise<any> {
+  /**
+   * Check for new training data and create a new transaction if found.
+   * @returns {Promise<any>}
+   */
+  createTransaction(): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
-      console.log("Delete current user Token: ", token);
 
       if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id;
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/exercise-transactions';
 
         let headers = new HttpHeaders()
           .set('Authorization', 'Bearer ' + token.access_token)
           .set('Accept', 'application/json')
           .set('Content-Type', 'application/json');
 
-        this.http.delete(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Delete user complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
-    });
-  }
-
-  initiateExerciseTransaction() {
-    return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-      console.log("Delete current user Token: ", token);
-
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id + '/exercise-transactions';
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.post(url, {headers: headers}).subscribe(success => {
+        this.http.post(url, {},{headers: headers}).subscribe(success => {
           resolve(success);
         }, error => {
           reject(error);
@@ -88,7 +64,291 @@ export class PolarDataProvider {
     });
   }
 
-  listAvailableData() {
+  /**
+   * After successfully initiating a transaction, training sessions included
+   * within it can be retrieved with the provided transactionId.
+   * @param {string} transaction_id
+   * @returns {Promise<any>}
+   */
+  listExercises(transaction_id: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/exercise-transactions/' + transaction_id;
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('List Exercises complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  /**
+   * After successfully retrieving training session data within a transaction,
+   * partners are expected to commit the transaction.
+   * @param {number} transaction_id
+   * @returns {Promise<any>}
+   */
+  commitTransaction(transaction_id: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/exercise-transactions/' + transaction_id;
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.put(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Commit Transaction complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+
+  /**
+   * Retrieve training session summary data.
+   * @param {number} transaction_id
+   * @param {number} exercise_id
+   * @returns {Promise<any>}
+   */
+  getExerciseSummary(transaction_id: number, exercise_id: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/exercise-transactions/' + transaction_id
+          + '/exercises/' + exercise_id;
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Get Exercise Summary complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  /**
+   * Retrieve training session summary data in GPX format.
+   * @param {number} transaction_id
+   * @param {number} exercise_id
+   * @returns {Promise<any>}
+   */
+  getGPX(transaction_id: number, exercise_id: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/exercise-transactions/' + transaction_id
+          + '/exercises/' + exercise_id
+          + '/gpx';
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/gpx+json')
+          .set('Content-Type', 'application/gpx+json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Get GPX complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  /**
+   * Retrieve heart rate zones in training session.
+   * @param {number} transaction_id
+   * @param {number} exercise_id
+   * @returns {Promise<any>}
+   */
+  getHeartRateZones(transaction_id: number, exercise_id: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/exercise-transactions/' + transaction_id
+          + '/exercises/' + exercise_id
+          + '/heart-rate-zones';
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Get Heart Rate Zones complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  /**
+   * Retrieve list of links to available samples in training session.
+   * @param {number} transaction_id
+   * @param {number} exercise_id
+   * @returns {Promise<any>}
+   */
+  getAvailableSamples(transaction_id: number, exercise_id: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/exercise-transactions/' + transaction_id
+          + '/exercises/' + exercise_id
+          + '/samples';
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Get Available Samples complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  /**
+   * Retrieve sample data of given type.
+   * @param {number} transaction_id
+   * @param {number} exercise_id
+   * @param {number} type_id
+   * @returns {Promise<any>}
+   */
+  getSamples(transaction_id: number, exercise_id: number, type_id:number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/exercise-transactions/' + transaction_id
+          + '/exercises/' + exercise_id
+          + '/samples/' + type_id;
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Get Samples complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  /**
+   * Retrieve exercise in TCX format.
+   * @param {number} transaction_id
+   * @param {number} exercise_id
+   * @returns {Promise<any>}
+   */
+  getTCX(transaction_id: number, exercise_id: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/exercise-transactions/' + transaction_id
+          + '/exercises/' + exercise_id
+          + '/tcx';
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/vnd.garmin.tcx+json')
+          .set('Content-Type', 'application/vnd.garmin.tcx+json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Get Samples complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  /*
+  Pull notifications
+   */
+  /**
+   * Get list of available exercises and activities for users.
+   * @returns {Promise<any>}
+   */
+  listAvailableData(): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
@@ -116,8 +376,50 @@ export class PolarDataProvider {
     });
   }
 
+  /*
+  Users
+   */
   /**
-   * Get all user information provided by Polar.
+   * Once partner has been authorized by user, partner must register user before
+   * being able to access her data.
+   * @param token
+   * @returns {Observable<Object>}
+   */
+  registerUser(token: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let url = this.v3User + '/v3/users';
+
+      let user_id = token.x_user_id;
+      let user_token = token.access_token;
+
+      console.log('Register User UserId:', user_id, user_token);
+
+      let member_id = '' + performance.now() + Math.random();
+      console.log('Register User MemberId', member_id);
+
+      let body = {};
+      body['members-id'] = member_id;
+
+      let headers = new HttpHeaders()
+        .set('Authorization', 'Bearer ' + user_token)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      console.log('Register User Body:', body);
+      console.log('Register User Header:', headers);
+
+      this.http.post(url, body, {headers: headers}).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Register user complete');
+      });
+    });
+  }
+
+  /**
+   * List user basic information.
    * @returns {Observable<Object>}
    */
   getUserInformation(): Promise<any> {
@@ -149,83 +451,50 @@ export class PolarDataProvider {
   }
 
   /**
-   * Register user with own member ID.
-   * @param token
+   * When partner wishes no longer to receive user data, user can be de-registered.
+   * This will revoke the access token authorized by user.
    * @returns {Observable<Object>}
    */
-  registerUser(token: any): Promise<any> {
+  deleteCurrentUser(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let url = this.v3User + '/v3/users';
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+      console.log("Delete current user Token: ", token);
 
-      let user_id = token.x_user_id;
-      let user_token = token.access_token;
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id;
 
-      console.log('Register User UserId:', user_id);
-      console.log('Register User UserToken:', user_token);
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
 
-
-      let member_id = '' + performance.now() + Math.random();
-      console.log('Register User MemberId', member_id);
-
-      let body = {};
-      body['members-id'] = member_id;
-
-      let headers = new HttpHeaders()
-        .set('Authorization', 'Bearer ' + user_token)
-        .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
-
-      console.log('Register User Body:', body);
-      console.log('Register User Header:', headers);
-
-      this.http.post(url, body, {headers: headers}).subscribe(success => {
-        resolve(success);
-      }, error => {
-        reject(error);
-      }, () => {
-        console.log('Register user complete');
-      });
+        /*
+        this.http.get('https://flow.polar.com/logout').subscribe(success => {
+          console.log('Logout', success);
+        }, error => {
+          console.error('Logout', error)
+        });
+        */
+        this.http.delete(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Delete user complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
     });
   }
 
-  /**
-   * Get the access-token with the code and client credentials.
-   * @param code
-   * @returns {Observable<Object>}
+  /*
+  Authentication
    */
-  getAccessToken(code: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Base64 encoding of secret and id: clientId:clientSecret.
-      //TODO remove local creds and use this.user_id and this.client_id.
-      let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
-
-      // Authorization URL.
-      const url = 'https://polarremote.com/v2/oauth2/token';
-
-      let body = new HttpParams()
-        .set('grant_type', 'authorization_code')
-        .set('code', code);
-
-      let headers = new HttpHeaders()
-        .set('Authorization', base64_auth)
-        .set('Accept', 'application/json;charset=UTF-8')
-        .set('Content-Type', 'application/x-www-form-urlencoded');
-
-      console.log('getAccessToken Body:', body);
-      console.log('getAccessToken Header:', headers);
-
-      this.http.post(url, body, {headers: headers}).subscribe(success => {
-        resolve(success);
-      }, error => {
-        reject(error);
-      }, () => {
-        console.log('Register user complete');
-      });
-    });
-  }
-
   /**
-   * Get authorization code.
+   * On success, user will be shown the authorization form.
+   * If an error occurs, user will be redirected to location defined in default redirect_uri with error code included.
    * @returns {Promise<Json>}
    */
   getAuthorizationCode(): Promise<any> {
@@ -268,7 +537,43 @@ export class PolarDataProvider {
 
       browser.on('exit').subscribe(event => {
         console.log('In App Browser', 'Event \'Exit\' is called');
-        reject("Abbruch des Authentifizierungsvorgangs");
+        reject("Exit");
+      });
+    });
+  }
+
+  /**
+   * With authorization code, an access token can be requested by posting authorization code to token endpoint.
+   * @param code
+   * @returns {Observable<Object>}
+   */
+  getAccessToken(code: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Base64 encoding of secret and id: clientId:clientSecret.
+      //TODO remove local creds and use this.user_id and this.client_id.
+      let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
+
+      // Authorization URL.
+      const url = 'https://polarremote.com/v2/oauth2/token';
+
+      let body = new HttpParams()
+        .set('grant_type', 'authorization_code')
+        .set('code', code);
+
+      let headers = new HttpHeaders()
+        .set('Authorization', base64_auth)
+        .set('Accept', 'application/json;charset=UTF-8')
+        .set('Content-Type', 'application/x-www-form-urlencoded');
+
+      console.log('getAccessToken Body:', body);
+      console.log('getAccessToken Header:', headers);
+
+      this.http.post(url, body, {headers: headers}).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Register user complete');
       });
     });
   }

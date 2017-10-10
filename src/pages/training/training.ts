@@ -21,19 +21,20 @@ export class TrainingPage {
 
   listAvailableData() {
     this.polarData.listAvailableData().then(success => {
-      console.log('List available data success', success);
+      console.log('List available data', success);
       this.refreshed = true;
     }, error => {
-      console.log('List available data error', error);
+      console.error('List available data', error);
+
       this.refreshed = false;
     })
   }
 
   private initiateExerciseTransaction() {
-    this.polarData.initiateExerciseTransaction().then(success => {
-      console.log('initiate exercise transaction success', success);
+    this.polarData.createTransaction().then(success => {
+      console.log('initiate exercise transaction', success);
     }, error => {
-      console.log('initiate exercise transaction error', error);
+      console.error('initiate exercise transaction', error);
     })
   }
 }

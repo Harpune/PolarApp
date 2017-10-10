@@ -44,49 +44,65 @@ export class LoginPage {
               this.navCtrl.popToRoot();
               this.dismissLoading();
             }, error => {
-              console.log('Register User error: ' + error);
-              console.log('Register User error: ' + error.status);
-              console.log('Register User error: ' + error.error);
+              console.error('Register User error: ' + error);
+              console.error('Register User error: ' + error.status);
+              console.error('Register User error: ' + error.error);
+
+              if(error.status == 409){
+                this.handle409(tokenData);
+              }
+
               this.dismissLoading();
             });
           }, accessTokenError => {
-            console.log('Get Access Token', accessTokenError);
+            console.error('Get Access Token', accessTokenError);
             this.dismissLoading();
           });//getAccessToken
         }, loadingError => {
-          console.log('Present Loading', loadingError);
+          console.error('Present Loading', loadingError);
           this.dismissLoading();
         });//loading
       }, authError => {
-        console.log('Get Authorization Code', authError);
+        console.error('Get Authorization Code', authError);
       });//getAuthorizationCode
     }, idSecretError => {
-      console.log('Get ID and secret', idSecretError);
+      console.error('Get ID and secret', idSecretError);
     });//platform.
   }
 
-  register(){
+  register() {
     this.platform.ready().then(() => {
       let browser = this.iab.create('https://flow.polar.com/register', '_self', 'location=no');
       browser.on('loadstart').subscribe(event => {
         console.log('In App Browser', 'Event \'Loadstart\' is called');
         console.log(event.url);
-
-        // Check if URL isn't to register a user. In this case close the browser.
-        if ((event.url).indexOf("https://flow.polar.com/register") != 0) {
-          browser.close();
-        }
       });
     })
   }
 
   dismissLoading() {
     this.loading.dismiss().then(() => {
-      console.log('Dismiss Loading succeeded');
+      console.log('Loading dismissed');
     }, () => {
-      console.log('Present Loading error');
+      console.error('Present Loading');
     });
     this.loading = null;
   }
 
+  private handle409(tokenData:any) {
+    console.log('409 response');
+    this.polarData.deleteCurrentUser().then(() => {
+      this.polarData.registerUser(tokenData).then(success => {
+        console.log('Register User Success: ', success);
+        localStorage.setItem('user', JSON.stringify(success));
+        this.navCtrl.setRoot(TabsPage);
+        this.navCtrl.popToRoot();
+      }, error => {
+        console.error('Register User error: ' + error);
+        console.error('Register User error: ' + error.status);
+        console.error('Register User error: ' + error.error);
+      })
+    })
+
+  }
 }

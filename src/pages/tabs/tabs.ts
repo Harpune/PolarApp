@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 
-import {Loading, LoadingController, NavController} from 'ionic-angular';
+import {Loading, LoadingController, NavController, Platform} from 'ionic-angular';
 
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 
@@ -22,9 +22,9 @@ export class TabsPage {
   loading: Loading;
   user: any;
 
-  constructor(public navCtrl: NavController,
+  constructor(private navCtrl: NavController,
               private polarData: PolarDataProvider,
-              public loadingCtrl: LoadingController,
+              private loadingCtrl: LoadingController,
               private iab: InAppBrowser) {
   }
 
@@ -35,14 +35,14 @@ export class TabsPage {
 
     this.loading.present().then(() => {
       this.polarData.deleteCurrentUser().then(success => {
-        console.log('Logout user success', success);
+        console.log('Logout user', success);
         localStorage.removeItem('currentUser');
         localStorage.removeItem('user');
         this.navCtrl.setRoot(LoginPage);
         this.navCtrl.popToRoot();
         this.dismissLoading();
       }, error => {
-        console.log('Logout user error', error);
+        console.error('Logout user', error);
         this.dismissLoading();
       })
     })
@@ -55,9 +55,9 @@ export class TabsPage {
 
   dismissLoading() {
     this.loading.dismiss().then(() => {
-      console.log('Dismiss Loading succeeded');
+      console.log('Loading dismissed');
     }, () => {
-      console.log('Present Loading error');
+      console.error('Dismiss Loading');
     });
     this.loading = null;
   }

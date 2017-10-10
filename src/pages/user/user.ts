@@ -16,8 +16,12 @@ export class UserPage {
               public loadingCtrl: LoadingController,
               public polarData: PolarDataProvider) {
     let user = localStorage.getItem('user');
-    this.user = JSON.parse(user);
-    console.log(this.user);
+    if (user) {
+      this.user = JSON.parse(user);
+      console.log(this.user);
+    } else {
+      this.getUserData();
+    }
   }
 
   getUserData() {
@@ -33,6 +37,11 @@ export class UserPage {
       }, error => {
         console.log('Get User Information', error);
         this.dismissLoading();
+
+        //Something went wrong: User not logged in
+        this.polarData.deleteCurrentUser().then(() => {
+
+        })
       });
     });
   }
