@@ -21,17 +21,17 @@ export class MyApp {
               splashScreen: SplashScreen) {
 
     platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-      statusBar.styleDefault();
-      splashScreen.hide();
-
       let token = JSON.parse(localStorage.getItem('currentUser'));
-      if (token) {
+      if (token) { // TODO check if token is valid
         this.rootPage = TabsPage;
       } else {
         this.rootPage = LoginPage;
       }
+
+      statusBar.styleDefault();
+      splashScreen.hide();
+
+
     });
   }
 }

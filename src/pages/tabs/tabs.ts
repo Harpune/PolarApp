@@ -38,9 +38,10 @@ export class TabsPage {
         console.log('Logout user', success);
         localStorage.removeItem('currentUser');
         localStorage.removeItem('user');
-        this.navCtrl.setRoot(LoginPage);
-        this.navCtrl.popToRoot();
-        this.dismissLoading();
+        this.navCtrl.setRoot(LoginPage).then(() => {
+          this.navCtrl.popToRoot();
+          this.dismissLoading();
+        });
       }, error => {
         console.error('Logout user', error);
         this.dismissLoading();

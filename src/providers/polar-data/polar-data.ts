@@ -31,6 +31,35 @@ export class PolarDataProvider {
   }
 
   /*
+  Physical info
+   */
+  checkForPhysicalInfo(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/physical-information-transactions';
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.post(url, JSON.stringify({}),{headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Check For Physical Info complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+  /*
   Training data
    */
   /**

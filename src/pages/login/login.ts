@@ -40,9 +40,10 @@ export class LoginPage {
             this.polarData.registerUser(tokenData).then(success => {
               console.log('Register User Success: ', success);
               localStorage.setItem('user', JSON.stringify(success));
-              this.navCtrl.setRoot(TabsPage);
-              this.navCtrl.popToRoot();
-              this.dismissLoading();
+              this.navCtrl.setRoot(TabsPage).then(() => {
+                this.navCtrl.popToRoot();
+                this.dismissLoading();
+              });
             }, error => {
               console.error('Register User error: ' + error);
               console.error('Register User error: ' + error.status);
@@ -52,7 +53,6 @@ export class LoginPage {
                 this.handle409(tokenData);
               }
 
-              this.dismissLoading();
             });
           }, accessTokenError => {
             console.error('Get Access Token', accessTokenError);
@@ -97,10 +97,12 @@ export class LoginPage {
         localStorage.setItem('user', JSON.stringify(success));
         this.navCtrl.setRoot(TabsPage);
         this.navCtrl.popToRoot();
+        this.dismissLoading();
       }, error => {
         console.error('Register User error: ' + error);
         console.error('Register User error: ' + error.status);
         console.error('Register User error: ' + error.error);
+        this.dismissLoading();
       })
     })
 
