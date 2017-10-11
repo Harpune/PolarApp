@@ -151,7 +151,7 @@ export class PolarDataProvider {
           .set('Accept', 'application/json')
           .set('Content-Type', 'application/json');
 
-        this.http.put(url, JSON.stringify({}), {headers: headers, observe: 'response'}).subscribe(success => {
+        this.http.put(url, null, {headers: headers, observe: 'response'}).subscribe(success => {
           switch (success.status) {
             case 200:
               resolve(success);

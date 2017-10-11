@@ -19,7 +19,7 @@ export class PhysicalInfoPage {
     }, () => {
       this.physical = localStorage.getItem('physical-information');
       if (this.physical) {
-        console.log('Physical info', this.physical);
+        console.log('Physical info', JSON.parse(this.physical));
       } else {
         console.log('No physical info');
       }
@@ -55,6 +55,7 @@ export class PhysicalInfoPage {
     if (new_data) {
       let all_data = new_data['available-user-data'];
       console.log('All data', all_data);
+
       for (let data of all_data) {
         if (data['data-type'] == 'PHYSICAL_INFORMATION') {
           console.log('PHYSICAL_INFORMATION');
@@ -67,16 +68,21 @@ export class PhysicalInfoPage {
                 console.log('List physical info', info);
                 this.polarData.getPhysicalInfo(info).then(physicalInfo => {
                   console.log('Get physical info', physicalInfo);
-                  this.saveNewPhysicalData(physicalInfo);
+                  //TODO save physical info in array to display progress
+                  this.physical = physicalInfo;
+                  localStorage.setItem('physical-information', JSON.stringify(physicalInfo));
+                  //this.saveNewPhysicalData(physicalInfo);
+                  /*
                   this.polarData.commitPhysicalInfo(transactionId).then(success => {
                     console.log('Physical info commited', success);
                   }, error => {
                     console.error('Physical info commited', error);
                   })
+                  */
                 }, error => {
                   console.error(error);
                 });
-              }
+              }//for-loop
 
             }, error => {
               console.error('List physical info', error);
@@ -86,6 +92,7 @@ export class PhysicalInfoPage {
           })
         }
       }
+
     } else {
       console.log('No new physical info');
     }
