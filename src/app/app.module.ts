@@ -1,23 +1,26 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { ErrorHandler, NgModule } from '@angular/core';
-import { HttpModule } from '@angular/http';
-import { HttpClientModule } from '@angular/common/http';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { StatusBar } from '@ionic-native/status-bar';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
+import {BrowserModule} from '@angular/platform-browser';
+import {ErrorHandler, NgModule} from '@angular/core';
+import {HttpModule} from '@angular/http';
+import {HttpClientModule} from '@angular/common/http';
+import {IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
+import {SplashScreen} from '@ionic-native/splash-screen';
+import {StatusBar} from '@ionic-native/status-bar';
+import {InAppBrowser} from '@ionic-native/in-app-browser';
 
-import { SuperTabsModule } from 'ionic2-super-tabs';
+import {SuperTabsModule} from 'ionic2-super-tabs';
 
-import { MyApp } from './app.component';
-import { HomePage } from '../pages/home/home';
-import { LoginPage } from '../pages/login/login';
-import { UserPage } from '../pages/user/user';
-import { TrainingPage } from '../pages/training/training';
-import { TabsPage } from '../pages/tabs/tabs';
+import {MyApp} from './app.component';
+import {HomePage} from '../pages/home/home';
+import {LoginPage} from '../pages/login/login';
+import {UserPage} from '../pages/user/user';
+import {TrainingPage} from '../pages/training/training';
+import {TabsPage} from '../pages/tabs/tabs';
+import {DailyActivityPage} from '../pages/daily-activity/daily-activity';
+import {PhysicalInfoPage} from '../pages/physical-info/physical-info';
+import {TrainingDataPage} from '../pages/training-data/training-data';
 
-import { PolarDataProvider } from '../providers/polar-data/polar-data';
-import { LocalDataProvider } from '../providers/local-data/local-data';
+import {PolarDataProvider} from '../providers/polar-data/polar-data';
+import {LocalDataProvider} from '../providers/local-data/local-data';
 
 @NgModule({
   declarations: [
@@ -26,7 +29,10 @@ import { LocalDataProvider } from '../providers/local-data/local-data';
     LoginPage,
     UserPage,
     TrainingPage,
-    TabsPage
+    TabsPage,
+    DailyActivityPage,
+    PhysicalInfoPage,
+    TrainingDataPage
   ],
   imports: [
     BrowserModule,
@@ -42,7 +48,10 @@ import { LocalDataProvider } from '../providers/local-data/local-data';
     LoginPage,
     UserPage,
     TrainingPage,
-    TabsPage
+    TabsPage,
+    DailyActivityPage,
+    PhysicalInfoPage,
+    TrainingDataPage
   ],
   providers: [
     StatusBar,
@@ -53,4 +62,5 @@ import { LocalDataProvider } from '../providers/local-data/local-data';
     LocalDataProvider
   ]
 })
-export class AppModule {}
+export class AppModule {
+}

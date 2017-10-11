@@ -7,9 +7,13 @@
 
   <ion-content>
     <ion-list>
+      <button ion-item menuClose (click)="goToUserPage()">
+        <ion-icon item-left name="md-person"></ion-icon>
+        Mein Profil
+      </button>
       <button ion-item menuClose (click)="visitPolarFlow()">
         <ion-icon item-left name="md-globe"></ion-icon>
-        Visit PolarFlow
+        Besuche PolarFlow
       </button>
       <button ion-item menuClose (click)="logout()">
         <ion-icon item-left name="md-exit"></ion-icon>
@@ -25,11 +29,11 @@
   <button ion-button icon-only menuToggle>
     <ion-icon name="menu"></ion-icon>
   </button>
-  <ion-title>Polar</ion-title>
+  <ion-title>Aurora</ion-title>
 </ion-navbar>
 
 <super-tabs selectedTabIndex="1">
-  <super-tab [root]="page1" title="Home" icon="home"></super-tab>
-  <super-tab [root]="page2" title="Training" icon="md-american-football"></super-tab>
-  <super-tab [root]="page3" title="Ich" icon="md-person"></super-tab>
+  <super-tab [root]="page1" title="Training Data" id="training-data"></super-tab>
+  <super-tab [root]="page2" title="Daily Activity" id="daily-activity"></super-tab>
+  <super-tab [root]="page3" title="Physical info" id="physical-info"></super-tab>
 </super-tabs>

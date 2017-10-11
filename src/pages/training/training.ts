@@ -31,7 +31,7 @@ export class TrainingPage {
   }
 
   private initiateExerciseTransaction() {
-    this.polarData.createTransaction().then(success => {
+    this.polarData.createTrainingData().then(success => {
       console.log('initiate exercise transaction', success);
     }, error => {
       console.error('initiate exercise transaction', error);

@@ -3,8 +3,6 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
 import {LocalDataProvider} from "../local-data/local-data";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 
-import 'rxjs/add/operator/timeout';
-
 @Injectable()
 export class PolarDataProvider {
   v3User: string;
@@ -33,7 +31,11 @@ export class PolarDataProvider {
   /*
   Physical info
    */
-  checkForPhysicalInfo(): Promise<any> {
+  /**
+   *
+   * @returns {Promise<any>}
+   */
+  createPhysicalInfo(): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
@@ -43,22 +45,134 @@ export class PolarDataProvider {
           + '/physical-information-transactions';
 
         let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
+          .set('Authorization', 'Bearer ' + token.access_token);
 
-        this.http.post(url, JSON.stringify({}),{headers: headers}).subscribe(success => {
-          resolve(success);
+        this.http.post(url, JSON.stringify({}), {
+          headers: headers,
+          responseType: 'text',
+          observe: 'response'
+        }).subscribe(success => {
+          switch (success.status) {
+            case 200:
+              resolve(success.headers.get('Location'));
+              break;
+            case 201:
+              resolve(success.headers.get('Location'));
+              break;
+            case 204:
+              reject(success);
+              break;
+            default:
+              reject(success);
+          }
         }, error => {
           reject(error);
         }, () => {
-          console.log('Check For Physical Info complete');
+          console.log('Create Physical Info complete');
         });
       } else {
         reject('No token saved!');
       }
     });
   }
+
+  listPhysicalInfo(url: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.get(url, {headers: headers, observe: 'response'}).subscribe(success => {
+          switch (success.status) {
+            case 200:
+              resolve(success.body);
+              break;
+            case 204:
+              reject(success);
+              break;
+            case 404:
+              reject(success);
+              break;
+            default:
+              reject(success);
+          }
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('List Physical Info complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  getPhysicalInfo(url: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Get Physical Info complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  commitPhysicalInfo(transaction_id: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+        let url = this.v3User + '/v3/users/' + token.x_user_id
+          + '/physical-information-transactions/' + transaction_id;
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', 'application/json')
+          .set('Content-Type', 'application/json');
+
+        this.http.put(url, JSON.stringify({}), {headers: headers, observe: 'response'}).subscribe(success => {
+          switch (success.status) {
+            case 200:
+              resolve(success);
+              break;
+            case 204:
+              reject(success);
+              break;
+            default:
+              reject(success);
+          }
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Commit Physical Info complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
   /*
   Training data
    */
@@ -66,7 +180,7 @@ export class PolarDataProvider {
    * Check for new training data and create a new transaction if found.
    * @returns {Promise<any>}
    */
-  createTransaction(): Promise<any> {
+  createTrainingData(): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
@@ -80,7 +194,7 @@ export class PolarDataProvider {
           .set('Accept', 'application/json')
           .set('Content-Type', 'application/json');
 
-        this.http.post(url, {},{headers: headers}).subscribe(success => {
+        this.http.post(url, {}, {headers: headers}).subscribe(success => {
           resolve(success);
         }, error => {
           reject(error);
@@ -99,7 +213,7 @@ export class PolarDataProvider {
    * @param {string} transaction_id
    * @returns {Promise<any>}
    */
-  listExercises(transaction_id: number): Promise<any> {
+  listTrainingData(transaction_id: number): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
@@ -132,7 +246,7 @@ export class PolarDataProvider {
    * @param {number} transaction_id
    * @returns {Promise<any>}
    */
-  commitTransaction(transaction_id: number): Promise<any> {
+  commitTrainingData(transaction_id: number): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
@@ -306,7 +420,7 @@ export class PolarDataProvider {
    * @param {number} type_id
    * @returns {Promise<any>}
    */
-  getSamples(transaction_id: number, exercise_id: number, type_id:number): Promise<any> {
+  getSamples(transaction_id: number, exercise_id: number, type_id: number): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
@@ -392,8 +506,23 @@ export class PolarDataProvider {
           .set('Accept', 'application/json')
           .set('Content-Type', 'application/json');
 
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
+        this.http.get(url, {headers: headers, observe: 'response'}).subscribe(success => {
+          switch (success.status) {
+            case 200:
+              console.log('List available data', 200);
+              resolve(success.body);
+              break;
+            case 201:
+              console.log('List available data', 201);
+              resolve(success.body);
+              break;
+            case 204:
+              console.log('List available data', 204);
+              reject(success);
+              break;
+            default:
+              reject(success);
+          }
         }, error => {
           reject(error);
         }, () => {
@@ -605,5 +734,29 @@ export class PolarDataProvider {
         console.log('Register user complete');
       });
     });
+  }
+
+  refreshToken(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
+
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      let headers = new HttpHeaders()
+        .set('Authorization', base64_auth)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/x-www-form-urlencoded');
+
+      let url = 'https://polarremote.com/v2/oauth2/token?grant_type=refresh_token&refresh_token='
+        + token.x_user_id;
+
+      this.http.post(url, null, {headers: headers}).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Token refresh complete');
+      })
+    })
   }
 }
