@@ -8,49 +8,40 @@ import {PolarDataProvider} from "../../providers/polar-data/polar-data";
   templateUrl: 'physical-info.html',
 })
 export class PhysicalInfoPage {
-  physical: any = null;
+  physical:any = [];
 
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
               private polarData: PolarDataProvider) {
 
-    this.checkForNewData().then(new_data => {
+    this.polarData.listAvailableData().then(new_data => {
+      console.log('New data', new_data);
       this.getNewPhysicalInfo(new_data);
-    }, () => {
-      this.physical = localStorage.getItem('physical-information');
+    }, no_data => {
+      console.log('No new data ', no_data);
+      this.physical = JSON.parse(localStorage.getItem('physicalInfo'));
       if (this.physical) {
-        console.log('Physical info', JSON.parse(this.physical));
+        console.log('Physical info', this.physical);
       } else {
         console.log('No physical info');
       }
     });
-
-    this.physical = localStorage.getItem('physical-information');
   }
 
   refresh(refresher) {
     console.log('Refreshed');
     if (refresher) {
-      this.checkForNewData().then(new_data => {
-        this.getNewPhysicalInfo(new_data);
-      }, () => {
+      this.polarData.listAvailableData().then(new_data => {
+        console.log('New data', new_data);
+        this.getNewPhysicalInfo(new_data, refresher);
+      }, no_data => {
+        console.log('No new data ', no_data);
         refresher.complete();
       });
     }
   }
 
-  checkForNewData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.polarData.listAvailableData().then(new_data => {
-        resolve(new_data);
-      }, error => {
-        reject(error);
-      });
-    });
-
-  }
-
-  getNewPhysicalInfo(new_data: any) {
+  getNewPhysicalInfo(new_data: any, refresher?) {
     console.log('List available data', new_data);
     if (new_data) {
       let all_data = new_data['available-user-data'];
@@ -63,26 +54,34 @@ export class PhysicalInfoPage {
             console.log('Create physical info', transactionId);
             this.polarData.listPhysicalInfo(transactionId).then(physicalInfoId => {
               console.log('List physical infos', physicalInfoId);
-
-              for(let info of physicalInfoId['physical-informations']){
+              let length = physicalInfoId.length;
+              console.log('Length', length);
+              let count = 0;
+              for (let info of physicalInfoId['physical-informations']) {
                 console.log('List physical info', info);
                 this.polarData.getPhysicalInfo(info).then(physicalInfo => {
                   console.log('Get physical info', physicalInfo);
-                  //TODO save physical info in array to display progress
-                  this.physical = physicalInfo;
-                  localStorage.setItem('physical-information', JSON.stringify(physicalInfo));
-                  //this.saveNewPhysicalData(physicalInfo);
-                  /*
-                  this.polarData.commitPhysicalInfo(transactionId).then(success => {
-                    console.log('Physical info commited', success);
-                  }, error => {
-                    console.error('Physical info commited', error);
-                  })
-                  */
+                  this.saveNewPhysicalData(physicalInfo);
+                  console.log('Count: ' + count + 'Legnth: ' + length);
+                  count++;
                 }, error => {
                   console.error(error);
                 });
               }//for-loop
+
+              if(count >= length){
+                console.log('Count: ' + count + 'Legnth: ' + length);
+                refresher.complete();
+                /*
+                this.polarData.commitPhysicalInfo(transactionId).then(success => {
+                  console.log('Physical info commited', success);
+                  refresher.complete();
+                }, error => {
+                  console.error('Physical info commited', error);
+                  refresher.complete();
+                })
+                */
+              }
 
             }, error => {
               console.error('List physical info', error);
@@ -92,24 +91,27 @@ export class PhysicalInfoPage {
           })
         }
       }
-
     } else {
       console.log('No new physical info');
     }
-
   }
 
-  saveNewPhysicalData(physicalInfo:any) {
-    let physicalInfos = localStorage.getItem('physical-information');
-    if(physicalInfos){
-      let infos = JSON.parse(physicalInfos);
-      console.log('Add physical Data', infos);
-      infos.push(physicalInfo);
-      console.log('Added physical Data', infos);
-      localStorage.setItem('physical-information', JSON.stringify(infos));
+  saveNewPhysicalData(physicalInfo: any) {
+
+    console.log('Save physical Data', physicalInfo);
+    let physicalInfos = localStorage.getItem('physicalInfo');
+    if (physicalInfos) {
+      this.physical = JSON.parse(physicalInfos);
+      console.log('Add physical Data', this.physical);
+      this.physical.push(physicalInfo);
+      console.log('Added physical Data', this.physical);
+      localStorage.setItem('physicalInfo', JSON.stringify(this.physical));
     } else {
-      console.log('Save physical Data', physicalInfo);
-      localStorage.setItem('physical-information', JSON.stringify(physicalInfo));
+      let temp = [];
+      temp.push(physicalInfo);
+      this.physical = temp;
+      console.log('New physical Data', this.physical);
+      localStorage.setItem('physicalInfo', JSON.stringify(this.physical));
     }
   }
 }

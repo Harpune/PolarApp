@@ -15,6 +15,9 @@ export class UserPage {
               public navParams: NavParams,
               public loadingCtrl: LoadingController,
               public polarData: PolarDataProvider) {
+  }
+
+  ionViewDidLoad() {
     let user = localStorage.getItem('user');
     if (user) {
       this.user = JSON.parse(user);

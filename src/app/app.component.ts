@@ -22,6 +22,7 @@ export class MyApp {
 
     platform.ready().then(() => {
       let token = JSON.parse(localStorage.getItem('currentUser'));
+      console.log('User logged in ', token);
       if (token) { // TODO check if token is valid
         this.rootPage = TabsPage;
       } else {

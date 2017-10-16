@@ -10,18 +10,8 @@
     </ion-refresher-content>
   </ion-refresher>
 
-  <div class="block">
-    <label>Erstellt am:&#09;</label>
-    {{physical['created']}}
-  </div>
-  <div class="block">
-    <label>Gewicht:&#09;</label>
-    {{physical['weight']}}
-  </div>
-  <div class="block">
-    <label>Größe:&#09;</label>
-    {{physical['height']}}
-  </div>
-
+  <p *ngFor="let physic of physical">
+    ID:{{physic['id']}} Erstellt:{{physic['created']}} Größe:{{physic['height']}} Gewicht:{{physic['weight']}}
+  </p>
 
 </ion-content>
