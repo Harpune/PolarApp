@@ -42,9 +42,13 @@ export class LoginPage {
             this.polarData.registerUser(tokenData).then(success => {
               console.log('Register User Success: ', success);
               localStorage.setItem('user', JSON.stringify(success));
+              this.dismissLoading();
               this.navCtrl.setRoot(TabsPage).then(() => {
-                this.navCtrl.popToRoot();
-                this.dismissLoading();
+                this.navCtrl.popToRoot().then(() => {
+                  console.log('Pop to root');
+                }, () => {
+                  console.log('Pop to root failed');
+                });
               });
             }, error => {
               console.error('Register User error: ' + error);
