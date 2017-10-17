@@ -6,36 +6,61 @@
 
 
 <ion-content>
-  <div class="block">
-    <label>Vorname:&#09;</label>
-    {{user['first-name']}}
-  </div>
-  <div class="block">
-    <label>Nachname:&#09;</label>
-    {{user['last-name']}}
-  </div>
-  <div class="block" *ngIf="user['gender']=='MALE';else female">
-    <label>Geschlecht:&#09;</label>
-    Männlich
-  </div>
-  <ng-template #female>
-    <label>Geschlecht:&#09;</label>
-    Weiblich
-  </ng-template>
-  <div class="block">
-    <label>Geburtstag:&#09;</label>
-    {{user['birthdate'] | date:'dd.MM.y'}}
-  </div>
-  <div class="block">
-    <label>Gewicht:&#09;</label>
-    {{user['weight']}} kg
-  </div>
-  <div class="block">
-    <label>Größe:&#09;</label>
-    {{user['height']}} cm
-  </div>
-  <div class="block">
-    <label>Registriet am :&#09;</label>
-    {{user['registration-date'] | date:'dd.MM.y'}}
-  </div>
+  <ion-card>
+    <ion-card-header>
+      Geschlecht
+    </ion-card-header>
+    <ion-card-content *ngIf="user['gender']=='MALE';else female">
+      Männlich
+    </ion-card-content>
+    <ng-template #female>
+      Weiblich
+    </ng-template>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      Vorname
+    </ion-card-header>
+    <ion-card-content>
+      {{user['first-name']}}
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      Nachname
+    </ion-card-header>
+    <ion-card-content>
+      {{user['last-name']}}
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      Geburstag
+    </ion-card-header>
+    <ion-card-content>
+      {{user['birthdate'] | date:'dd.MM.y'}}
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      Gewicht
+    </ion-card-header>
+    <ion-card-content>
+      {{user['weight']}} kg
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      Größe
+    </ion-card-header>
+    <ion-card-content>
+      {{user['height']}} cm
+    </ion-card-content>
+  </ion-card>
+
 </ion-content>

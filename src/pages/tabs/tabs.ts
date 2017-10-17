@@ -65,7 +65,11 @@ export class TabsPage {
    * Go to user page.
    */
   goToUserPage() {
-    this.navCtrl.push(UserPage);
+    this.navCtrl.push(UserPage).then(() => {
+      console.log('Pushed to user page');
+    }, () => {
+      console.log('Pushed to user page failed');
+    });
   }
 
   /**

@@ -1,6 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {HttpModule} from '@angular/http';
+import {DatePipe} from "@angular/common";
 import {HttpClientModule} from '@angular/common/http';
 import {IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
 import {SplashScreen} from '@ionic-native/splash-screen';
@@ -21,6 +22,7 @@ import {TrainingDataPage} from '../pages/training-data/training-data';
 
 import {PolarDataProvider} from '../providers/polar-data/polar-data';
 import {LocalDataProvider} from '../providers/local-data/local-data';
+
 
 @NgModule({
   declarations: [
@@ -59,7 +61,8 @@ import {LocalDataProvider} from '../providers/local-data/local-data';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     InAppBrowser,
     PolarDataProvider,
-    LocalDataProvider
+    LocalDataProvider,
+    DatePipe
   ]
 })
 export class AppModule {

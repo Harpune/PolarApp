@@ -10,8 +10,31 @@
     </ion-refresher-content>
   </ion-refresher>
 
-  <p *ngFor="let physic of physical">
-    ID:{{physic['id']}} Erstellt:{{physic['created']}} Größe:{{physic['height']}} Gewicht:{{physic['weight']}}
-  </p>
+  <ion-card (click)='showStature()' >
+    <ion-card-header>
+      Statur
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #statureCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      Puls
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #heartRateCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      Sauerstoff Aufnahme
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #aerobCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>

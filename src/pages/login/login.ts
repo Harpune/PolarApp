@@ -16,6 +16,8 @@ export class LoginPage {
               public polarData: PolarDataProvider,
               public loadingCtrl: LoadingController,
               public iab: InAppBrowser) {
+
+    // TODO: Angemeldet als Lukas - Nicht Lukas
   }
 
   login() {

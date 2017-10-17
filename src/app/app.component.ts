@@ -19,11 +19,11 @@ export class MyApp {
   constructor(platform: Platform,
               statusBar: StatusBar,
               splashScreen: SplashScreen) {
-
+    //localStorage.removeItem('currentUser');
     platform.ready().then(() => {
       let token = JSON.parse(localStorage.getItem('currentUser'));
       console.log('User logged in ', token);
-      if (token) { // TODO check if token is valid
+      if (token) {
         this.rootPage = TabsPage;
       } else {
         this.rootPage = LoginPage;

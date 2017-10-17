@@ -9,7 +9,7 @@ import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 
 export class UserPage {
   loading: Loading;
-  user: any;
+  user: any = [];
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -18,13 +18,14 @@ export class UserPage {
   }
 
   ionViewDidLoad() {
-    let user = localStorage.getItem('user');
-    if (user) {
-      this.user = JSON.parse(user);
+
+    this.user = JSON.parse(localStorage.getItem('user'));
+    if (this.user) {
       console.log(this.user);
     } else {
       this.getUserData();
     }
+
   }
 
   getUserData() {
@@ -40,11 +41,6 @@ export class UserPage {
       }, error => {
         console.log('Get User Information', error);
         this.dismissLoading();
-
-        //Something went wrong: User not logged in
-        this.polarData.deleteCurrentUser().then(() => {
-
-        })
       });
     });
   }

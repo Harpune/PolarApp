@@ -35,19 +35,16 @@ export class PolarDataProvider {
    *
    * @returns {Promise<any>}
    */
-  createPhysicalInfo(): Promise<any> {
+  create(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
 
       if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/physical-information-transactions';
-
         let headers = new HttpHeaders()
           .set('Authorization', 'Bearer ' + token.access_token);
 
-        this.http.post(url, JSON.stringify({}), {
+        this.http.post(url, null, {
           headers: headers,
           responseType: 'text',
           observe: 'response'
@@ -68,7 +65,7 @@ export class PolarDataProvider {
         }, error => {
           reject(error);
         }, () => {
-          console.log('Create Physical Info complete');
+          console.log('Create complete');
         });
       } else {
         reject('No token saved!');
@@ -76,7 +73,7 @@ export class PolarDataProvider {
     });
   }
 
-  listPhysicalInfo(url: string): Promise<any> {
+  list(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
@@ -104,7 +101,7 @@ export class PolarDataProvider {
         }, error => {
           reject(error);
         }, () => {
-          console.log('List Physical Info complete');
+          console.log('List complete');
         });
       } else {
         reject('No token saved!');
@@ -112,7 +109,7 @@ export class PolarDataProvider {
     });
   }
 
-  getPhysicalInfo(url: string): Promise<any> {
+  get(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
@@ -129,7 +126,7 @@ export class PolarDataProvider {
         }, error => {
           reject(error);
         }, () => {
-          console.log('Get Physical Info complete');
+          console.log('Get complete');
         });
       } else {
         reject('No token saved!');
@@ -137,21 +134,19 @@ export class PolarDataProvider {
     });
   }
 
-  commitPhysicalInfo(transaction_id: number): Promise<any> {
+  commit(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
       let token = JSON.parse(localStorage.getItem('currentUser'));
 
       if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/physical-information-transactions/' + transaction_id;
 
         let headers = new HttpHeaders()
           .set('Authorization', 'Bearer ' + token.access_token)
           .set('Accept', 'application/json')
           .set('Content-Type', 'application/json');
 
-        this.http.put(url, null, {headers: headers, observe: 'response'}).subscribe(success => {
+        this.http.put(url, null, {headers: headers, responseType: 'text', observe: 'response'}).subscribe(success => {
           switch (success.status) {
             case 200:
               resolve(success);
@@ -165,318 +160,7 @@ export class PolarDataProvider {
         }, error => {
           reject(error);
         }, () => {
-          console.log('Commit Physical Info complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
-    });
-  }
-
-  /*
-  Training data
-   */
-  /**
-   * Check for new training data and create a new transaction if found.
-   * @returns {Promise<any>}
-   */
-  createTrainingData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/exercise-transactions';
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.post(url, {}, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Initiate exercise transaction complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
-    });
-  }
-
-  /**
-   * After successfully initiating a transaction, training sessions included
-   * within it can be retrieved with the provided transactionId.
-   * @param {string} transaction_id
-   * @returns {Promise<any>}
-   */
-  listTrainingData(transaction_id: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/exercise-transactions/' + transaction_id;
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('List Exercises complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
-    });
-  }
-
-  /**
-   * After successfully retrieving training session data within a transaction,
-   * partners are expected to commit the transaction.
-   * @param {number} transaction_id
-   * @returns {Promise<any>}
-   */
-  commitTrainingData(transaction_id: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/exercise-transactions/' + transaction_id;
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.put(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Commit Transaction complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
-    });
-  }
-
-
-  /**
-   * Retrieve training session summary data.
-   * @param {number} transaction_id
-   * @param {number} exercise_id
-   * @returns {Promise<any>}
-   */
-  getExerciseSummary(transaction_id: number, exercise_id: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/exercise-transactions/' + transaction_id
-          + '/exercises/' + exercise_id;
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Get Exercise Summary complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
-    });
-  }
-
-  /**
-   * Retrieve training session summary data in GPX format.
-   * @param {number} transaction_id
-   * @param {number} exercise_id
-   * @returns {Promise<any>}
-   */
-  getGPX(transaction_id: number, exercise_id: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/exercise-transactions/' + transaction_id
-          + '/exercises/' + exercise_id
-          + '/gpx';
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/gpx+json')
-          .set('Content-Type', 'application/gpx+json');
-
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Get GPX complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
-    });
-  }
-
-  /**
-   * Retrieve heart rate zones in training session.
-   * @param {number} transaction_id
-   * @param {number} exercise_id
-   * @returns {Promise<any>}
-   */
-  getHeartRateZones(transaction_id: number, exercise_id: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/exercise-transactions/' + transaction_id
-          + '/exercises/' + exercise_id
-          + '/heart-rate-zones';
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Get Heart Rate Zones complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
-    });
-  }
-
-  /**
-   * Retrieve list of links to available samples in training session.
-   * @param {number} transaction_id
-   * @param {number} exercise_id
-   * @returns {Promise<any>}
-   */
-  getAvailableSamples(transaction_id: number, exercise_id: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/exercise-transactions/' + transaction_id
-          + '/exercises/' + exercise_id
-          + '/samples';
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Get Available Samples complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
-    });
-  }
-
-  /**
-   * Retrieve sample data of given type.
-   * @param {number} transaction_id
-   * @param {number} exercise_id
-   * @param {number} type_id
-   * @returns {Promise<any>}
-   */
-  getSamples(transaction_id: number, exercise_id: number, type_id: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/exercise-transactions/' + transaction_id
-          + '/exercises/' + exercise_id
-          + '/samples/' + type_id;
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Get Samples complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
-    });
-  }
-
-  /**
-   * Retrieve exercise in TCX format.
-   * @param {number} transaction_id
-   * @param {number} exercise_id
-   * @returns {Promise<any>}
-   */
-  getTCX(transaction_id: number, exercise_id: number): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id
-          + '/exercise-transactions/' + transaction_id
-          + '/exercises/' + exercise_id
-          + '/tcx';
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/vnd.garmin.tcx+json')
-          .set('Content-Type', 'application/vnd.garmin.tcx+json');
-
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Get Samples complete');
+          console.log('Commit complete');
         });
       } else {
         reject('No token saved!');
@@ -693,7 +377,7 @@ export class PolarDataProvider {
         }
       });
 
-      browser.on('exit').subscribe(event => {
+      browser.on('exit').subscribe(() => {
         console.log('In App Browser', 'Event \'Exit\' is called');
         reject("Exit");
       });
@@ -734,29 +418,5 @@ export class PolarDataProvider {
         console.log('Register user complete');
       });
     });
-  }
-
-  refreshToken(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
-
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      let headers = new HttpHeaders()
-        .set('Authorization', base64_auth)
-        .set('Accept', 'application/json')
-        .set('Content-Type', 'application/x-www-form-urlencoded');
-
-      let url = 'https://polarremote.com/v2/oauth2/token?grant_type=refresh_token&refresh_token='
-        + token.x_user_id;
-
-      this.http.post(url, null, {headers: headers}).subscribe(success => {
-        resolve(success);
-      }, error => {
-        reject(error);
-      }, () => {
-        console.log('Token refresh complete');
-      })
-    })
   }
 }
