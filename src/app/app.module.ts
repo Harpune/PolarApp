@@ -14,7 +14,6 @@ import {MyApp} from './app.component';
 import {HomePage} from '../pages/home/home';
 import {LoginPage} from '../pages/login/login';
 import {UserPage} from '../pages/user/user';
-import {TrainingPage} from '../pages/training/training';
 import {TabsPage} from '../pages/tabs/tabs';
 import {DailyActivityPage} from '../pages/daily-activity/daily-activity';
 import {PhysicalInfoPage} from '../pages/physical-info/physical-info';
@@ -30,7 +29,6 @@ import {LocalDataProvider} from '../providers/local-data/local-data';
     HomePage,
     LoginPage,
     UserPage,
-    TrainingPage,
     TabsPage,
     DailyActivityPage,
     PhysicalInfoPage,
@@ -49,7 +47,6 @@ import {LocalDataProvider} from '../providers/local-data/local-data';
     HomePage,
     LoginPage,
     UserPage,
-    TrainingPage,
     TabsPage,
     DailyActivityPage,
     PhysicalInfoPage,

@@ -84,15 +84,15 @@ export class PhysicalInfoPage {
             // List new physical information.
             this.polarData.list(transactionIdUrl).then(physicalInfoId => {
               let length = Object.keys(physicalInfoId['physical-informations']).length;
-              let count = 0;
 
-              for (let info of physicalInfoId['physical-informations']) {
+              physicalInfoId['physical-informations'].forEach((info, index) => {
+
                 // Get new physical information.
                 this.polarData.get(info).then(physicalInfo => {
                   console.log('Get physical info', physicalInfo);
                   LocalDataProvider.saveData(physicalInfo, 'physicalInfo');
-                  count++;
-                  if (count >= length) {
+                  if (index >= length) {
+
                     // Commit the transaction.
                     this.polarData.commit(transactionIdUrl).then(success => {
                       console.log('Physical info committed', success);
@@ -105,12 +105,11 @@ export class PhysicalInfoPage {
                   }
                 }, error => {
                   console.error(error);
-                  count++;
-                  if (count >= length) {
+                  if (index >= length) {
                     reject(error);
                   }
                 });
-              }//for-loop
+              });
 
             }, error => {
               console.error('List physical info', error);

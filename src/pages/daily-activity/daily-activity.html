@@ -2,4 +2,14 @@
 </ion-header>
 
 <ion-content>
+
+  <ion-refresher (ionRefresh)="checkForNewData($event)">
+    <ion-refresher-content
+      pullingIcon="arrow-dropdown"
+      pullingText="Noch ein Stückchen zum Laden..."
+      refreshingSpinner="circles"
+      refreshingText="Ich schau nach!">
+    </ion-refresher-content>
+  </ion-refresher>
+
 </ion-content>

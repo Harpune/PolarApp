@@ -134,6 +134,56 @@ export class PolarDataProvider {
     });
   }
 
+  getGPX(url: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', ' application/gpx+json')
+          .set('Content-Type', 'application/gpx+json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Get complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
+  getTCX(url: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get local token.
+      let token = JSON.parse(localStorage.getItem('currentUser'));
+
+      if (token) {
+
+        let headers = new HttpHeaders()
+          .set('Authorization', 'Bearer ' + token.access_token)
+          .set('Accept', ' application/vnd.garmin.tcx+json')
+          .set('Content-Type', 'application/vnd.garmin.tcx+json');
+
+        this.http.get(url, {headers: headers}).subscribe(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        }, () => {
+          console.log('Get complete');
+        });
+      } else {
+        reject('No token saved!');
+      }
+    });
+  }
+
   commit(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get local token.
