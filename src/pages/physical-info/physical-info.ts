@@ -3,6 +3,7 @@ import {NavController, NavParams} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {Chart} from 'chart.js';
 import {DatePipe} from "@angular/common";
+import {LocalDataProvider} from "../../providers/local-data/local-data";
 
 @Component({
   selector: 'page-physical-info',
@@ -23,16 +24,131 @@ export class PhysicalInfoPage {
               private polarData: PolarDataProvider,
               private datePipe: DatePipe) {
     //localStorage.removeItem('physicalInfo');
-    this.physical = JSON.parse(localStorage.getItem('physicalInfo'));
-    if (this.physical) {
-      console.log('Local physical info', this.physical);
-    } else {
-      console.log('No physical info');
-    }
+
   }
 
   ionViewDidLoad() {
-    this.updateCharts();
+    this.physical = JSON.parse(localStorage.getItem('physicalInfo'));
+    if (this.physical) {
+      console.log('Local physical info', this.physical);
+      this.updateCharts();
+    } else {
+      console.log('No physical info');
+    }
+
+    this.checkForNewData();
+
+  }
+
+
+  checkForNewData(refresher?) {
+    this.polarData.listAvailableData().then(new_data => {
+      console.log('New data', new_data);
+      this.getPhysicalInfo(new_data).then(success => {
+        console.log('New Physical info', success);
+        this.updateCharts();
+        if (refresher) {
+          refresher.complete();
+        }
+      }, error => {
+        console.error('New Physical info', error);
+        if (refresher) {
+          refresher.complete();
+        }
+      });
+    }, no_data => {
+      if (refresher) {
+        refresher.complete();
+      }
+      console.log('No new data ', no_data);
+      //Loading
+    });
+  }
+
+  /**
+   * This resource allows partners to access their users’ physical information. Whenever some user’s physical
+   * information changes, new entry containing full physical info is stored to AccessLink.
+   * @param new_data
+   */
+  getPhysicalInfo(new_data: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      console.log('List available data', new_data);
+      if (new_data) {
+        let all_data = new_data['available-user-data'];
+        this.dataContainsType(all_data, 'PHYSICAL_INFORMATION').then(index => {
+          let data = all_data[index];
+          console.log('Data ', data);
+          // Create new transaction.
+          this.polarData.create(data['url']).then(transactionIdUrl => {
+
+            // List new physical information.
+            this.polarData.list(transactionIdUrl).then(physicalInfoId => {
+              let length = Object.keys(physicalInfoId['physical-informations']).length;
+              let count = 0;
+
+              for (let info of physicalInfoId['physical-informations']) {
+                // Get new physical information.
+                this.polarData.get(info).then(physicalInfo => {
+                  console.log('Get physical info', physicalInfo);
+                  LocalDataProvider.saveData(physicalInfo, 'physicalInfo');
+                  count++;
+                  if (count >= length) {
+                    // Commit the transaction.
+                    this.polarData.commit(transactionIdUrl).then(success => {
+                      console.log('Physical info committed', success);
+                      resolve(success);
+                    }, error => {
+                      console.error('Physical info committed', error);
+                      reject(error);
+                      //Loading
+                    })
+                  }
+                }, error => {
+                  console.error(error);
+                  count++;
+                  if (count >= length) {
+                    reject(error);
+                  }
+                });
+              }//for-loop
+
+            }, error => {
+              console.error('List physical info', error);
+              reject(error);
+            })
+          }, error => {
+            console.error('Create physical info', error);
+            reject(error);
+          })
+        }, () => {
+          console.log('NO PHYSICAL_INFORMATION');
+          reject('NO PHYSICAL_INFORMATION');
+        });
+
+      } else {
+        console.log('No new physical info');
+        reject('No new physical info');
+      }
+    });
+  }
+
+  /**
+   * Check if all_data is of type.
+   * @param all_data
+   * @param {string} type
+   * @returns {Promise<number>}
+   */
+  dataContainsType(all_data: any, type: string): Promise<number> {
+    return new Promise((resolve, reject) => {
+      all_data.forEach((item, index) => {
+        if (item['data-type'] == type) {
+          console.log(type, index);
+          resolve(index);
+        }
+      });
+
+      reject(-1);
+    });
   }
 
   updateCharts() {
