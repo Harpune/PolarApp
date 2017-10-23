@@ -1,24 +1,80 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams} from 'ionic-angular';
+import {NavController, NavParams} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
+import {ActivityPage} from "../activity/activity";
 
-@IonicPage()
 @Component({
   selector: 'page-daily-activity',
   templateUrl: 'daily-activity.html',
 })
 export class DailyActivityPage {
   activity: any = [];
+  user: any = {};
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private polarData: PolarDataProvider) {
     //localStorage.removeItem('activityLog');
+    this.user = JSON.parse(localStorage.getItem('user'));
   }
 
   ionViewDidLoad() {
-    this.activity = JSON.parse(localStorage.getItem('activityLog'));
+    this.activity = JSON.parse(localStorage.getItem('activityLogs')) || [];
+    console.log(this.activity);
+    this.activity.push({
+      "id": 1234,
+      "polar-user": "https://www.polaraccesslink/v3/users/1",
+      "transaction-id": 179879,
+      "date": "2010-12-31",
+      "created": "2016-04-27T20:11:33.000Z",
+      "calories": 2329,
+      "active-calories": 428,
+      "duration": "PT2H44M",
+      "active-steps": 250
+    }, {
+      "id": 12345,
+      "polar-user": "https://www.polaraccesslink/v3/users/2",
+      "transaction-id": 179880,
+      "date": "2010-12-31",
+      "created": "2016-04-27T20:11:33.000Z",
+      "calories": 2329,
+      "active-calories": 428,
+      "duration": "PT2H44M",
+      "active-steps": 250
+    }, {
+      "id": 12345,
+      "polar-user": "https://www.polaraccesslink/v3/users/2",
+      "transaction-id": 179880,
+      "date": "2010-12-31",
+      "created": "2016-04-27T20:11:33.000Z",
+      "calories": 2329,
+      "active-calories": 428,
+      "duration": "PT2H44M",
+      "active-steps": 250
+    }, {
+      "id": 12345,
+      "polar-user": "https://www.polaraccesslink/v3/users/2",
+      "transaction-id": 179880,
+      "date": "2010-12-31",
+      "created": "2016-04-27T20:11:33.000Z",
+      "calories": 2329,
+      "active-calories": 428,
+      "duration": "PT2H44M",
+      "active-steps": 250
+    }, {
+      "id": 12345,
+      "polar-user": "https://www.polaraccesslink/v3/users/2",
+      "transaction-id": 179880,
+      "date": "2010-12-31",
+      "created": "2016-04-27T20:11:33.000Z",
+      "calories": 2329,
+      "active-calories": 428,
+      "duration": "PT2H44M",
+      "active-steps": 250
+    });
+    console.log(this.activity);
+
     if (this.activity) {
       console.log('Daily activity', this.activity);
       //Do stuff with activity
@@ -28,6 +84,10 @@ export class DailyActivityPage {
     this.checkForNewData();
   }
 
+  showActivity(){
+    this.navCtrl.push(ActivityPage);
+  }
+
   /**
    * Checks for new available data.
    */
@@ -35,13 +95,13 @@ export class DailyActivityPage {
     this.polarData.listAvailableData().then(new_data => {
       console.log('New data', new_data);
       this.getActivitySummary(new_data).then(success => {
-        console.log('New Physical info', success);
+        console.log('New activity info', success);
         //Do stuff with activity
         if (refresher) {
           refresher.complete();
         }
       }, error => {
-        console.error('New Physical info', error);
+        console.error('No activity info', error);
         if (refresher) {
           refresher.complete();
         }

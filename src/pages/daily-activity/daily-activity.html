@@ -2,7 +2,6 @@
 </ion-header>
 
 <ion-content>
-
   <ion-refresher (ionRefresh)="checkForNewData($event)">
     <ion-refresher-content
       pullingIcon="arrow-dropdown"
@@ -11,5 +10,37 @@
       refreshingText="Ich schau nach!">
     </ion-refresher-content>
   </ion-refresher>
+
+
+  <div *ngFor="let act of activity">
+    <ion-card (click)="showActivity()">
+      <ion-card-header>
+        <p>{{user['first-name']}} {{user['last-name']}}</p>
+
+        <p>Tägliche Aktivität</p>
+        <p>{{act['created'] | date:'dd.MM.y H:m:s'}}</p>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="wrapper">
+          <div class="inner">
+            <ion-icon name="md-timer"></ion-icon>
+            <ion-badge>{{act['duration']}}</ion-badge>
+            <p>Dauer</p>
+          </div>
+          <div class="inner">
+            <ion-icon name="md-flame"></ion-icon>
+            <ion-badge>{{act['active-calories']}}</ion-badge>
+            <p>Kalorien</p>
+          </div>
+          <div class="inner">
+            <ion-icon name="md-walk"></ion-icon>
+            <ion-badge>{{act['active-steps']}}</ion-badge>
+            <p>Schritte</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
 </ion-content>

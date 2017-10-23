@@ -28,7 +28,47 @@ export class PhysicalInfoPage {
   }
 
   ionViewDidLoad() {
-    this.physical = JSON.parse(localStorage.getItem('physicalInfo'));
+    this.physical = JSON.parse(localStorage.getItem('physicalInfo')) || [];
+    this.physical.push({
+      "id": 123,
+      "transaction-id": 179879,
+      "created": "2016-04-27T20:11:33.000Z",
+      "polar-user": "https://www.polaraccesslink/v3/users/1",
+      "weight": 80,
+      "height": 180,
+      "maximum-heart-rate": 160,
+      "resting-heart-rate": 60,
+      "aerobic-threshold": 123,
+      "anaerobic-threshold": 123,
+      "vo2-max": 12,
+      "weight-source": "SOURCE_MEASURED"
+    }, {
+      "id": 123,
+      "transaction-id": 179879,
+      "created": "2016-04-27T20:11:33.000Z",
+      "polar-user": "https://www.polaraccesslink/v3/users/1",
+      "weight": 80,
+      "height": 180,
+      "maximum-heart-rate": 160,
+      "resting-heart-rate": 60,
+      "aerobic-threshold": 123,
+      "anaerobic-threshold": 123,
+      "vo2-max": 12,
+      "weight-source": "SOURCE_MEASURED"
+    }, {
+      "id": 123,
+      "transaction-id": 179879,
+      "created": "2016-04-27T20:11:33.000Z",
+      "polar-user": "https://www.polaraccesslink/v3/users/1",
+      "weight": 80,
+      "height": 180,
+      "maximum-heart-rate": 160,
+      "resting-heart-rate": 60,
+      "aerobic-threshold": 123,
+      "anaerobic-threshold": 123,
+      "vo2-max": 12,
+      "weight-source": "SOURCE_MEASURED"
+    });
     if (this.physical) {
       console.log('Local physical info', this.physical);
       this.updateCharts();

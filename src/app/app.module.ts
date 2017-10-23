@@ -11,13 +11,13 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
 import {SuperTabsModule} from 'ionic2-super-tabs';
 
 import {MyApp} from './app.component';
-import {HomePage} from '../pages/home/home';
 import {LoginPage} from '../pages/login/login';
 import {UserPage} from '../pages/user/user';
 import {TabsPage} from '../pages/tabs/tabs';
 import {DailyActivityPage} from '../pages/daily-activity/daily-activity';
 import {PhysicalInfoPage} from '../pages/physical-info/physical-info';
 import {TrainingDataPage} from '../pages/training-data/training-data';
+import {ActivityPage} from "../pages/activity/activity";
 
 import {PolarDataProvider} from '../providers/polar-data/polar-data';
 import {LocalDataProvider} from '../providers/local-data/local-data';
@@ -26,13 +26,13 @@ import {LocalDataProvider} from '../providers/local-data/local-data';
 @NgModule({
   declarations: [
     MyApp,
-    HomePage,
     LoginPage,
     UserPage,
     TabsPage,
     DailyActivityPage,
     PhysicalInfoPage,
-    TrainingDataPage
+    TrainingDataPage,
+    ActivityPage
   ],
   imports: [
     BrowserModule,
@@ -44,13 +44,13 @@ import {LocalDataProvider} from '../providers/local-data/local-data';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage,
     LoginPage,
     UserPage,
     TabsPage,
     DailyActivityPage,
     PhysicalInfoPage,
-    TrainingDataPage
+    TrainingDataPage,
+    ActivityPage
   ],
   providers: [
     StatusBar,
