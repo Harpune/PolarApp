@@ -12,20 +12,22 @@
   </ion-refresher>
 
 
-  <div *ngFor="let act of activity">
-    <ion-card (click)="showActivity()">
+  <div *ngFor="let act of activity; let i = index">
+    <ion-card (click)="showActivity(i)">
       <ion-card-header>
-        <p>{{user['first-name']}} {{user['last-name']}}</p>
-
-        <p>Tägliche Aktivität</p>
-        <p>{{act['created'] | date:'dd.MM.y H:m:s'}}</p>
+        <p>Am {{act['created'] | date:'dd.MM.y'}} um {{act['created'] | date:'H:m:s'}}</p>
       </ion-card-header>
+
+      <div id="progressBar">
+        <div id="progress" [style.width.%]="progress[i]"></div>
+        {{progress[i]}}%
+      </div>
 
       <ion-card-content>
         <div class="wrapper">
           <div class="inner">
             <ion-icon name="md-timer"></ion-icon>
-            <ion-badge>{{act['duration']}}</ion-badge>
+            <ion-badge>{{act['duration']['hours']}}:{{act['duration']['minutes']}}:{{act['duration']['seconds']}}</ion-badge>
             <p>Dauer</p>
           </div>
           <div class="inner">

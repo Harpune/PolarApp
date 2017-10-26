@@ -10,4 +10,25 @@ page-daily-activity {
     width: 33%;
     text-align: center;
   }
+
+  div#progressBar {
+    margin: 0 auto;
+  }
+
+  #progressBar {
+    width: 90%;
+    background-color: white;
+    border: 1px black solid;
+    border-radius: 1px;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 25px;
+  }
+
+  #progress {
+    height: 25px;
+    background-color: #cf102f;
+    position: absolute;
+  }
 }

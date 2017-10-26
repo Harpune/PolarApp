@@ -19,17 +19,9 @@ export class MyApp {
   constructor(platform: Platform,
               statusBar: StatusBar,
               splashScreen: SplashScreen) {
-    localStorage.removeItem('currentUser');
+
     platform.ready().then(() => {
       let token = JSON.parse(localStorage.getItem('currentUser'));
-
-      token = {
-        "access_token": "2YotnFZFEjr1zCsicMWpAA",
-        "token_type": "bearer",
-        "expires_in": 31535999,
-        "x_user_id": 10579
-      };
-
       console.log('User logged in ', token);
       if (token) {
         this.rootPage = TabsPage;

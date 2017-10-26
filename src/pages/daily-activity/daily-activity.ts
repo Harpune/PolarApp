@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
-import {NavController, NavParams} from 'ionic-angular';
+import {App, NavController, NavParams} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {ActivityPage} from "../activity/activity";
+import {parse, end, toSeconds, pattern} from 'iso8601-duration';
 
 @Component({
   selector: 'page-daily-activity',
@@ -11,85 +12,49 @@ import {ActivityPage} from "../activity/activity";
 export class DailyActivityPage {
   activity: any = [];
   user: any = {};
+  progress: any = [];
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              private polarData: PolarDataProvider) {
+  constructor(private polarData: PolarDataProvider,
+              private app: App) {
     //localStorage.removeItem('activityLog');
     this.user = JSON.parse(localStorage.getItem('user'));
   }
 
+  /**
+   * Ionic View did load.
+   */
   ionViewDidLoad() {
-    this.activity = JSON.parse(localStorage.getItem('activityLogs')) || [];
-    console.log(this.activity);
-    this.activity.push({
-      "id": 1234,
-      "polar-user": "https://www.polaraccesslink/v3/users/1",
-      "transaction-id": 179879,
-      "date": "2010-12-31",
-      "created": "2016-04-27T20:11:33.000Z",
-      "calories": 2329,
-      "active-calories": 428,
-      "duration": "PT2H44M",
-      "active-steps": 250
-    }, {
-      "id": 12345,
-      "polar-user": "https://www.polaraccesslink/v3/users/2",
-      "transaction-id": 179880,
-      "date": "2010-12-31",
-      "created": "2016-04-27T20:11:33.000Z",
-      "calories": 2329,
-      "active-calories": 428,
-      "duration": "PT2H44M",
-      "active-steps": 250
-    }, {
-      "id": 12345,
-      "polar-user": "https://www.polaraccesslink/v3/users/2",
-      "transaction-id": 179880,
-      "date": "2010-12-31",
-      "created": "2016-04-27T20:11:33.000Z",
-      "calories": 2329,
-      "active-calories": 428,
-      "duration": "PT2H44M",
-      "active-steps": 250
-    }, {
-      "id": 12345,
-      "polar-user": "https://www.polaraccesslink/v3/users/2",
-      "transaction-id": 179880,
-      "date": "2010-12-31",
-      "created": "2016-04-27T20:11:33.000Z",
-      "calories": 2329,
-      "active-calories": 428,
-      "duration": "PT2H44M",
-      "active-steps": 250
-    }, {
-      "id": 12345,
-      "polar-user": "https://www.polaraccesslink/v3/users/2",
-      "transaction-id": 179880,
-      "date": "2010-12-31",
-      "created": "2016-04-27T20:11:33.000Z",
-      "calories": 2329,
-      "active-calories": 428,
-      "duration": "PT2H44M",
-      "active-steps": 250
-    });
+    this.activity = JSON.parse(localStorage.getItem('activity_sum')) || [];
     console.log(this.activity);
 
     if (this.activity) {
       console.log('Daily activity', this.activity);
-      //Do stuff with activity
+
+      this.activity.forEach((act, index) => {
+        this.progress[index] = Math.floor((act['active-calories'] * 100) / act['calories']);
+        console.log('Progress' + index, this.progress[index]);
+      });
+
     } else {
       console.log('No daily activity');
     }
     this.checkForNewData();
   }
 
-  showActivity(){
-    this.navCtrl.push(ActivityPage);
+  /**
+   * Go to the activityPage.
+   * @param {number} index
+   */
+  showActivity(index: number) {
+    let act = this.activity[index];
+    console.log('Activity', act);
+    console.log('Activity index', index);
+    this.app.getRootNav().push(ActivityPage, {act: act, index: index});
   }
 
   /**
-   * Checks for new available data.
+   * Check for new data.
+   * @param refresher
    */
   checkForNewData(refresher?) {
     this.polarData.listAvailableData().then(new_data => {
@@ -116,7 +81,7 @@ export class DailyActivityPage {
   }
 
   /**
-   *
+   * Get new activities.
    * @param new_data
    */
   private getActivitySummary(new_data: any): Promise<any> {
@@ -143,6 +108,11 @@ export class DailyActivityPage {
               activitySummary['activity-log'].forEach((info, index) => {
                 this.polarData.get(info).then(activity_sum => {
                   console.log('Get activity summary', activity_sum);
+                  let durationPT = activity_sum['duration'];
+                  let durationDate = parse(durationPT);
+                  console.log("duration", durationDate);
+                  activity_sum['duration'] = durationDate;
+
                   LocalDataProvider.saveData(activity_sum, 'activity_sum');
 
                   this.polarData.get(info + '/step-samples').then(activity_step => {
@@ -154,6 +124,7 @@ export class DailyActivityPage {
                       LocalDataProvider.saveData(activity_zone, 'activity_zone');
 
                       if (index >= length) {
+                        /*
                         this.polarData.commit(transactionIdUrl).then(success => {
                           console.log('Activity info committed', success);
                           resolve(success);
@@ -161,6 +132,9 @@ export class DailyActivityPage {
                           console.error('Activity info committed', error);
                           reject(error);
                         })
+                         */
+                        console.log("ACTIVITY DONE!");
+
                       }
 
                     }, error => {
@@ -177,7 +151,10 @@ export class DailyActivityPage {
                   console.error(error);
                   reject(error);
                 });
-              });
+              });//for each
+            }, error => {
+              console.error(error);
+              reject(error);
             })
           }, error => {
             console.error('Create activity summary', error);
@@ -192,7 +169,6 @@ export class DailyActivityPage {
         reject('No new activity summary');
       }
     });
-
   }
 
   /**
