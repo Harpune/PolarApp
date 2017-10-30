@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {App, NavController, NavParams} from 'ionic-angular';
+import {App} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {ActivityPage} from "../activity/activity";
@@ -109,9 +109,7 @@ export class DailyActivityPage {
                 this.polarData.get(info).then(activity_sum => {
                   console.log('Get activity summary', activity_sum);
                   let durationPT = activity_sum['duration'];
-                  let durationDate = parse(durationPT);
-                  console.log("duration", durationDate);
-                  activity_sum['duration'] = durationDate;
+                  activity_sum['duration'] = parse(durationPT);
 
                   LocalDataProvider.saveData(activity_sum, 'activity_sum');
 
@@ -124,15 +122,15 @@ export class DailyActivityPage {
                       LocalDataProvider.saveData(activity_zone, 'activity_zone');
 
                       if (index >= length) {
-                        /*
+
                         this.polarData.commit(transactionIdUrl).then(success => {
                           console.log('Activity info committed', success);
                           resolve(success);
                         }, error => {
                           console.error('Activity info committed', error);
                           reject(error);
-                        })
-                         */
+                        });
+
                         console.log("ACTIVITY DONE!");
 
                       }

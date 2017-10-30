@@ -19,7 +19,7 @@ export class MyApp {
   constructor(platform: Platform,
               statusBar: StatusBar,
               splashScreen: SplashScreen) {
-
+    //localStorage.removeItem('currentUser');
     platform.ready().then(() => {
       let token = JSON.parse(localStorage.getItem('currentUser'));
       console.log('User logged in ', token);

@@ -1,5 +1,4 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavController, NavParams} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {Chart} from 'chart.js';
 import {DatePipe} from "@angular/common";
@@ -19,9 +18,7 @@ export class PhysicalInfoPage {
   heartRateChart: any;
   aerobChart: any;
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private polarData: PolarDataProvider,
+  constructor(private polarData: PolarDataProvider,
               private datePipe: DatePipe) {
     //localStorage.removeItem('physicalInfo');
 
@@ -29,46 +26,7 @@ export class PhysicalInfoPage {
 
   ionViewDidLoad() {
     this.physical = JSON.parse(localStorage.getItem('physicalInfo')) || [];
-    this.physical.push({
-      "id": 123,
-      "transaction-id": 179879,
-      "created": "2016-04-27T20:11:33.000Z",
-      "polar-user": "https://www.polaraccesslink/v3/users/1",
-      "weight": 80,
-      "height": 180,
-      "maximum-heart-rate": 160,
-      "resting-heart-rate": 60,
-      "aerobic-threshold": 123,
-      "anaerobic-threshold": 123,
-      "vo2-max": 12,
-      "weight-source": "SOURCE_MEASURED"
-    }, {
-      "id": 123,
-      "transaction-id": 179879,
-      "created": "2016-04-27T20:11:33.000Z",
-      "polar-user": "https://www.polaraccesslink/v3/users/1",
-      "weight": 80,
-      "height": 180,
-      "maximum-heart-rate": 160,
-      "resting-heart-rate": 60,
-      "aerobic-threshold": 123,
-      "anaerobic-threshold": 123,
-      "vo2-max": 12,
-      "weight-source": "SOURCE_MEASURED"
-    }, {
-      "id": 123,
-      "transaction-id": 179879,
-      "created": "2016-04-27T20:11:33.000Z",
-      "polar-user": "https://www.polaraccesslink/v3/users/1",
-      "weight": 80,
-      "height": 180,
-      "maximum-heart-rate": 160,
-      "resting-heart-rate": 60,
-      "aerobic-threshold": 123,
-      "anaerobic-threshold": 123,
-      "vo2-max": 12,
-      "weight-source": "SOURCE_MEASURED"
-    });
+
     if (this.physical) {
       console.log('Local physical info', this.physical);
       this.updateCharts();
@@ -80,7 +38,10 @@ export class PhysicalInfoPage {
 
   }
 
-
+  /**
+   * Check for a new update.
+   * @param refresher
+   */
   checkForNewData(refresher?) {
     this.polarData.listAvailableData().then(new_data => {
       console.log('New data', new_data);
