@@ -4,6 +4,7 @@ import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {ActivityPage} from "../activity/activity";
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
+import {Observable} from "rxjs/Rx";
 
 @Component({
   selector: 'page-daily-activity',
@@ -32,13 +33,16 @@ export class DailyActivityPage {
 
       this.activity.forEach((act, index) => {
         this.progress[index] = Math.floor((act['active-calories'] * 100) / act['calories']);
-        console.log('Progress' + index, this.progress[index]);
       });
 
     } else {
       console.log('No daily activity');
     }
-    this.checkForNewData();
+
+    Observable.interval(1000 * 60 * 10).startWith(0).subscribe(trigger => {
+      console.log('No. ' + trigger + ': 10 minutes more');
+      this.checkForNewData()
+    });
   }
 
   /**
@@ -47,8 +51,6 @@ export class DailyActivityPage {
    */
   showActivity(index: number) {
     let act = this.activity[index];
-    console.log('Activity', act);
-    console.log('Activity index', index);
     this.app.getRootNav().push(ActivityPage, {act: act, index: index});
   }
 

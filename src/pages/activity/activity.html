@@ -7,7 +7,9 @@
 </ion-header>
 
 
-<ion-content>
+<ion-content padding>
+  <p>Deine Schritte, die du am {{activity['created'] | date:'dd.MM.y'}} gemacht hast. Weiter so!</p>
   <canvas #stepsCanvas></canvas>
-
+  <p>In diesem Diagram werden deine Aktivitätszeiten dargestellt. Je dunkler, desto besser!</p>
+  <canvas #zonesCanvas></canvas>
 </ion-content>

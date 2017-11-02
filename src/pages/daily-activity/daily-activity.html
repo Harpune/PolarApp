@@ -2,16 +2,6 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher (ionRefresh)="checkForNewData($event)">
-    <ion-refresher-content
-      pullingIcon="arrow-dropdown"
-      pullingText="Noch ein Stückchen zum Laden..."
-      refreshingSpinner="circles"
-      refreshingText="Ich schau nach!">
-    </ion-refresher-content>
-  </ion-refresher>
-
-
   <div *ngFor="let act of activity; let i = index">
     <ion-card
       *ngIf="act['duration']['hours'] != 0 && act['duration']['minutes'] != 0 && act['duration']['seconds'] != 0"

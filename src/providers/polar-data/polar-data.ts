@@ -442,7 +442,6 @@ export class PolarDataProvider {
   getAccessToken(code: string): Promise<any> {
     return new Promise((resolve, reject) => {
       // Base64 encoding of secret and id: clientId:clientSecret.
-      //TODO remove local creds and use this.user_id and this.client_id.
       let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
 
       // Authorization URL.

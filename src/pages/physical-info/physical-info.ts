@@ -3,6 +3,7 @@ import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {Chart} from 'chart.js';
 import {DatePipe} from "@angular/common";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
+import {Observable} from 'rxjs/Rx';
 
 @Component({
   selector: 'page-physical-info',
@@ -21,7 +22,6 @@ export class PhysicalInfoPage {
   constructor(private polarData: PolarDataProvider,
               private datePipe: DatePipe) {
     //localStorage.removeItem('physicalInfo');
-
   }
 
   ionViewDidLoad() {
@@ -34,7 +34,10 @@ export class PhysicalInfoPage {
       console.log('No physical info');
     }
 
-    this.checkForNewData();
+    Observable.interval(1000 * 60 * 10).startWith(0).subscribe( trigger => {
+      console.log('No. ' + trigger + ': 10 minutes more');
+      this.checkForNewData()
+    });
 
   }
 

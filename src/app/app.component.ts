@@ -20,18 +20,17 @@ export class MyApp {
               statusBar: StatusBar,
               splashScreen: SplashScreen) {
     //localStorage.removeItem('currentUser');
-    platform.ready().then(() => {
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-      console.log('User logged in ', token);
-      if (token) {
-        this.rootPage = TabsPage;
-      } else {
-        this.rootPage = LoginPage;
-      }
+    let token = JSON.parse(localStorage.getItem('currentUser'));
+    console.log('User logged in ', token);
+    if (token) {
+      this.rootPage = TabsPage;
+    } else {
+      this.rootPage = LoginPage;
+    }
 
+    platform.ready().then(() => {
       statusBar.styleDefault();
       splashScreen.hide();
-
     });
   }
 }

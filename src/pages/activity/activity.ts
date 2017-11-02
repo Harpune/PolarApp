@@ -2,6 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import {NavController, NavParams} from 'ionic-angular';
 import {Chart} from 'chart.js';
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
+import {DatePipe} from "@angular/common";
 
 @Component({
   selector: 'page-activity',
@@ -11,18 +12,20 @@ export class ActivityPage {
   activity: any;
   stepSamples: any;
   zoneSamples: any;
-  @ViewChild('stepsCanvas') stepsCanvas;
-  stepsChart: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  @ViewChild('stepsCanvas') stepsCanvas;
+  @ViewChild('zonesCanvas') zonesCanvas;
+  stepsChart: any;
+  zonesChart: any;
+
+  constructor(private navParams: NavParams,
+              private datePipe: DatePipe) {
     this.activity = navParams.get('act');
     let index = navParams.get('index');
 
     console.log('Activity', this.activity);
     this.stepSamples = JSON.parse(localStorage.getItem('activity_step'))[index];
-    console.log('Steps', this.stepSamples);
     this.zoneSamples = JSON.parse(localStorage.getItem('activity_zone'))[index];
-    console.log('Zones', this.zoneSamples);
   }
 
   ionViewDidLoad() {
@@ -33,27 +36,40 @@ export class ActivityPage {
     if (this.stepSamples) {
       let steps = [];
       let times = [];
+      let count = 0;
       for (let step of this.stepSamples['samples']) {
         steps.push(step['steps']);
-        times.push(step['time']);
+        times.push(count++ + ':00');
+
       }
       console.log('Steps', steps);
       console.log('Time', times);
 
       this.stepsChart = new Chart(this.stepsCanvas.nativeElement, {
-        type: 'doughnut',
+        type: 'line',
         data: {
           labels: times,
           datasets: [{
             data: steps,
             label: 'Schritte',
-            borderColor: '#cf102f',
-            backgroundColor: 'rgba(207,16,47,0.4)'
+            borderColor: '#009de1',
+            backgroundColor: 'rgba(0,157,225,0.4)'
           }]
         }
       });
     }
-
+    /*
+     * backgroundColor: [
+     '#24BBFC',
+     '#07B4FF',
+     '#009DE1',
+     '#006F9E',
+     '#00577D',
+     '#666'
+     ]
+     */
+    // TODO zone zeit ordentlich dartestellen (nicht in Sekunden)
+    // TODO zusätzliche Bar mit den Zeiten (dann ohne oberes TODO eventuell)
     if (this.zoneSamples) {
       let zones = [0, 0, 0, 0, 0, 0];
       for (let entry of this.zoneSamples['samples']) {
@@ -68,21 +84,24 @@ export class ActivityPage {
 
       console.log('ZOOONE', zones);
 
-      this.stepsChart = new Chart(this.stepsCanvas.nativeElement, {
+      this.zonesChart = new Chart(this.zonesCanvas.nativeElement, {
         type: 'doughnut',
         data: {
-          labels: ['Sleep', 'Sedentary', 'Light', 'Moderate', 'Vigorous', 'Non Wear'],
+          labels: ['Ruhe', 'Sitzen', 'Niedrig', 'Mittel', 'Hoch', 'Nicht an'],
           datasets: [{
             data: zones,
             backgroundColor: [
-              "#2ecc71",
-              "#3498db",
-              "#95a5a6",
-              "#f1c40f",
-              "#e74c3c",
-              "#34495e"
+              '#f2637a',
+              '#e22954',
+              '#cf102f',
+              '#a6041e',
+              '#810014',
+              '#666'
             ]
           }]
+        },
+        options: {
+          maintainAspectRatio : false
         }
       });
     }

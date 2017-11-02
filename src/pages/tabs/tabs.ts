@@ -53,6 +53,7 @@ export class TabsPage {
         });
       }, error => {
         console.error('Logout user', error);
+        alert(error.message);
         this.dismissLoading();
       })
     })
