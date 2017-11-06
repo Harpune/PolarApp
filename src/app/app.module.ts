@@ -2,7 +2,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {HttpModule} from '@angular/http';
 import {DatePipe} from "@angular/common";
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
 import {SplashScreen} from '@ionic-native/splash-screen';
 import {StatusBar} from '@ionic-native/status-bar';
@@ -21,6 +21,7 @@ import {ActivityPage} from "../pages/activity/activity";
 
 import {PolarDataProvider} from '../providers/polar-data/polar-data';
 import {LocalDataProvider} from '../providers/local-data/local-data';
+import {TokenInterceptor} from '../providers/auth/interceptor';
 
 
 @NgModule({
@@ -59,7 +60,8 @@ import {LocalDataProvider} from '../providers/local-data/local-data';
     InAppBrowser,
     PolarDataProvider,
     LocalDataProvider,
-    DatePipe
+    DatePipe,
+    {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}
   ]
 })
 export class AppModule {
