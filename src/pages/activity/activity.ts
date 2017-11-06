@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavController, NavParams} from 'ionic-angular';
+import {NavParams} from 'ionic-angular';
 import {Chart} from 'chart.js';
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
 import {DatePipe} from "@angular/common";

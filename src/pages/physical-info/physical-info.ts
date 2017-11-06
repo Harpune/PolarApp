@@ -11,6 +11,7 @@ import {Observable} from 'rxjs/Rx';
 })
 export class PhysicalInfoPage {
   physical: any = [];
+  weight: string;
 
   @ViewChild('statureCanvas') statureCanvas;
   @ViewChild('heartRateCanvas') heartRateCanvas;
@@ -29,12 +30,13 @@ export class PhysicalInfoPage {
 
     if (this.physical) {
       console.log('Local physical info', this.physical);
+      this.weight = this.physical[this.physical.length-1]['weight'];
       this.updateCharts();
     } else {
       console.log('No physical info');
     }
 
-    Observable.interval(1000 * 60 * 10).startWith(0).subscribe( trigger => {
+    Observable.interval(1000 * 60 * 10).startWith(0).subscribe(trigger => {
       console.log('No. ' + trigger + ': 10 minutes more');
       this.checkForNewData()
     });

@@ -2,12 +2,12 @@
 </ion-header>
 
 <ion-content>
-  <div *ngFor="let act of activity; let i = index">
+  <ng-container *ngFor="let act of activity; let i = index">
     <ion-card
       *ngIf="act['duration']['hours'] != 0 && act['duration']['minutes'] != 0 && act['duration']['seconds'] != 0"
       (click)="showActivity(i)">
       <ion-card-header>
-        <p>Am {{act['created'] | date:'dd.MM.y'}} um {{act['created'] | date:'H:m:s'}}</p>
+        <p>Am {{act['date'] | date:'dd.MM.y'}}</p>
       </ion-card-header>
 
       <div id="progressBar">
@@ -36,6 +36,6 @@
         </div>
       </ion-card-content>
     </ion-card>
-  </div>
+  </ng-container>
 
 </ion-content>

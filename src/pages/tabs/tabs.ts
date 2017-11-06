@@ -78,6 +78,14 @@ export class TabsPage {
     browser.show();
   }
 
+  refresh() {
+    this.polarData.listAvailableData().then(success => {
+      console.log('Refresh', success);
+    }, error => {
+      console.log('Refresh', error);
+    })
+  }
+
   /**
    * Dismiss loading.
    */

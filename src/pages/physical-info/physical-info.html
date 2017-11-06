@@ -2,12 +2,17 @@
 </ion-header>
 
 <ion-content>
-
-  <!--
-    <ion-img class="floating-box" [height]="190" style="background: transparent"
-             src="assets/img/Silhouette_woman.svg"></ion-img>
-             https://wiki.selfhtml.org/wiki/CSS/Eigenschaften/Anzeige/display/Tabelle
-  -->
+  <ion-card (click)='showStature()'>
+    <ion-card-header>
+      Gewicht
+    </ion-card-header>
+    <ion-card-content>
+      <div class="wrapper">
+        <img src="https://image.flaticon.com/icons/svg/30/30473.svg" />
+        <div class="caption">{{weight}}</div>
+      </div>
+    </ion-card-content>
+  </ion-card>
 
   <ion-card (click)='showStature()'>
     <ion-card-header>

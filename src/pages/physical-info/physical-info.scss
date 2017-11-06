@@ -1,6 +1,10 @@
 page-physical-info {
-  .floating-box {
-    float: left;
-    width: 100%;
+  .wrapper {
+    display: flex;
+    height: 100px;
+  }
+
+  .caption {
+    line-height: 100px;
   }
 }

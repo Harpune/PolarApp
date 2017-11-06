@@ -31,9 +31,7 @@ export class DailyActivityPage {
     if (this.activity) {
       console.log('Daily activity', this.activity);
 
-      this.activity.forEach((act, index) => {
-        this.progress[index] = Math.floor((act['active-calories'] * 100) / act['calories']);
-      });
+      this.updateProgress();
 
     } else {
       console.log('No daily activity');
@@ -42,6 +40,12 @@ export class DailyActivityPage {
     Observable.interval(1000 * 60 * 10).startWith(0).subscribe(trigger => {
       console.log('No. ' + trigger + ': 10 minutes more');
       this.checkForNewData()
+    });
+  }
+
+  updateProgress(){
+    this.activity.forEach((act, index) => {
+      this.progress[index] = Math.floor((act['active-calories'] * 100) / act['calories']);
     });
   }
 
@@ -56,27 +60,21 @@ export class DailyActivityPage {
 
   /**
    * Check for new data.
-   * @param refresher
    */
-  checkForNewData(refresher?) {
+  checkForNewData() {
     this.polarData.listAvailableData().then(new_data => {
       console.log('New data', new_data);
       this.getActivitySummary(new_data).then(success => {
         console.log('New activity info', success);
         //Do stuff with activity
-        if (refresher) {
-          refresher.complete();
-        }
+        this.activity.push(success);
+        this.updateProgress();
+
       }, error => {
         console.error('No activity info', error);
-        if (refresher) {
-          refresher.complete();
-        }
+
       });
     }, no_data => {
-      if (refresher) {
-        refresher.complete();
-      }
       console.log('No new data ', no_data);
       //Loading
     });
@@ -122,9 +120,10 @@ export class DailyActivityPage {
                     this.polarData.get(info + '/zone-samples').then(activity_zone => {
                       console.log('Get zone samples', activity_zone);
                       LocalDataProvider.saveData(activity_zone, 'activity_zone');
-
+                      console.log('Commit index', index);
+                      console.log('Commit length', length);
                       if (index >= length) {
-
+                        console.log('COOOOOOMMIIIIITTT!');
                         this.polarData.commit(transactionIdUrl).then(success => {
                           console.log('Activity info committed', success);
                           resolve(success);

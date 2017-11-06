@@ -7,8 +7,7 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 export class PolarDataProvider {
   v3User: string;
   token: any;
-  creds_id: string;
-  creds_secret: string;
+  id: string;
 
   constructor(private http: HttpClient,
               private localData: LocalDataProvider,
@@ -23,8 +22,7 @@ export class PolarDataProvider {
 
     // Get the id and secret.
     this.localData.getIdAndSecret().subscribe(creds => {
-      this.creds_id = creds.client_id;
-      this.creds_secret = creds.client_secret;
+      this.id = creds.client_id;
     });
   }
 
@@ -37,184 +35,138 @@ export class PolarDataProvider {
    */
   create(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
+      let headers = new HttpHeaders();
 
-      if (token) {
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token);
-
-        this.http.post(url, null, {
-          headers: headers,
-          responseType: 'text',
-          observe: 'response'
-        }).subscribe(success => {
-          switch (success.status) {
-            case 200:
-              resolve(success.headers.get('Location'));
-              break;
-            case 201:
-              resolve(success.headers.get('Location'));
-              break;
-            case 204:
-              reject(success);
-              break;
-            default:
-              reject(success);
-          }
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Create complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
+      this.http.post(url, null, {
+        headers: headers,
+        responseType: 'text',
+        observe: 'response'
+      }).subscribe(success => {
+        switch (success.status) {
+          case 200:
+            resolve(success.headers.get('Location'));
+            break;
+          case 201:
+            resolve(success.headers.get('Location'));
+            break;
+          case 204:
+            reject(success);
+            break;
+          default:
+            reject(success);
+        }
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Create complete');
+      });
     });
   }
 
   list(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
+      let headers = new HttpHeaders()
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
 
-      if (token) {
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.get(url, {headers: headers, observe: 'response'}).subscribe(success => {
-          switch (success.status) {
-            case 200:
-              resolve(success.body);
-              break;
-            case 204:
-              reject(success);
-              break;
-            case 404:
-              reject(success);
-              break;
-            default:
-              reject(success);
-          }
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('List complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
+      this.http.get(url, {headers: headers, observe: 'response'}).subscribe(success => {
+        switch (success.status) {
+          case 200:
+            resolve(success.body);
+            break;
+          case 204:
+            reject(success);
+            break;
+          case 404:
+            reject(success);
+            break;
+          default:
+            reject(success);
+        }
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('List complete');
+      });
     });
   }
 
   get(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
+      let headers = new HttpHeaders()
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
 
-      if (token) {
-
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Get complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
+      this.http.get(url, {headers: headers}).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Get complete');
+      });
     });
   }
 
   getGPX(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
 
-      if (token) {
+      let headers = new HttpHeaders()
+        .set('Accept', ' application/gpx+json')
+        .set('Content-Type', 'application/gpx+json');
 
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', ' application/gpx+json')
-          .set('Content-Type', 'application/gpx+json');
+      this.http.get(url, {headers: headers}).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Get complete');
+      });
 
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Get complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
     });
   }
 
   getTCX(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
 
-      if (token) {
 
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', ' application/vnd.garmin.tcx+json')
-          .set('Content-Type', 'application/vnd.garmin.tcx+json');
+      let headers = new HttpHeaders()
+        .set('Accept', ' application/vnd.garmin.tcx+json')
+        .set('Content-Type', 'application/vnd.garmin.tcx+json');
 
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Get complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
+      this.http.get(url, {headers: headers}).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Get complete');
+      });
+
     });
   }
 
   commit(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
+      let headers = new HttpHeaders()
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
 
-      if (token) {
+      this.http.put(url, null, {headers: headers, responseType: 'text', observe: 'response'}).subscribe(success => {
+        switch (success.status) {
+          case 200:
+            resolve(success);
+            break;
+          case 204:
+            reject(success);
+            break;
+          default:
+            reject(success);
+        }
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Commit complete');
+      });
 
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.put(url, null, {headers: headers, responseType: 'text', observe: 'response'}).subscribe(success => {
-          switch (success.status) {
-            case 200:
-              resolve(success);
-              break;
-            case 204:
-              reject(success);
-              break;
-            default:
-              reject(success);
-          }
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Commit complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
     });
   }
 
@@ -227,44 +179,35 @@ export class PolarDataProvider {
    */
   listAvailableData(): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
+      let url = this.v3User + '/v3/notifications';
 
-      if (token) {
-        let url = this.v3User + '/v3/notifications';
+      let headers = new HttpHeaders()
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
 
-        let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
+      this.http.get(url, {headers: headers, observe: 'response'}).subscribe(success => {
+        switch (success.status) {
+          case 200:
+            console.log('List available data', 200);
+            resolve(success.body);
+            break;
+          case 201:
+            console.log('List available data', 201);
+            resolve(success.body);
+            break;
+          case 204:
+            console.log('List available data', 204);
+            reject(success);
+            break;
+          default:
+            reject(success);
+        }
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('List available data complete');
+      });
 
-        let headers = new HttpHeaders()
-          .set('Authorization', base64_auth)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        this.http.get(url, {headers: headers, observe: 'response'}).subscribe(success => {
-          switch (success.status) {
-            case 200:
-              console.log('List available data', 200);
-              resolve(success.body);
-              break;
-            case 201:
-              console.log('List available data', 201);
-              resolve(success.body);
-              break;
-            case 204:
-              console.log('List available data', 204);
-              reject(success);
-              break;
-            default:
-              reject(success);
-          }
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('List available data complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
     });
   }
 
@@ -281,19 +224,15 @@ export class PolarDataProvider {
     return new Promise((resolve, reject) => {
       let url = this.v3User + '/v3/users';
 
-      let user_id = token.x_user_id;
-      let user_token = token.access_token;
+      this.token = token;
 
-      console.log('Register User UserId:', user_id, user_token);
-
-      let member_id = '' + performance.now() + Math.random();
+      let member_id = '' + performance.now() + Math.random() + token.access_token;
       console.log('Register User MemberId', member_id);
 
       let body = {};
       body['members-id'] = member_id;
 
       let headers = new HttpHeaders()
-        .set('Authorization', 'Bearer ' + user_token)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
@@ -316,29 +255,20 @@ export class PolarDataProvider {
    */
   getUserInformation(): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-      console.log("Get user Information Token: ", token);
+      let url = this.v3User + '/v3/users/' + this.token.x_user_id;
 
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id;
+      let headers = new HttpHeaders()
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
 
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        // Start request.
-        this.http.get(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Get user information complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
+      // Start request.
+      this.http.get(url, {headers: headers}).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Get user information complete');
+      });
     });
   }
 
@@ -349,35 +279,19 @@ export class PolarDataProvider {
    */
   deleteCurrentUser(): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Get local token.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
-      console.log("Delete current user Token: ", token);
+      let url = this.v3User + '/v3/users/' + this.token.x_user_id;
 
-      if (token) {
-        let url = this.v3User + '/v3/users/' + token.x_user_id;
+      let headers = new HttpHeaders()
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
 
-        let headers = new HttpHeaders()
-          .set('Authorization', 'Bearer ' + token.access_token)
-          .set('Accept', 'application/json')
-          .set('Content-Type', 'application/json');
-
-        /*
-        this.http.get('https://flow.polar.com/logout').subscribe(success => {
-          console.log('Logout', success);
-        }, error => {
-          console.error('Logout', error)
-        });
-        */
-        this.http.delete(url, {headers: headers}).subscribe(success => {
-          resolve(success);
-        }, error => {
-          reject(error);
-        }, () => {
-          console.log('Delete user complete');
-        });
-      } else {
-        reject('No token saved!');
-      }
+      this.http.delete(url, {headers: headers}).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      }, () => {
+        console.log('Delete user complete');
+      });
     });
   }
 
@@ -395,7 +309,7 @@ export class PolarDataProvider {
       let authUrl = `https://flow.polar.com/oauth2/authorization?` +
         `response_type=code&` +
         `scope=accesslink.read_all&` +
-        `client_id=${this.creds_id}`;
+        `client_id=${this.id}`;
 
       console.log(authUrl);
       // TODO don't build auth url like this. Use params header!
@@ -407,7 +321,7 @@ export class PolarDataProvider {
         console.log(event.url);
 
         // Check if URL contains callback url.
-        if ((event.url).indexOf("https://www.getpostman.com/oauth2/callback") === 0) {
+        if ((event.url).indexOf('https://www.getpostman.com/oauth2/callback') === 0) {
           // Get the URL.
           let url_string = event.url;
           let url = new URL(url_string);
@@ -441,9 +355,6 @@ export class PolarDataProvider {
    */
   getAccessToken(code: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      // Base64 encoding of secret and id: clientId:clientSecret.
-      let base64_auth = 'Basic ' + btoa(this.creds_id + ':' + this.creds_secret);
-
       // Authorization URL.
       const url = 'https://polarremote.com/v2/oauth2/token';
 
@@ -452,12 +363,8 @@ export class PolarDataProvider {
         .set('code', code);
 
       let headers = new HttpHeaders()
-        .set('Authorization', base64_auth)
         .set('Accept', 'application/json;charset=UTF-8')
         .set('Content-Type', 'application/x-www-form-urlencoded');
-
-      console.log('getAccessToken Body:', body);
-      console.log('getAccessToken Header:', headers);
 
       this.http.post(url, body, {headers: headers}).subscribe(success => {
         resolve(success);
