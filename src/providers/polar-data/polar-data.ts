@@ -111,10 +111,10 @@ export class PolarDataProvider {
     return new Promise((resolve, reject) => {
 
       let headers = new HttpHeaders()
-        .set('Accept', ' application/gpx+json')
-        .set('Content-Type', 'application/gpx+json');
+        .set('Accept', ' application/gpx+xml')
+        .set('Content-Type', 'application/gpx+xml');
 
-      this.http.get(url, {headers: headers}).subscribe(success => {
+      this.http.get(url, {headers: headers, responseType: 'text'}).subscribe(success => {
         resolve(success);
       }, error => {
         reject(error);
@@ -127,13 +127,11 @@ export class PolarDataProvider {
 
   getTCX(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
-
-
       let headers = new HttpHeaders()
-        .set('Accept', ' application/vnd.garmin.tcx+json')
-        .set('Content-Type', 'application/vnd.garmin.tcx+json');
+        .set('Accept', ' application/vnd.garmin.tcx+xml')
+        .set('Content-Type', 'application/vnd.garmin.tcx+xml');
 
-      this.http.get(url, {headers: headers}).subscribe(success => {
+      this.http.get(url, {headers: headers, responseType: 'text'}).subscribe(success => {
         resolve(success);
       }, error => {
         reject(error);
@@ -204,8 +202,6 @@ export class PolarDataProvider {
         }
       }, error => {
         reject(error);
-      }, () => {
-        console.log('List available data complete');
       });
 
     });

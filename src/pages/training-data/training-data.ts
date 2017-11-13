@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
-import {NavController, NavParams} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
-import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {Observable} from "rxjs/Observable";
+import 'rxjs/Rx'
+import 'rxjs/add/observable/forkJoin'
 
 @Component({
   selector: 'page-training-data',
@@ -21,13 +21,12 @@ export class TrainingDataPage {
    * Ionic View did load.
    */
   ionViewDidLoad() {
-    this.training = JSON.parse(localStorage.getItem('activity_sum')) || [];
-    console.log(this.training);
+    this.training = JSON.parse(localStorage.getItem('training_sum')) || [];
 
     if (this.training) {
-      console.log('Daily activity', this.training);
+      console.log('Training data', this.training);
     } else {
-      console.log('No daily activity');
+      console.log('No training data');
     }
 
     Observable.interval(1000 * 60 * 10).startWith(0).subscribe(trigger => {
@@ -42,10 +41,10 @@ export class TrainingDataPage {
       this.getTrainingData(new_data).then(success => {
         this.training.push(success);
       }, error => {
-        console.error('No training info', error);
+        console.error('Error training data', error);
       });
     }, no_data => {
-      console.log('No new data ', no_data);
+      console.log('No training data', no_data);
       //Loading
     });
   }
@@ -67,11 +66,32 @@ export class TrainingDataPage {
 
             // List new physical information.
             this.polarData.list(transactionIdUrl).then(trainingId => {
-              let length = Object.keys(trainingId['training-informations']).length;
+              console.log('After list', trainingId);
+              let length = Object.keys(trainingId['exercises']).length;
 
-              trainingId['training-informations'].forEach((info, index) => {
+              trainingId['exercises'].forEach((info, index) => {
                 console.log('Training info', info);
 
+                Observable.forkJoin([
+                  this.polarData.get(info),
+                  this.polarData.get(info + '/heart-rate-zones'),
+                  this.polarData.getGPX(info + '/gpx'),
+                  this.polarData.getTCX(info + '/tcx'),
+                  this.polarData.get(info + '/samples')
+                ]).subscribe(data => {
+                  console.log('000', data[0]);
+                  console.log('111', data[1]);
+                  console.log('222', data[2]);
+                  console.log('333', data[3]);
+                  console.log('444', data[4]);
+
+                  Observable.forkJoin(data[4]['samples']).subscribe(samples => {
+                    for (let sample of samples) {
+                      console.log('Sample', sample);
+                    }
+                  });
+                });
+                /*
                 // Get new physical information.
                 this.polarData.get(info).then(training_sum => {
                   console.log('Get training summary', training_sum);
@@ -94,20 +114,10 @@ export class TrainingDataPage {
                           let s_length = Object.keys(training_all_samples['samples']).length;
 
                           //TODO ForkJoin! Observable.forkJoin(this.polarData.get())
-
+                          let samples = [];
                           training_all_samples['samples'].forEach((sample, s_index) => {
-                            this.polarData.get(sample).then(training_sample => {
-                              if ((s_index) >= s_length-1) {
-                                if ((index) >= length-1) {
-                                }
-                              }
-                              console.log(training_sample);
-                            }, error => {
-                              reject(error);
-                              //TODO hier weiter machen: Aber vorher Activity
-                            });
+                            this.polarData.get(sample)
                           });
-
                         }, error => {
                           reject(error);
                         })
@@ -120,36 +130,20 @@ export class TrainingDataPage {
                   }, error => {
                     reject(error);
                   });
-
-
-                  if (index >= length) {
-                    this.polarData.commit(transactionIdUrl).then(success => {
-                      console.log('Physical info committed', success);
-                      //Loading
-                    }, error => {
-                      console.error('Physical info committed', error);
-                      //Loading
-                    })
-                  }
                 }, error => {
-                  console.error(error);
                   reject(error);
-                });
+                });*/
               });
             }, error => {
-              console.error('List training info', error);
               reject(error);
             })
           }, error => {
-            console.error('Create training info', error);
             reject(error);
           })
         }, () => {
-          console.log('NO TRAINING_DATA');
-          reject('NO TRAINING_DATA');
+          reject('No training data');
         });
       } else {
-        console.log('No new training info');
         reject('No new training info');
       }
     });

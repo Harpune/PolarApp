@@ -28,13 +28,10 @@ export class DailyActivityPage {
    */
   ionViewDidLoad() {
     this.activity = JSON.parse(localStorage.getItem('activity_sum')) || [];
-    console.log(this.activity);
 
     if (this.activity) {
       console.log('Daily activity', this.activity);
-
       this.updateProgress();
-
     } else {
       console.log('No daily activity');
     }
@@ -45,7 +42,7 @@ export class DailyActivityPage {
     });
   }
 
-  updateProgress(){
+  updateProgress() {
     this.activity.forEach((act, index) => {
       this.progress[index] = Math.floor((act['active-calories'] * 100) / act['calories']);
     });
@@ -67,16 +64,15 @@ export class DailyActivityPage {
     this.polarData.listAvailableData().then(new_data => {
       console.log('New data', new_data);
       this.getActivitySummary(new_data).then(success => {
-        console.log('New activity info', success);
         //Do stuff with activity
         this.activity.push(success);
         this.updateProgress();
 
       }, error => {
-        console.error('No activity info', error);
+        console.error('Error daily activity', error);
       });
     }, no_data => {
-      console.log('No new data ', no_data);
+      console.log('No daily activity', no_data);
       //Loading
     });
   }
@@ -103,9 +99,27 @@ export class DailyActivityPage {
             this.polarData.list(transactionIdUrl).then(activitySummary => {
               console.log('List activity summary', activitySummary);
               let length = Object.keys(activitySummary['activity-log']).length;
-              console.log('Length', length);
 
               activitySummary['activity-log'].forEach((info, index) => {
+                Observable.forkJoin([
+                  this.polarData.get(info),
+                  this.polarData.get(info + '/step-samples'),
+                  this.polarData.get(info + '/zone-samples'),
+                ]).subscribe(data => {
+                  LocalDataProvider.saveData(data[0], 'activity_sum');
+                  LocalDataProvider.saveData(data[1], 'activity_step');
+                  LocalDataProvider.saveData(data[2], 'activity_zone');
+
+                  if ((index) >= length - 1) {
+                    console.log('Commit daily activity');
+                    this.polarData.commit(transactionIdUrl).then(success => {
+                      resolve(success);
+                    }, error => {
+                      reject(error);
+                    });
+                  }
+                });
+                /*
                 this.polarData.get(info).then(activity_sum => {
                   console.log('Get activity summary', activity_sum);
                   let durationPT = activity_sum['duration'];
@@ -121,9 +135,9 @@ export class DailyActivityPage {
                       console.log('Get zone samples', activity_zone);
                       LocalDataProvider.saveData(activity_zone, 'activity_zone');
                       console.log('Commit index', index);
-                      console.log('Commit length', length-1);
+                      console.log('Commit length', length - 1);
 
-                      if ((index) >= length-1) {
+                      if ((index) >= length - 1) {
                         console.log('COOOOOOMMIIIIITTT!');
                         this.polarData.commit(transactionIdUrl).then(success => {
                           console.log('Activity info committed', success);
@@ -134,7 +148,6 @@ export class DailyActivityPage {
                         });
 
                         console.log("ACTIVITY DONE!");
-
                       }
 
                     }, error => {
@@ -143,6 +156,7 @@ export class DailyActivityPage {
                         reject(error);
                       }
                     });
+
                   }, error => {
                     console.error(error);
                     reject(error);
@@ -150,7 +164,7 @@ export class DailyActivityPage {
                 }, error => {
                   console.error(error);
                   reject(error);
-                });
+                });*/
               });//for each
             }, error => {
               console.error(error);

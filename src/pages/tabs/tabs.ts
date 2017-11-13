@@ -28,9 +28,7 @@ export class TabsPage {
   constructor(private navCtrl: NavController,
               private polarData: PolarDataProvider,
               private loadingCtrl: LoadingController,
-              private iab: InAppBrowser) {
-
-  }
+              private iab: InAppBrowser) {}
 
   /**
    * Logout user, delete Token and set root to LoginPage.

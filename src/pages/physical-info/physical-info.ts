@@ -31,7 +31,7 @@ export class PhysicalInfoPage {
     this.physical = JSON.parse(localStorage.getItem('physicalInfo')) || [];
 
     if (this.physical) {
-      console.log('Local physical info', this.physical);
+      console.log('Physical info', this.physical);
       this.weight = this.physical[this.physical.length - 1]['weight'];
       this.updateCharts();
     } else {
@@ -47,29 +47,17 @@ export class PhysicalInfoPage {
 
   /**
    * Check for a new update.
-   * @param refresher
    */
-  checkForNewData(refresher?) {
+  checkForNewData() {
     this.polarData.listAvailableData().then(new_data => {
       console.log('New data', new_data);
       this.getPhysicalInfo(new_data).then(success => {
-        console.log('New Physical info', success);
         this.updateCharts();
-        if (refresher) {
-          refresher.complete();
-        }
       }, error => {
-        console.error('New Physical info', error);
-        if (refresher) {
-          refresher.complete();
-        }
+        console.error('Error physical info', error);
       });
     }, no_data => {
-      if (refresher) {
-        refresher.complete();
-      }
-      console.log('No new data ', no_data);
-      //Loading
+      console.log('No physical info', no_data);
     });
   }
 
