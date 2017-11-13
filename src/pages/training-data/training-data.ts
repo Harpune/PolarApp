@@ -2,32 +2,48 @@ import {Component} from '@angular/core';
 import {NavController, NavParams} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'page-training-data',
   templateUrl: 'training-data.html',
 })
 export class TrainingDataPage {
+  user: any = {};
   training: any = [];
 
-  constructor(private navCtrl: NavController,
-              private navParams: NavParams,
-              private polarData: PolarDataProvider) {
+  constructor(private polarData: PolarDataProvider) {
     //localStorage.removeItem('trainingData');
-    this.training = JSON.parse(localStorage.getItem('trainingData'));
+    this.user = JSON.parse(localStorage.getItem('user'));
+  }
+
+  /**
+   * Ionic View did load.
+   */
+  ionViewDidLoad() {
+    this.training = JSON.parse(localStorage.getItem('activity_sum')) || [];
+    console.log(this.training);
+
     if (this.training) {
-      console.log('Local training data', this.training);
+      console.log('Daily activity', this.training);
     } else {
-      console.log('No training data');
+      console.log('No daily activity');
     }
 
-    //this.checkForNewData();
+    Observable.interval(1000 * 60 * 10).startWith(0).subscribe(trigger => {
+      console.log('No. ' + trigger + ': 10 minutes more');
+      this.checkForNewData()
+    });
   }
 
   checkForNewData() {
     this.polarData.listAvailableData().then(new_data => {
       console.log('New data', new_data);
-      this.getTrainingData(new_data);
+      this.getTrainingData(new_data).then(success => {
+        this.training.push(success);
+      }, error => {
+        console.error('No training info', error);
+      });
     }, no_data => {
       console.log('No new data ', no_data);
       //Loading
@@ -39,7 +55,9 @@ export class TrainingDataPage {
       console.log('List available data', new_data);
       if (new_data) {
         let all_data = new_data['available-user-data'];
-        this.dataContainsType(all_data, 'PHYSICAL_INFORMATION').then(index => {
+        console.log('All data', all_data);
+
+        this.dataContainsType(all_data, 'EXERCISE').then(index => {
           let data = all_data[index];
           console.log('Data ', data);
 
@@ -48,10 +66,10 @@ export class TrainingDataPage {
             console.log('Create training data', transactionIdUrl);
 
             // List new physical information.
-            this.polarData.list(transactionIdUrl).then(physicalInfoId => {
-              let length = Object.keys(physicalInfoId['physical-informations']).length;
+            this.polarData.list(transactionIdUrl).then(trainingId => {
+              let length = Object.keys(trainingId['training-informations']).length;
 
-              physicalInfoId['physical-informations'].forEach((info, index) => {
+              trainingId['training-informations'].forEach((info, index) => {
                 console.log('Training info', info);
 
                 // Get new physical information.
@@ -75,8 +93,14 @@ export class TrainingDataPage {
                           console.log('Get training TCX', training_all_samples);
                           let s_length = Object.keys(training_all_samples['samples']).length;
 
-                          training_all_samples['samples'].forEach((sample, index) => {
+                          //TODO ForkJoin! Observable.forkJoin(this.polarData.get())
+
+                          training_all_samples['samples'].forEach((sample, s_index) => {
                             this.polarData.get(sample).then(training_sample => {
+                              if ((s_index) >= s_length-1) {
+                                if ((index) >= length-1) {
+                                }
+                              }
                               console.log(training_sample);
                             }, error => {
                               reject(error);

@@ -2,43 +2,43 @@
 </ion-header>
 
 <ion-content>
-  <ion-card (click)='showStature()'>
-    <ion-card-header>
-      Gewicht
-    </ion-card-header>
-    <ion-card-content>
-      <div class="wrapper">
-        <img src="https://image.flaticon.com/icons/svg/30/30473.svg" />
-        <div class="caption">{{weight}}</div>
+  <div class="wrapper">
+    <div class="item" style="background-color: #cf102f">
+      <div class="imageContainer" *ngIf="user['gender']=='MALE'; else female">
+        <img id="silhouette" src="assets/img/Silhouette_man.svg"/>
       </div>
-    </ion-card-content>
-  </ion-card>
 
-  <ion-card (click)='showStature()'>
-    <ion-card-header>
-      Statur
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #statureCanvas></canvas>
-    </ion-card-content>
-  </ion-card>
+      <ng-template #female><
+        <img src="assets/img/Silhouette_woman.svg"/>
+      </ng-template>
 
-  <ion-card>
-    <ion-card-header>
-      Puls
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #heartRateCanvas></canvas>
-    </ion-card-content>
-  </ion-card>
+      <div class="caption">
+        190cm
+      </div>
+    </div>
 
-  <ion-card>
-    <ion-card-header>
-      Sauerstoff Aufnahme
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #aerobCanvas></canvas>
-    </ion-card-content>
-  </ion-card>
+    <div class="item" style="background-color: #009de1">
+      <div class="imageContainer">
+        <img id="scale" src="assets/img/medical.svg" height="50px"/>
+      </div>
+      <div class="caption">
+        76kg
+      </div>
+    </div>
+  </div>
 
+  <div padding>
+    <p style="padding-top: 140px">Puls und Ruhepuls</p>
+    <canvas #heartRateCanvas></canvas>
+  </div>
+
+  <div padding>
+    <p>Sauerstoff Aufnahme</p>
+    <canvas #aerobCanvas></canvas>
+  </div>
+
+  <div padding>
+    <p>Statur</p>
+    <canvas #statureCanvas></canvas>
+  </div>
 </ion-content>

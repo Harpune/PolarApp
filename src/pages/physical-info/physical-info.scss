@@ -1,10 +1,47 @@
 page-physical-info {
   .wrapper {
-    display: flex;
-    height: 100px;
+    width: 100%;
+  }
+
+  .item {
+    width: 50%;
+    height: 150px;
+    float: left;
+    position: relative;
+  }
+
+  .imageContainer {
+    position: absolute;
+    width: 60%;
+    height:100%;
+  }
+
+  img {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
 
   .caption {
-    line-height: 100px;
+    width: 40%;
+    height: 100%;
+    display: inline-block;
+    float: right;
+    margin: 0 auto;
+    line-height: 150px;
+    font-size:16pt;
+  }
+
+  #silhouette{
+    height: 100px;
+    float: left;
+  }
+
+  #scale {
+    height: 50px;
+    float: left;
   }
 }

@@ -11,6 +11,7 @@ import {Observable} from 'rxjs/Rx';
 })
 export class PhysicalInfoPage {
   physical: any = [];
+  user: any = {};
   weight: string;
 
   @ViewChild('statureCanvas') statureCanvas;
@@ -23,6 +24,7 @@ export class PhysicalInfoPage {
   constructor(private polarData: PolarDataProvider,
               private datePipe: DatePipe) {
     //localStorage.removeItem('physicalInfo');
+    this.user = JSON.parse(localStorage.getItem('user')) || {};
   }
 
   ionViewDidLoad() {
@@ -30,7 +32,7 @@ export class PhysicalInfoPage {
 
     if (this.physical) {
       console.log('Local physical info', this.physical);
-      this.weight = this.physical[this.physical.length-1]['weight'];
+      this.weight = this.physical[this.physical.length - 1]['weight'];
       this.updateCharts();
     } else {
       console.log('No physical info');

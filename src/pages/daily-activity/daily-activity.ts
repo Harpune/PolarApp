@@ -17,7 +17,9 @@ export class DailyActivityPage {
 
   constructor(private polarData: PolarDataProvider,
               private app: App) {
-    //localStorage.removeItem('activityLog');
+    //localStorage.removeItem('activity_sum');
+    //localStorage.removeItem('activity_step');
+    //localStorage.removeItem('activity_zone');
     this.user = JSON.parse(localStorage.getItem('user'));
   }
 
@@ -72,7 +74,6 @@ export class DailyActivityPage {
 
       }, error => {
         console.error('No activity info', error);
-
       });
     }, no_data => {
       console.log('No new data ', no_data);
@@ -92,7 +93,6 @@ export class DailyActivityPage {
         console.log('All data', all_data);
 
         this.dataContainsType(all_data, 'ACTIVITY_SUMMARY').then(index => {
-          console.log('Index', index);
           let data = all_data[index];
           console.log('Data', data);
 
@@ -121,8 +121,9 @@ export class DailyActivityPage {
                       console.log('Get zone samples', activity_zone);
                       LocalDataProvider.saveData(activity_zone, 'activity_zone');
                       console.log('Commit index', index);
-                      console.log('Commit length', length);
-                      if (index >= length) {
+                      console.log('Commit length', length-1);
+
+                      if ((index) >= length-1) {
                         console.log('COOOOOOMMIIIIITTT!');
                         this.polarData.commit(transactionIdUrl).then(success => {
                           console.log('Activity info committed', success);
