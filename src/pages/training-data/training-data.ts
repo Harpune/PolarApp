@@ -85,7 +85,8 @@ export class TrainingDataPage {
                   console.log('333', data[3]);
                   console.log('444', data[4]);
 
-                  Observable.forkJoin(data[4]['samples']).subscribe(samples => {
+                  Observable.forkJoin(
+                    data[4]['samples']).subscribe(samples => {
                     for (let sample of samples) {
                       console.log('Sample', sample);
                     }

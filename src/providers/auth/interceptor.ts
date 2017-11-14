@@ -8,7 +8,7 @@ export class TokenInterceptor implements HttpInterceptor {
   id: string = '31496f50-2e27-4f94-8cd3-5e75249656ec';
   secret: string = '99f506b3-48c8-489e-a1e5-8c3379cce491';
 
-  constructor(private localData: LocalDataProvider) {
+  constructor() {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {

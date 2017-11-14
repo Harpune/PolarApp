@@ -1,47 +1,31 @@
-<ion-menu [content]="menu">
+<ion-menu [content]="content">
   <ion-header>
     <ion-toolbar>
       <ion-title>Menu</ion-title>
     </ion-toolbar>
   </ion-header>
-
   <ion-content>
     <ion-list>
-      <button ion-item menuClose (click)="goToUserPage()">
+      <button *ngFor="let p of pages" ion-item menuClose (click)="goToPage(p)">
         <ion-icon item-left name="md-person"></ion-icon>
-        Mein Profil
-      </button>
-      <button ion-item menuClose (click)="visitPolarFlow()">
-        <ion-icon item-left name="md-globe"></ion-icon>
-        Besuche PolarFlow
-      </button>
-      <button ion-item menuClose (click)="logout()">
-        <ion-icon item-left name="md-exit"></ion-icon>
-        Logout
+        {{p.title}}
       </button>
     </ion-list>
   </ion-content>
 </ion-menu>
 
-<ion-nav #menu [root]="tabsPage"></ion-nav>
-
-<ion-navbar>
-  <button ion-button icon-only menuToggle>
-    <ion-icon name="menu"></ion-icon>
-  </button>
-
-  <ion-title>Aurora</ion-title>
-
-  <ion-buttons end>
-    <button ion-button icon-only (click)="refresh()">
-      <ion-icon name="md-refresh"></ion-icon>
-    </button>
-  </ion-buttons>
-
-</ion-navbar>
-
-<super-tabs selectedTabIndex="1">
-  <super-tab [root]="page1" title="Training Data" id="training-data"></super-tab>
-  <super-tab [root]="page2" title="Daily Activity" id="daily-activity"></super-tab>
-  <super-tab [root]="page3" title="Physical info" id="physical-info"></super-tab>
-</super-tabs>
+<ion-nav id="nav" #content [root]="rootPage"></ion-nav>
+<ion-content>
+  <ion-tabs selectedIndex="1">
+    <ion-tab [root]="page1" tabTitle="Training" id="training-data"></ion-tab>
+    <ion-tab [root]="page2" tabTitle="Tägliche Aktivität" id="daily-activity"></ion-tab>
+    <ion-tab [root]="page3" tabTitle="Physik" id="physical-info"></ion-tab>
+  </ion-tabs>
+  <!--
+  <super-tabs selectedTabIndex="1">
+    <super-tab [root]="page1" title="Training Data" id="training-data"></super-tab>
+    <super-tab [root]="page2" title="Daily Activity" id="daily-activity"></super-tab>
+    <super-tab [root]="page3" title="Physical info" id="physical-info"></super-tab>
+  </super-tabs>
+  -->
+</ion-content>

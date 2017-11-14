@@ -18,9 +18,10 @@ import {LoginPage} from "../login/login";
 })
 
 export class TabsPage {
-  page1 = TrainingDataPage;
-  page2 = DailyActivityPage;
-  page3 = PhysicalInfoPage;
+  pages: Array<{ id: number, title: string, icon: string, component: any }>;
+  page1: any = TrainingDataPage;
+  page2: any = DailyActivityPage;
+  page3: any = PhysicalInfoPage;
 
   loading: Loading;
   user: any;
@@ -28,7 +29,22 @@ export class TabsPage {
   constructor(private navCtrl: NavController,
               private polarData: PolarDataProvider,
               private loadingCtrl: LoadingController,
-              private iab: InAppBrowser) {}
+              private iab: InAppBrowser) {
+    this.pages = [
+      {id: 1, title: 'Mein Profil', icon: 'md-person', component: UserPage},
+      {id: 2, title: 'Bye Bye', icon: 'md-log-out', component: LoginPage}
+    ];
+  }
+
+  goToPage(page) {
+    if (page.id == 2) {
+      this.logout();
+    } else {
+      this.navCtrl.push(page.component).then(() => {
+        console.log("Pushed to " + page.title);
+      })
+    }
+  }
 
   /**
    * Logout user, delete Token and set root to LoginPage.
