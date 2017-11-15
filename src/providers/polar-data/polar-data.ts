@@ -97,6 +97,8 @@ export class PolarDataProvider {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
+      // let data = response.text() ? response.json() : [{}];
+
       this.http.get(url, {headers: headers}).subscribe(success => {
         resolve(success);
       }, error => {

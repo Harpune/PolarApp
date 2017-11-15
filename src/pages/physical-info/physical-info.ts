@@ -87,8 +87,8 @@ export class PhysicalInfoPage {
                 this.polarData.get(info).then(physicalInfo => {
                   console.log('Get physical info', physicalInfo);
                   LocalDataProvider.saveData(physicalInfo, 'physicalInfo');
-                  if (index >= length) {
 
+                  if (index >= length - 1) {
                     // Commit the transaction.
                     this.polarData.commit(transactionIdUrl).then(success => {
                       console.log('Physical info committed', success);
@@ -96,7 +96,6 @@ export class PhysicalInfoPage {
                     }, error => {
                       console.error('Physical info committed', error);
                       reject(error);
-                      //Loading
                     })
                   }
                 }, error => {

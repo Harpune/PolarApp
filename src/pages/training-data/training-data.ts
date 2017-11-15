@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-import {PolarDataProvider} from "../../providers/polar-data/polar-data";
-import {Observable} from "rxjs/Observable";
+import {PolarDataProvider} from '../../providers/polar-data/polar-data';
+import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx'
 import 'rxjs/add/observable/forkJoin'
 
@@ -13,7 +13,7 @@ export class TrainingDataPage {
   training: any = [];
 
   constructor(private polarData: PolarDataProvider) {
-    //localStorage.removeItem('trainingData');
+    localStorage.removeItem('trainingData');
     this.user = JSON.parse(localStorage.getItem('user'));
   }
 
@@ -85,55 +85,28 @@ export class TrainingDataPage {
                   console.log('333', data[3]);
                   console.log('444', data[4]);
 
-                  Observable.forkJoin(
-                    data[4]['samples']).subscribe(samples => {
-                    for (let sample of samples) {
-                      console.log('Sample', sample);
-                    }
+                  let parser = new DOMParser();
+                  let gpxData = parser.parseFromString(data[2], 'application/xml');
+                  let tcxData = parser.parseFromString(data[3], 'application/xml');
+
+                  console.log('GPX', gpxData);
+                  console.log('TCX', tcxData);
+
+                  let sLength = Object.keys(data[4]['samples']).length;
+
+                  data[4]['samples'].forEach((sample, sIndex) => {
+                    this.polarData.get(sample).then((s) => {
+                      console.log('Sample', s);
+
+                      if (sIndex >= sLength - 1) {
+                        // Fertig mit diesen samples. -> Alles speichern!
+                        if (index >= length - 1) {
+                          // Ganz fertig! -> Commit.
+                        }
+                      }
+                    })
                   });
                 });
-                /*
-                // Get new physical information.
-                this.polarData.get(info).then(training_sum => {
-                  console.log('Get training summary', training_sum);
-                  LocalDataProvider.saveData(training_sum, 'training_sum');
-
-                  this.polarData.getGPX(info + '/gpx').then(training_gpx => {
-                    console.log('Get training GPX', training_gpx);
-                    LocalDataProvider.saveData(training_gpx, 'training_gpx');
-
-                    this.polarData.get(info + '/heart-rate-zones').then(training_heart_rate => {
-                      console.log('Get training heart rate', training_heart_rate);
-                      LocalDataProvider.saveData(training_heart_rate, 'training_heart_rate');
-
-                      this.polarData.getTCX(info + '/tcx').then(training_tcx => {
-                        console.log('Get training TCX', training_tcx);
-                        LocalDataProvider.saveData(training_tcx, 'training_tcx');
-
-                        this.polarData.get(info + '/samples').then(training_all_samples => {
-                          console.log('Get training TCX', training_all_samples);
-                          let s_length = Object.keys(training_all_samples['samples']).length;
-
-                          //TODO ForkJoin! Observable.forkJoin(this.polarData.get())
-                          let samples = [];
-                          training_all_samples['samples'].forEach((sample, s_index) => {
-                            this.polarData.get(sample)
-                          });
-                        }, error => {
-                          reject(error);
-                        })
-                      }, error => {
-                        reject(error);
-                      });
-                    }, error => {
-                      reject(error);
-                    });
-                  }, error => {
-                    reject(error);
-                  });
-                }, error => {
-                  reject(error);
-                });*/
               });
             }, error => {
               reject(error);

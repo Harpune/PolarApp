@@ -2,13 +2,12 @@ import {Component} from '@angular/core';
 
 import {Loading, LoadingController, NavController} from 'ionic-angular';
 
-import {InAppBrowser} from "@ionic-native/in-app-browser";
-
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 
 import {TrainingDataPage} from "../training-data/training-data";
 import {DailyActivityPage} from "../daily-activity/daily-activity";
 import {PhysicalInfoPage} from "../physical-info/physical-info";
+
 import {UserPage} from "../user/user";
 import {LoginPage} from "../login/login";
 
@@ -18,7 +17,7 @@ import {LoginPage} from "../login/login";
 })
 
 export class TabsPage {
-  pages: Array<{ id: number, title: string, icon: string, component: any }>;
+  menuPages: Array<{ id: number, title: string, icon: string, component: any }>;
   page1: any = TrainingDataPage;
   page2: any = DailyActivityPage;
   page3: any = PhysicalInfoPage;
@@ -28,9 +27,8 @@ export class TabsPage {
 
   constructor(private navCtrl: NavController,
               private polarData: PolarDataProvider,
-              private loadingCtrl: LoadingController,
-              private iab: InAppBrowser) {
-    this.pages = [
+              private loadingCtrl: LoadingController) {
+    this.menuPages = [
       {id: 1, title: 'Mein Profil', icon: 'md-person', component: UserPage},
       {id: 2, title: 'Bye Bye', icon: 'md-log-out', component: LoginPage}
     ];
@@ -71,25 +69,6 @@ export class TabsPage {
         this.dismissLoading();
       })
     })
-  }
-
-  /**
-   * Go to user page.
-   */
-  goToUserPage() {
-    this.navCtrl.push(UserPage).then(() => {
-      console.log('Pushed to user page');
-    }, () => {
-      console.log('Pushed to user page failed');
-    });
-  }
-
-  /**
-   * Open Polar Flow website.
-   */
-  visitPolarFlow() {
-    const browser = this.iab.create('https://flow.polar.com/', '_self', 'location=no');
-    browser.show();
   }
 
   refresh() {

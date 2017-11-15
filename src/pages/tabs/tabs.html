@@ -1,12 +1,15 @@
 <ion-menu [content]="content">
   <ion-header>
     <ion-toolbar>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
       <ion-title>Menu</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
     <ion-list>
-      <button *ngFor="let p of pages" ion-item menuClose (click)="goToPage(p)">
+      <button *ngFor="let p of menuPages" ion-item menuClose (click)="goToPage(p)">
         <ion-icon item-left name="md-person"></ion-icon>
         {{p.title}}
       </button>
@@ -15,6 +18,16 @@
 </ion-menu>
 
 <ion-nav id="nav" #content [root]="rootPage"></ion-nav>
+
+<ion-header>
+  <ion-toolbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Polar</ion-title>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content>
   <ion-tabs selectedIndex="1">
     <ion-tab [root]="page1" tabTitle="Training" id="training-data"></ion-tab>
