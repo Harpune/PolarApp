@@ -69,7 +69,7 @@ export class DailyActivityPage {
         this.updateProgress();
 
       }, error => {
-        console.error('Error daily activity', error);
+        console.log('Error daily activity', error);
       });
     }, no_data => {
       console.log('No daily activity', no_data);

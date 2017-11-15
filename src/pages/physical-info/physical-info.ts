@@ -4,6 +4,7 @@ import {Chart} from 'chart.js';
 import {DatePipe} from "@angular/common";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {Observable} from 'rxjs/Rx';
+import {SQLitePorter} from "@ionic-native/sqlite-porter";
 
 @Component({
   selector: 'page-physical-info',
@@ -22,7 +23,8 @@ export class PhysicalInfoPage {
   aerobChart: any;
 
   constructor(private polarData: PolarDataProvider,
-              private datePipe: DatePipe) {
+              private datePipe: DatePipe,
+              private sqlitePorter: SQLitePorter) {
     //localStorage.removeItem('physicalInfo');
     this.user = JSON.parse(localStorage.getItem('user')) || {};
   }
@@ -67,6 +69,7 @@ export class PhysicalInfoPage {
    * @param new_data
    */
   getPhysicalInfo(new_data: any): Promise<any> {
+
     return new Promise((resolve, reject) => {
       console.log('List available data', new_data);
       if (new_data) {

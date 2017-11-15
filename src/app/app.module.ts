@@ -4,13 +4,17 @@ import {HttpModule} from '@angular/http';
 import {DatePipe} from "@angular/common";
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
+
 import {SplashScreen} from '@ionic-native/splash-screen';
 import {StatusBar} from '@ionic-native/status-bar';
 import {InAppBrowser} from '@ionic-native/in-app-browser';
+import {SQLite} from '@ionic-native/sqlite';
+import {SQLitePorter} from '@ionic-native/sqlite-porter';
 
 import {SuperTabsModule} from 'ionic2-super-tabs';
 
 import {MyApp} from './app.component';
+
 import {LoginPage} from '../pages/login/login';
 import {UserPage} from '../pages/user/user';
 import {TabsPage} from '../pages/tabs/tabs';
@@ -61,6 +65,8 @@ import {TokenInterceptor} from '../providers/auth/interceptor';
     PolarDataProvider,
     LocalDataProvider,
     DatePipe,
+    SQLitePorter,
+    SQLite,
     {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}
   ]
 })

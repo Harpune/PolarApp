@@ -1,5 +1,7 @@
 import {Component} from '@angular/core';
 import {PolarDataProvider} from '../../providers/polar-data/polar-data';
+import {SQLitePorter} from "@ionic-native/sqlite-porter";
+import {SQLite, SQLiteObject} from '@ionic-native/sqlite';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx'
 import 'rxjs/add/observable/forkJoin'
@@ -12,7 +14,9 @@ export class TrainingDataPage {
   user: any = {};
   training: any = [];
 
-  constructor(private polarData: PolarDataProvider) {
+  constructor(private polarData: PolarDataProvider,
+              private sqlite: SQLite,
+              private sqlitePorter: SQLitePorter) {
     localStorage.removeItem('trainingData');
     this.user = JSON.parse(localStorage.getItem('user'));
   }
@@ -93,15 +97,21 @@ export class TrainingDataPage {
                   console.log('TCX', tcxData);
 
                   let sLength = Object.keys(data[4]['samples']).length;
-
+                  let samples = [];
                   data[4]['samples'].forEach((sample, sIndex) => {
                     this.polarData.get(sample).then((s) => {
                       console.log('Sample', s);
-
+                      samples.push(s);
+                      console.log('sindex', sIndex);
+                      console.log('sLength', sLength);
+                      console.log('index', index);
+                      console.log('length', length);
                       if (sIndex >= sLength - 1) {
+                        console.log("Done with sample!");
                         // Fertig mit diesen samples. -> Alles speichern!
                         if (index >= length - 1) {
                           // Ganz fertig! -> Commit.
+                          console.log("Done with life!");
                         }
                       }
                     })
