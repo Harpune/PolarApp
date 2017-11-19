@@ -18,14 +18,16 @@ export class ActivityPage {
   stepsChart: any;
   zonesChart: any;
 
-  constructor(private navParams: NavParams,
-              private datePipe: DatePipe) {
+  constructor(private navParams: NavParams) {
     this.activity = navParams.get('act');
     let index = navParams.get('index');
 
-    console.log('Activity', this.activity);
     this.stepSamples = JSON.parse(localStorage.getItem('activity_step'))[index];
     this.zoneSamples = JSON.parse(localStorage.getItem('activity_zone'))[index];
+
+    console.log('Activity', this.activity);
+    console.log('Step samples', this.stepSamples);
+    console.log('ZoneSamples', this.zoneSamples);
   }
 
   ionViewDidLoad() {
@@ -40,10 +42,7 @@ export class ActivityPage {
       for (let step of this.stepSamples['samples']) {
         steps.push(step['steps']);
         times.push(count++ + ':00');
-
       }
-      console.log('Steps', steps);
-      console.log('Time', times);
 
       this.stepsChart = new Chart(this.stepsCanvas.nativeElement, {
         type: 'line',
@@ -73,7 +72,6 @@ export class ActivityPage {
     if (this.zoneSamples) {
       let zones = [0, 0, 0, 0, 0, 0];
       for (let entry of this.zoneSamples['samples']) {
-        console.log(toSeconds(parse(entry['activity-zones'][0]['inzone'])));
         zones[0] = zones[0] + toSeconds(parse(entry['activity-zones'][0]['inzone']));
         zones[1] = zones[1] + toSeconds(parse(entry['activity-zones'][1]['inzone']));
         zones[2] = zones[2] + toSeconds(parse(entry['activity-zones'][2]['inzone']));
@@ -81,8 +79,6 @@ export class ActivityPage {
         zones[4] = zones[4] + toSeconds(parse(entry['activity-zones'][4]['inzone']));
         zones[5] = zones[5] + toSeconds(parse(entry['activity-zones'][5]['inzone']));
       }
-
-      console.log('ZOOONE', zones);
 
       this.zonesChart = new Chart(this.zonesCanvas.nativeElement, {
         type: 'doughnut',
@@ -101,7 +97,7 @@ export class ActivityPage {
           }]
         },
         options: {
-          maintainAspectRatio : false
+          maintainAspectRatio: false
         }
       });
     }

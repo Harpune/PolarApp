@@ -17,22 +17,25 @@ export class LocalDataProvider {
     this.json = {
       'structure': {
         'tables': {
-          //'Artist': '([Id] PRIMARY KEY, [Title])'
+          // Tables.
         }, 'otherSQL': [
-          // SQL statement
+          // SQL statement.
         ]
       }, 'data': {
         'inserts': {
-          //Data here
+          // Data inserted into DB.
         }, 'updates': {
-          //Data here
+          // Update data in DB.
         }, 'deletes': {
-          //Data here
+          // Delete data from DB.
         }
       }
     }
   }
 
+  /**
+   * Start the DB and create the tables.
+   */
   startDb() {
     this.sqlite.create({
       name: 'data.db',
@@ -43,9 +46,18 @@ export class LocalDataProvider {
     });
   }
 
+  /**
+   * Create all tables.
+   * - User.
+   * - PhysicalInfo.
+   * - ActivitySummary.
+   */
   createTables() {
     let temp = this.json;
     temp.structure.tables['User'] = '([polar-user-id] PRIMARY KEY, [member-id], [registration-date], [first-name], [last-name], [birthdate], [gender], [weight], [height], [extra-info])';
+    temp.structure.tables['PhysicalInfo'] = '([id] PRIMARY KEY, [transaction-id], [created], [polar-user], [weight], [height], [maximum-heart-rate], [resting-heart-rate], [aerobic-threshold], [anaerobic-threshold], [vo2-max], [weight-source])';
+    temp.structure.tables['ActivitySummary'] = '([id] PRIMARY KEY, [transaction-id], [created], [polar-user], [date], [calories], [active-calories], [duration], [active-steps])';
+    temp.structure.tables['ActivitySummary'] = '([id] PRIMARY KEY, [interval], [samples])';
 
     console.log('Create table', temp);
     this.sqlPorter.importJsonToDb(this.db, temp).then(success => {
