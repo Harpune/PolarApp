@@ -4,11 +4,10 @@ import {Platform} from 'ionic-angular';
 
 import {StatusBar} from '@ionic-native/status-bar';
 import {SplashScreen} from '@ionic-native/splash-screen';
-import {SQLite, SQLiteObject} from "@ionic-native/sqlite";
-import {SQLitePorter} from '@ionic-native/sqlite-porter';
 
 import {LoginPage} from "../pages/login/login";
 import {TabsPage} from "../pages/tabs/tabs";
+import {LocalDataProvider} from "../providers/local-data/local-data";
 
 @Component({
   templateUrl: 'app.html'
@@ -21,8 +20,7 @@ export class MyApp {
   constructor(private platform: Platform,
               private statusBar: StatusBar,
               private splashScreen: SplashScreen,
-              private sqlite: SQLite,
-              private sqlitePorter: SQLitePorter) {
+              private localData: LocalDataProvider) {
     //localStorage.removeItem('currentUser');
     this.token = JSON.parse(localStorage.getItem('currentUser'));
     let user = JSON.parse(localStorage.getItem('user'));
@@ -37,30 +35,8 @@ export class MyApp {
     platform.ready().then(() => {
       statusBar.styleDefault();
       splashScreen.hide();
+      this.localData.startDb();
     });
   }
-
-  ngOnInit(): void {
-    this.sqlite.create({
-      name: 'data.db',
-      location: 'default'
-    }).then((db: SQLiteObject) => {
-      this.createTables(db)
-    })
-  }
-
-  createTables(db: any) {
-    this.sqlitePorter.importJsonToDb(db._objectInstance, this.token).then(success => {
-        console.log("SQLite", success)
-      }, error => {
-        console.log("SQLLite", error)
-      }
-    );
-
-    this.sqlitePorter.exportDbToJson(db).then(data => {
-      console.log("SQLite data", data)
-    })
-  }
-
 }
 

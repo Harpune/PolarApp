@@ -1,18 +1,97 @@
-import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import {Injectable} from '@angular/core';
+import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
+import {SQLite, SQLiteObject} from "@ionic-native/sqlite";
+import {SQLitePorter} from "@ionic-native/sqlite-porter";
 
-/*
-  Generated class for the LocalDataProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class LocalDataProvider {
+  db: any;
+  json: any;
 
-  constructor(public http: Http) {
+  constructor(public http: Http,
+              public sqlite: SQLite,
+              public sqlPorter: SQLitePorter) {
     console.log('Hello LocalDataProvider Provider');
+
+    this.json = {
+      'structure': {
+        'tables': {
+          //'Artist': '([Id] PRIMARY KEY, [Title])'
+        }, 'otherSQL': [
+          // SQL statement
+        ]
+      }, 'data': {
+        'inserts': {
+          //Data here
+        }, 'updates': {
+          //Data here
+        }, 'deletes': {
+          //Data here
+        }
+      }
+    }
+  }
+
+  startDb() {
+    this.sqlite.create({
+      name: 'data.db',
+      location: 'default'
+    }).then((db: any) => {
+      this.db = db._objectInstance;
+      this.createTables();
+    });
+  }
+
+  createTables() {
+    let temp = this.json;
+    temp.structure.tables['User'] = '([polar-user-id] PRIMARY KEY, [member-id], [registration-date], [first-name], [last-name], [birthdate], [gender], [weight], [height], [extra-info])';
+
+    console.log('Create table', temp);
+    this.sqlPorter.importJsonToDb(this.db, temp).then(success => {
+      console.log('Create tables', success);
+    }, error => {
+      console.log('Create tables', error);
+    });
+
+    this.getAllData().then(success => {
+      console.log('Tables', success)
+    }, error => {
+      console.log('Tables', error)
+    });
+  }
+
+  getAllData(): Promise<any> {
+    return new Promise(((resolve, reject) => {
+        this.sqlPorter.exportDbToJson(this.db).then(success => {
+          resolve(success);
+        }, error => {
+          reject(error);
+        })
+      })
+    );
+  }
+
+  saveUser(data: any) {
+    let temp = this.json;
+    temp.data.inserts['User'] = [];
+    temp.data.inserts['User'].push(data);
+    console.log("Here", temp);
+    this.sqlPorter.importJsonToDb(this.db, temp).then(success => {
+      console.log('Save User', success);
+      this.getAllData().then(success => {
+        console.log('saveUser', success)
+      }, error => {
+        console.log('saveUser', error)
+      });
+    }, error => {
+      console.log('Save User', error);
+      this.getAllData().then(success => {
+        console.log('saveUser', success)
+      }, error => {
+        console.log('saveUser', error)
+      });
+    })
   }
 
   /**
