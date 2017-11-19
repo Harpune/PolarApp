@@ -25,6 +25,7 @@ export class ActivityPage {
     this.stepSamples = JSON.parse(localStorage.getItem('activity_step'))[index];
     this.zoneSamples = JSON.parse(localStorage.getItem('activity_zone'))[index];
 
+
     console.log('Activity', this.activity);
     console.log('Step samples', this.stepSamples);
     console.log('ZoneSamples', this.zoneSamples);

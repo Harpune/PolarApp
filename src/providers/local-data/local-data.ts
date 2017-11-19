@@ -84,25 +84,18 @@ export class LocalDataProvider {
     );
   }
 
+
   saveUser(data: any) {
     let temp = this.json;
     temp.data.inserts['User'] = [];
     temp.data.inserts['User'].push(data);
-    console.log("Here", temp);
+
+    console.log('User to save', temp);
+
     this.sqlPorter.importJsonToDb(this.db, temp).then(success => {
       console.log('Save User', success);
-      this.getAllData().then(success => {
-        console.log('saveUser', success)
-      }, error => {
-        console.log('saveUser', error)
-      });
     }, error => {
       console.log('Save User', error);
-      this.getAllData().then(success => {
-        console.log('saveUser', success)
-      }, error => {
-        console.log('saveUser', error)
-      });
     })
   }
 
