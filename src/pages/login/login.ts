@@ -9,6 +9,7 @@ import {InAppBrowser} from "@ionic-native/in-app-browser";
   templateUrl: 'login.html',
 })
 export class LoginPage {
+  json: any;
   loading: Loading;
 
   constructor(public navCtrl: NavController,
@@ -17,32 +18,53 @@ export class LoginPage {
               public loadingCtrl: LoadingController,
               public iab: InAppBrowser) {
 
+    this.json = {
+      'exercise-transaction': [],
+      'activity-transaction': [],
+      'physical-information-transaction': [],
+      'user': {}
+    }
+
+
     // TODO: Angemeldet als Lukas - Nicht Lukas
   }
 
   login() {
     // Triggered when Platform is ready.
     this.platform.ready().then(() => {
+
       // Start Authorization Process.
       this.polarData.getAuthorizationCode().then(code => {
 
         this.loading = this.loadingCtrl.create({
-          content: 'micro momentito',
+          content: 'Micro momentito...',
           dismissOnPageChange: true
         });
 
         // Presents the loading Icon.
         this.loading.present().then(() => {
+
           // Get the Access-Token.
           this.polarData.getAccessToken(code).then(tokenData => {
+
             // Parse data to Json and read.
             console.log('AccessToken', tokenData);
-            localStorage.setItem('currentUser', JSON.stringify(tokenData));
-            // Register the User. ionic-native.
+            localStorage.setItem('token', JSON.stringify(tokenData));
+
+            // Register the User.
             this.polarData.registerUser(tokenData).then(success => {
-              console.log('Register User Success: ', success);
-              localStorage.setItem('user', JSON.stringify(success));
+
+              // Save user data.
+              this.json['user'] = success;
+              console.log('Register User Success: ', this.json);
+
+              if (!localStorage.getItem(String(tokenData.x_user_id))) {
+                localStorage.setItem(String(tokenData.x_user_id), JSON.stringify(this.json));
+              }
+
               this.dismissLoading();
+
+              // Set new root and go to TabsPage.
               this.navCtrl.setRoot(TabsPage).then(() => {
                 this.navCtrl.popToRoot().then(() => {
                   console.log('Pop to root');
@@ -51,11 +73,11 @@ export class LoginPage {
                 });
               });
             }, error => {
+              // Error by registration.
               console.error('Register User error: ' + error);
-              console.error('Register User error: ' + error.status);
-              console.error('Register User error: ' + error.error);
 
-              if(error.status == 409){
+              // Handle if user already exists.
+              if (error.status == 409) {
                 this.handle409(tokenData);
               }
 
@@ -76,16 +98,21 @@ export class LoginPage {
     });//platform.
   }
 
+  /**
+   * Open InAppBrowser and let user register.
+   */
   register() {
     this.platform.ready().then(() => {
       let browser = this.iab.create('https://flow.polar.com/register', '_self', 'location=no');
       browser.on('loadstart').subscribe(event => {
-        console.log('In App Browser', 'Event \'Loadstart\' is called');
-        console.log(event.url);
+        console.log('In App Browser', 'Event \'Loadstart\' is called', event.url);
       });
     })
   }
 
+  /**
+   * Dismiss this loading and make loading reusable.
+   */
   dismissLoading() {
     this.loading.dismiss().then(() => {
       console.log('Loading dismissed');
@@ -95,14 +122,22 @@ export class LoginPage {
     this.loading = null;
   }
 
-  private handle409(tokenData:any) {
+  /**
+   * User is already registered in Polar. So delete and re-register again.
+   * @param tokenData
+   */
+  private handle409(tokenData: any) {
     console.log('409 response');
     this.polarData.deleteCurrentUser().then(() => {
       this.polarData.registerUser(tokenData).then(success => {
         console.log('Register User Success: ', success);
         localStorage.setItem('user', JSON.stringify(success));
-        this.navCtrl.setRoot(TabsPage);
-        this.navCtrl.popToRoot();
+        this.navCtrl.setRoot(TabsPage).then(() => {
+          this.navCtrl.popToRoot().then(() => {
+            console.log('Pushed to TabsPage')
+          });
+        });
+
         this.dismissLoading();
       }, error => {
         console.error('Register User error: ' + error);

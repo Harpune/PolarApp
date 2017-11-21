@@ -30,7 +30,7 @@ export class TokenInterceptor implements HttpInterceptor {
       console.log('Interceptor for v3 user!');
 
       // Get the token of current user.
-      let token = JSON.parse(localStorage.getItem('currentUser'));
+      let token = JSON.parse(localStorage.getItem('token'));
 
       // Update the headers.
       request = request.clone({

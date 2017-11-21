@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Loading, LoadingController, NavController, NavParams} from 'ionic-angular';
+import {Loading, LoadingController} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 
 @Component({
@@ -11,38 +11,44 @@ export class UserPage {
   loading: Loading;
   user: any = [];
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              public loadingCtrl: LoadingController,
+  constructor(public loadingCtrl: LoadingController,
               public polarData: PolarDataProvider) {
   }
 
   ionViewDidLoad() {
-
-    this.user = JSON.parse(localStorage.getItem('user'));
+    let token = JSON.parse(localStorage.getItem('token'));
+    this.user = JSON.parse(localStorage.getItem(String(token.x_user_id)));
     if (this.user) {
       console.log(this.user);
     } else {
-      this.getUserData();
+      this.getUserData().then(success => {
+        this.user = success;
+        console.log('Get User Information', success);
+      }, error => {
+        console.log('Get User Information', error);
+      });
     }
 
   }
 
-  getUserData() {
-    this.loading = this.loadingCtrl.create({
-      content: 'Search for user information',
-    });
+  getUserData(): Promise<any> {
+    return new Promise(((resolve, reject) => {
 
-    this.loading.present().then(() => {
-      this.polarData.getUserInformation().then(success => {
-        this.user = success;
-        console.log('Get User Information', success);
-        this.dismissLoading();
-      }, error => {
-        console.log('Get User Information', error);
-        this.dismissLoading();
+      this.loading = this.loadingCtrl.create({
+        content: 'Search for user information',
       });
-    });
+
+      this.loading.present().then(() => {
+        this.polarData.getUserInformation().then(success => {
+          this.dismissLoading();
+          resolve(success);
+        }, error => {
+          this.dismissLoading();
+          reject(error);
+
+        });
+      });
+    }));
   }
 
   dismissLoading() {

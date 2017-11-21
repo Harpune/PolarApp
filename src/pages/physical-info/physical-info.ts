@@ -26,7 +26,8 @@ export class PhysicalInfoPage {
               private datePipe: DatePipe,
               private sqlitePorter: SQLitePorter) {
     //localStorage.removeItem('physicalInfo');
-    this.user = JSON.parse(localStorage.getItem('user')) || {};
+    let token = JSON.parse(localStorage.getItem('token'));
+    this.user = JSON.parse(localStorage.getItem(String(token.x_user_id))) || {};
   }
 
   ionViewDidLoad() {
@@ -89,7 +90,7 @@ export class PhysicalInfoPage {
                 // Get new physical information.
                 this.polarData.get(info).then(physicalInfo => {
                   console.log('Get physical info', physicalInfo);
-                  LocalDataProvider.saveData(physicalInfo, 'physicalInfo');
+                  //LocalDataProvider.saveData(physicalInfo, 'physicalInfo');
 
                   if (index >= length - 1) {
                     // Commit the transaction.

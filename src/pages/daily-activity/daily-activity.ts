@@ -16,11 +16,14 @@ export class DailyActivityPage {
   progress: any = [];
 
   constructor(private polarData: PolarDataProvider,
+              private localData: LocalDataProvider,
               private app: App) {
     //localStorage.removeItem('activity_sum');
     //localStorage.removeItem('activity_step');
     //localStorage.removeItem('activity_zone');
-    this.user = JSON.parse(localStorage.getItem('user'));
+    let token = JSON.parse(localStorage.getItem('token'));
+    console.log('Token', String(token['x_user_id']));
+    this.user = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
   }
 
   /**
@@ -93,10 +96,10 @@ export class DailyActivityPage {
           console.log('Data', data);
 
           // Create new transaction.
-          this.polarData.create(data['url']).then(transactionIdUrl => {
-            console.log('Create activity summary');
+          this.polarData.create(data['url']).then(transaction => {
+            console.log('Create activity summary', transaction);
 
-            this.polarData.list(transactionIdUrl).then(activitySummary => {
+            this.polarData.list(transaction['resource-uri']).then(activitySummary => {
               console.log('List activity summary', activitySummary);
               let length = Object.keys(activitySummary['activity-log']).length;
 
@@ -106,65 +109,20 @@ export class DailyActivityPage {
                   this.polarData.get(info + '/step-samples'),
                   this.polarData.get(info + '/zone-samples'),
                 ]).subscribe(data => {
-                  LocalDataProvider.saveData(data[0], 'activity_sum');
-                  LocalDataProvider.saveData(data[1], 'activity_step');
-                  LocalDataProvider.saveData(data[2], 'activity_zone');
+                  let url = new URL(info);
+                  console.log('INFO url', url);
+                  // this.localData.saveActivity(transaction['transaction-id'], info, data);
 
                   if ((index) >= length - 1) {
                     console.log('Commit daily activity');
-                    this.polarData.commit(transactionIdUrl).then(success => {
+                    this.polarData.commit(transaction['resource-uri']).then(success => {
                       resolve(success);
                     }, error => {
                       reject(error);
                     });
                   }
                 });
-                /*
-                this.polarData.get(info).then(activity_sum => {
-                  console.log('Get activity summary', activity_sum);
-                  let durationPT = activity_sum['duration'];
-                  activity_sum['duration'] = parse(durationPT);
 
-                  LocalDataProvider.saveData(activity_sum, 'activity_sum');
-
-                  this.polarData.get(info + '/step-samples').then(activity_step => {
-                    console.log('Get step samples', activity_step);
-                    LocalDataProvider.saveData(activity_step, 'activity_step');
-
-                    this.polarData.get(info + '/zone-samples').then(activity_zone => {
-                      console.log('Get zone samples', activity_zone);
-                      LocalDataProvider.saveData(activity_zone, 'activity_zone');
-                      console.log('Commit index', index);
-                      console.log('Commit length', length - 1);
-
-                      if ((index) >= length - 1) {
-                        console.log('COOOOOOMMIIIIITTT!');
-                        this.polarData.commit(transactionIdUrl).then(success => {
-                          console.log('Activity info committed', success);
-                          resolve(success);
-                        }, error => {
-                          console.error('Activity info committed', error);
-                          reject(error);
-                        });
-
-                        console.log("ACTIVITY DONE!");
-                      }
-
-                    }, error => {
-                      console.error(error);
-                      if (index >= length) {
-                        reject(error);
-                      }
-                    });
-
-                  }, error => {
-                    console.error(error);
-                    reject(error);
-                  });
-                }, error => {
-                  console.error(error);
-                  reject(error);
-                });*/
               });//for each
             }, error => {
               console.error(error);

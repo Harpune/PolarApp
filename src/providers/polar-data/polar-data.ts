@@ -18,7 +18,7 @@ export class PolarDataProvider {
     this.v3User = 'https://www.polaraccesslink.com';
 
     // Get local stored token if possible;
-    this.token = JSON.parse(localStorage.getItem('currentUser'));
+    this.token = JSON.parse(localStorage.getItem('token'));
 
     // Get the id and secret.
     this.localData.getIdAndSecret().subscribe(creds => {
@@ -42,12 +42,15 @@ export class PolarDataProvider {
         responseType: 'text',
         observe: 'response'
       }).subscribe(success => {
+        console.log('HEEEERREEEE!', success.body);
         switch (success.status) {
           case 200:
-            resolve(success.headers.get('Location'));
+            //resolve(success.headers.get('Location'));
+            resolve(JSON.parse(success.body));
             break;
           case 201:
-            resolve(success.headers.get('Location'));
+            //resolve(success.headers.get('Location'));
+            resolve(JSON.parse(success.body));
             break;
           case 204:
             reject(success);

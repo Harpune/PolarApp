@@ -17,8 +17,9 @@ export class TrainingDataPage {
   constructor(private polarData: PolarDataProvider,
               private sqlite: SQLite,
               private sqlitePorter: SQLitePorter) {
-    localStorage.removeItem('trainingData');
-    this.user = JSON.parse(localStorage.getItem('user'));
+    //localStorage.removeItem('trainingData');
+    let token = JSON.parse(localStorage.getItem('token'));
+    this.user = JSON.parse(localStorage.getItem(String(token.x_user_id))) || {};
   }
 
   /**
