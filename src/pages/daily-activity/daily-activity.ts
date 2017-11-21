@@ -103,24 +103,32 @@ export class DailyActivityPage {
               console.log('List activity summary', activitySummary);
               let length = Object.keys(activitySummary['activity-log']).length;
 
+              let datas = [];
+              let infos = [];
+
               activitySummary['activity-log'].forEach((info, index) => {
                 Observable.forkJoin([
                   this.polarData.get(info),
                   this.polarData.get(info + '/step-samples'),
                   this.polarData.get(info + '/zone-samples'),
                 ]).subscribe(data => {
-                  let url = new URL(info);
-                  console.log('INFO url', url);
-                  // this.localData.saveActivity(transaction['transaction-id'], info, data);
 
-                  if ((index) >= length - 1) {
-                    console.log('Commit daily activity');
+                  datas.push(data);
+                  infos.push(info);//TODO change to exercise id.
+
+                  if (index >= length - 1) {
+                    // Save the data.
+                    this.localData.saveActivity(transaction['transaction-id'], infos, datas);
+
+                    // Commit the transaction.
                     this.polarData.commit(transaction['resource-uri']).then(success => {
                       resolve(success);
                     }, error => {
                       reject(error);
                     });
                   }
+                }, error => {
+                  reject(error);
                 });
 
               });//for each

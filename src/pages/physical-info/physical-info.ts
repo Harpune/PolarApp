@@ -24,7 +24,7 @@ export class PhysicalInfoPage {
 
   constructor(private polarData: PolarDataProvider,
               private datePipe: DatePipe,
-              private sqlitePorter: SQLitePorter) {
+              private localData: LocalDataProvider) {
     //localStorage.removeItem('physicalInfo');
     let token = JSON.parse(localStorage.getItem('token'));
     this.user = JSON.parse(localStorage.getItem(String(token.x_user_id))) || {};
@@ -78,38 +78,43 @@ export class PhysicalInfoPage {
         this.dataContainsType(all_data, 'PHYSICAL_INFORMATION').then(index => {
           let data = all_data[index];
           console.log('Data ', data);
+
           // Create new transaction.
-          this.polarData.create(data['url']).then(transactionIdUrl => {
+          this.polarData.create(data['url']).then(transaction => {
+            console.log('Create physical info', transaction);
 
             // List new physical information.
-            this.polarData.list(transactionIdUrl).then(physicalInfoId => {
+            this.polarData.list(transaction['resource-uri']).then(physicalInfoId => {
+              console.log('List physical info', physicalInfoId);
               let length = Object.keys(physicalInfoId['physical-informations']).length;
+
+              let datas = [];
+              let infos = [];
 
               physicalInfoId['physical-informations'].forEach((info, index) => {
 
-                // Get new physical information.
-                this.polarData.get(info).then(physicalInfo => {
-                  console.log('Get physical info', physicalInfo);
-                  //LocalDataProvider.saveData(physicalInfo, 'physicalInfo');
+                Observable.forkJoin(
+                  this.polarData.get(info)
+                ).subscribe(data => {
+
+                  datas.push(data);
+                  infos.push(info);//TODO change to exercise id.
 
                   if (index >= length - 1) {
+                    // Save the data.
+                    this.localData.savePhysical(transaction['transaction-id'], infos, datas);
+
                     // Commit the transaction.
-                    this.polarData.commit(transactionIdUrl).then(success => {
-                      console.log('Physical info committed', success);
+                    this.polarData.commit(transaction['resource-uri']).then(success => {
                       resolve(success);
                     }, error => {
-                      console.error('Physical info committed', error);
                       reject(error);
                     })
                   }
                 }, error => {
-                  console.error(error);
-                  if (index >= length) {
-                    reject(error);
-                  }
+                  reject(error);
                 });
               });
-
             }, error => {
               console.error('List physical info', error);
               reject(error);

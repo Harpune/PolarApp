@@ -1,22 +1,23 @@
 import {Component} from '@angular/core';
 import {PolarDataProvider} from '../../providers/polar-data/polar-data';
-import {SQLitePorter} from "@ionic-native/sqlite-porter";
-import {SQLite, SQLiteObject} from '@ionic-native/sqlite';
+import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {Observable} from 'rxjs/Observable';
+import {Parser} from 'xml2js';
 import 'rxjs/Rx'
 import 'rxjs/add/observable/forkJoin'
+import * as xml2js from 'xml2js';
 
 @Component({
   selector: 'page-training-data',
   templateUrl: 'training-data.html',
 })
+
 export class TrainingDataPage {
   user: any = {};
   training: any = [];
 
   constructor(private polarData: PolarDataProvider,
-              private sqlite: SQLite,
-              private sqlitePorter: SQLitePorter) {
+              private localData: LocalDataProvider) {
     //localStorage.removeItem('trainingData');
     let token = JSON.parse(localStorage.getItem('token'));
     this.user = JSON.parse(localStorage.getItem(String(token.x_user_id))) || {};
@@ -66,17 +67,18 @@ export class TrainingDataPage {
           console.log('Data ', data);
 
           // Create new transaction.
-          this.polarData.create(data['url']).then(transactionIdUrl => {
-            console.log('Create training data', transactionIdUrl);
+          this.polarData.create(data['url']).then(transaction => {
+            console.log('Create training data', transaction);
 
             // List new physical information.
-            this.polarData.list(transactionIdUrl).then(trainingId => {
+            this.polarData.list(transaction['resource-uri']).then(trainingId => {
               console.log('After list', trainingId);
               let length = Object.keys(trainingId['exercises']).length;
 
-              trainingId['exercises'].forEach((info, index) => {
-                console.log('Training info', info);
+              let datas = [];
+              let infos = [];
 
+              trainingId['exercises'].forEach((info, index) => {
                 Observable.forkJoin([
                   this.polarData.get(info),
                   this.polarData.get(info + '/heart-rate-zones'),
@@ -84,35 +86,35 @@ export class TrainingDataPage {
                   this.polarData.getTCX(info + '/tcx'),
                   this.polarData.get(info + '/samples')
                 ]).subscribe(data => {
-                  console.log('000', data[0]);
-                  console.log('111', data[1]);
-                  console.log('222', data[2]);
-                  console.log('333', data[3]);
-                  console.log('444', data[4]);
-
                   let parser = new DOMParser();
                   let gpxData = parser.parseFromString(data[2], 'application/xml');
                   let tcxData = parser.parseFromString(data[3], 'application/xml');
 
+                  //TODO ToJson.
                   console.log('GPX', gpxData);
                   console.log('TCX', tcxData);
+
+                  datas.push(data);
+                  infos.push(info);//TODO change to exercise id.
 
                   let sLength = Object.keys(data[4]['samples']).length;
                   let samples = [];
                   data[4]['samples'].forEach((sample, sIndex) => {
                     this.polarData.get(sample).then((s) => {
-                      console.log('Sample', s);
                       samples.push(s);
-                      console.log('sindex', sIndex);
-                      console.log('sLength', sLength);
-                      console.log('index', index);
-                      console.log('length', length);
+
                       if (sIndex >= sLength - 1) {
-                        console.log("Done with sample!");
-                        // Fertig mit diesen samples. -> Alles speichern!
                         if (index >= length - 1) {
-                          // Ganz fertig! -> Commit.
-                          console.log("Done with life!");
+                          data[4] = samples;
+                          // Save the data.
+                          this.localData.saveExercise(transaction['transaction-id'], infos, datas);
+
+                          // Commit the transaction.
+                          this.polarData.commit(transaction['resource-uri']).then(success => {
+                            resolve(success);
+                          }, error => {
+                            reject(error);
+                          });
                         }
                       }
                     })
