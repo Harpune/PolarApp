@@ -6,8 +6,13 @@
     <div class="middle">
       <div class="inner">
         <img src="assets/img/polar_icon.png"/>
-        <button style="font-size: 16px; text-transform:none" ion-button block (click)='login()'>Anmelden</button>
-        <button style="font-size: 16px; text-transform:none" ion-button block (click)='register()'>Registrieren</button>
+        <div *ngIf="user;else login_content">
+          <button style="font-size: 16px; text-transform:none" ion-button block (click)='goToHome()'>Angemeldet als {{user['first-name']}} {{user['last-name']}}</button>
+          <button style="font-size: 16px; text-transform:none" ion-button block (click)='login()'>Nicht du? Anmelden!</button>
+        </div>
+        <ng-template #login_content>
+          <button style="font-size: 16px; text-transform:none" ion-button block (click)='login()'>Anmelden</button>
+        </ng-template>
       </div>
     </div>
   </div>

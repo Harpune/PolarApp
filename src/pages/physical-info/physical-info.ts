@@ -11,8 +11,8 @@ import {SQLitePorter} from "@ionic-native/sqlite-porter";
   templateUrl: 'physical-info.html',
 })
 export class PhysicalInfoPage {
-  physical: any = [];
   user: any = {};
+  physical: any = [];
   weight: string;
 
   @ViewChild('statureCanvas') statureCanvas;
@@ -26,12 +26,14 @@ export class PhysicalInfoPage {
               private datePipe: DatePipe,
               private localData: LocalDataProvider) {
     //localStorage.removeItem('physicalInfo');
-    let token = JSON.parse(localStorage.getItem('token'));
-    this.user = JSON.parse(localStorage.getItem(String(token.x_user_id))) || {};
+
   }
 
   ionViewDidLoad() {
-    this.physical = JSON.parse(localStorage.getItem('physicalInfo')) || [];
+    let token = JSON.parse(localStorage.getItem('token'));
+    let json = JSON.parse(localStorage.getItem(String(token.x_user_id)));
+    this.user = json['user'];
+    this.physical = json['physical-information-transaction'];
 
     if (this.physical) {
       console.log('Physical info', this.physical);
@@ -40,12 +42,6 @@ export class PhysicalInfoPage {
     } else {
       console.log('No physical info');
     }
-
-    Observable.interval(1000 * 60 * 10).startWith(0).subscribe(trigger => {
-      console.log('No. ' + trigger + ': 10 minutes more');
-      this.checkForNewData()
-    });
-
   }
 
   /**
@@ -70,7 +66,6 @@ export class PhysicalInfoPage {
    * @param new_data
    */
   getPhysicalInfo(new_data: any): Promise<any> {
-
     return new Promise((resolve, reject) => {
       console.log('List available data', new_data);
       if (new_data) {
@@ -88,21 +83,26 @@ export class PhysicalInfoPage {
               console.log('List physical info', physicalInfoId);
               let length = Object.keys(physicalInfoId['physical-informations']).length;
 
-              let datas = [];
-              let infos = [];
+              let _data = [];
+              let _info = [];
 
               physicalInfoId['physical-informations'].forEach((info, index) => {
 
                 Observable.forkJoin(
                   this.polarData.get(info)
                 ).subscribe(data => {
+                  let splitUrl = info.split('/');
+                  let last = splitUrl.length - 1;
 
-                  datas.push(data);
-                  infos.push(info);//TODO change to exercise id.
+                  _data.push(data);
+                  _info.push(splitUrl[last]);//TODO change to exercise id.
 
+                  console.log('Data', _data);
+                  console.log('Info', _info);
+                  /*
                   if (index >= length - 1) {
                     // Save the data.
-                    this.localData.savePhysical(transaction['transaction-id'], infos, datas);
+                    LocalDataProvider.savePhysical(transaction['transaction-id'], _info, _data);
 
                     // Commit the transaction.
                     this.polarData.commit(transaction['resource-uri']).then(success => {
@@ -111,6 +111,7 @@ export class PhysicalInfoPage {
                       reject(error);
                     })
                   }
+                  */
                 }, error => {
                   reject(error);
                 });

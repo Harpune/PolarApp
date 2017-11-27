@@ -3,20 +3,24 @@ import {Loading, LoadingController, NavController, Platform} from 'ionic-angular
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {TabsPage} from "../tabs/tabs";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
+import {LocalDataProvider} from "../../providers/local-data/local-data";
 
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',
 })
 export class LoginPage {
+  user: any;
   json: any;
   loading: Loading;
 
   constructor(public navCtrl: NavController,
-              private platform: Platform,
+              public platform: Platform,
               public polarData: PolarDataProvider,
+              public localData: LocalDataProvider,
               public loadingCtrl: LoadingController,
               public iab: InAppBrowser) {
+    this.user = localData.getUser();
 
     this.json = {
       'exercise-transaction': [],
@@ -24,9 +28,17 @@ export class LoginPage {
       'physical-information-transaction': [],
       'user': {}
     }
+  }
 
-
-    // TODO: Angemeldet als Lukas - Nicht Lukas
+  goToHome() {
+    // Set new root and go to TabsPage.
+    this.navCtrl.setRoot(TabsPage).then(() => {
+      this.navCtrl.popToRoot().then(() => {
+        console.log('Pop to root');
+      }, () => {
+        console.log('Pop to root failed');
+      });
+    });
   }
 
   login() {
@@ -58,10 +70,7 @@ export class LoginPage {
               this.json['user'] = success;
               console.log('Register User Success: ', this.json);
 
-              if (!localStorage.getItem(String(tokenData.x_user_id))) {
-                localStorage.setItem(String(tokenData.x_user_id), JSON.stringify(this.json));
-              }
-
+              localStorage.setItem(String(tokenData.x_user_id), JSON.stringify(this.json));
               this.dismissLoading();
 
               // Set new root and go to TabsPage.
@@ -130,8 +139,11 @@ export class LoginPage {
     console.log('409 response');
     this.polarData.deleteCurrentUser().then(() => {
       this.polarData.registerUser(tokenData).then(success => {
-        console.log('Register User Success: ', success);
-        localStorage.setItem('user', JSON.stringify(success));
+        // Save user data.
+        this.json['user'] = success;
+        console.log('Register User Success: ', this.json);
+        localStorage.setItem(String(tokenData.x_user_id), JSON.stringify(this.json));
+
         this.navCtrl.setRoot(TabsPage).then(() => {
           this.navCtrl.popToRoot().then(() => {
             console.log('Pushed to TabsPage')
@@ -141,11 +153,8 @@ export class LoginPage {
         this.dismissLoading();
       }, error => {
         console.error('Register User error: ' + error);
-        console.error('Register User error: ' + error.status);
-        console.error('Register User error: ' + error.error);
         this.dismissLoading();
       })
     })
-
   }
 }

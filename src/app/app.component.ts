@@ -19,17 +19,16 @@ export class MyApp {
   constructor(private platform: Platform,
               private statusBar: StatusBar,
               private splashScreen: SplashScreen) {
-    localStorage.removeItem('token');
+    //localStorage.removeItem('token');
     this.token = JSON.parse(localStorage.getItem('token'));
     console.log('Token logged in ', this.token);
 
     if (this.token) {
       this.rootPage = TabsPage;
+      this.getAllData();
     } else {
       this.rootPage = LoginPage;
     }
-
-    MyApp.getAllData();
 
     platform.ready().then(() => {
       statusBar.styleDefault();
@@ -37,8 +36,8 @@ export class MyApp {
     });
   }
 
-  static getAllData() {
-    let user = JSON.parse(localStorage.getItem('user'));
+  getAllData() {
+    let user = JSON.parse(localStorage.getItem(String(this.token.x_user_id)));
 
     let a_sum = JSON.parse(localStorage.getItem('activity_sum'));
     let a_step = JSON.parse(localStorage.getItem('activity_step'));

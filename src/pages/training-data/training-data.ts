@@ -106,6 +106,7 @@ export class TrainingDataPage {
                       if (sIndex >= sLength - 1) {
                         if (index >= length - 1) {
                           data[4] = samples;
+                          /*
                           // Save the data.
                           this.localData.saveExercise(transaction['transaction-id'], infos, datas);
 
@@ -115,6 +116,7 @@ export class TrainingDataPage {
                           }, error => {
                             reject(error);
                           });
+                          */
                         }
                       }
                     })

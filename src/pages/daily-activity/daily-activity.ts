@@ -117,6 +117,7 @@ export class DailyActivityPage {
                   infos.push(info);//TODO change to exercise id.
 
                   if (index >= length - 1) {
+                    /*
                     // Save the data.
                     this.localData.saveActivity(transaction['transaction-id'], infos, datas);
 
@@ -126,6 +127,7 @@ export class DailyActivityPage {
                     }, error => {
                       reject(error);
                     });
+                    */
                   }
                 }, error => {
                   reject(error);

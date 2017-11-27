@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
+import {HttpClient} from "@angular/common/http";
 import 'rxjs/add/operator/map';
+
 
 @Injectable()
 export class LocalDataProvider {
 
-  constructor(public http: Http) {
+  constructor(public http: HttpClient) {
     console.log('Hello LocalDataProvider Provider');
   }
 
@@ -14,24 +15,45 @@ export class LocalDataProvider {
    * @returns {Promise<any>}
    */
   getIdAndSecret() {
-    return this.http.get('assets/data/config.json').map(res => res.json());
+    return this.http.get('assets/data/config.json');
   }
 
-  savePhysical(transaction: string, physicals: string[], data: any[]) {
+  static savePhysical(transaction: string, physicals: string[], data: any[]) {
     let token = JSON.parse(localStorage.getItem('token'));
     let user = localStorage.getItem(String(token.x_user_id));
-    user['physical-information-transaction'].push(transaction);
-    console.log('Save physical', user);
-    localStorage.setItem('physical-information-transaction', user);
+    console.log('Save Physical user before', user);
+
+    if (user['physical-information-transaction']) {
+      user['physical-information-transaction'].push(transaction);
+    } else {
+      user['physical-information-transaction'] = [];
+      user['physical-information-transaction'].push(transaction);
+    }
+
+    console.log('Save Physical user after', user);
+    localStorage.setItem(String(token.x_user_id), user);
 
     let activity = [];
-    localStorage.setItem(transaction, JSON.stringify(activity.push(physicals)));
+    activity.push(physicals);
+    console.log('Save Physical Activity', activity);
+    localStorage.setItem(transaction, JSON.stringify(activity));
 
     let temp = {};
     for (let i = 0; i < physicals.length; i++) {
       temp['summary'] = data[i][0];
       localStorage.setItem(physicals[i], JSON.stringify(temp));
     }
+  }
+
+  getUser(): any {
+    let token = JSON.parse(localStorage.getItem('token'));
+    if (token) {
+      let json = JSON.parse(localStorage.getItem(token['x_user_id']));
+      if (json) {
+        return json['user'];
+      }
+    }
+    return null;
   }
 
   saveActivity(transaction: string, activities: string[], data: any[]) {

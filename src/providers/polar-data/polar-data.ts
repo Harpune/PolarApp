@@ -21,9 +21,7 @@ export class PolarDataProvider {
     this.token = JSON.parse(localStorage.getItem('token'));
 
     // Get the id and secret.
-    this.localData.getIdAndSecret().subscribe(creds => {
-      this.id = creds.client_id;
-    });
+    // TODO outsource id and secret.
   }
 
   /*
@@ -307,10 +305,17 @@ export class PolarDataProvider {
   getAuthorizationCode(): Promise<any> {
     return new Promise((resolve, reject) => {
       // Url to authorization.
+      /*
       let authUrl = `https://flow.polar.com/oauth2/authorization?` +
         `response_type=code&` +
         `scope=accesslink.read_all&` +
         `client_id=${this.id}`;
+      */
+
+      let authUrl = `https://flow.polar.com/oauth2/authorization?` +
+        `response_type=code&` +
+        `scope=accesslink.read_all&` +
+        `client_id=31496f50-2e27-4f94-8cd3-5e75249656ec`;
 
       console.log(authUrl);
       // TODO don't build auth url like this. Use params header!
