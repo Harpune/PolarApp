@@ -19,6 +19,7 @@ export class MyApp {
   constructor(private platform: Platform,
               private statusBar: StatusBar,
               private splashScreen: SplashScreen) {
+
     //localStorage.removeItem('token');
     this.token = JSON.parse(localStorage.getItem('token'));
     console.log('Token logged in ', this.token);

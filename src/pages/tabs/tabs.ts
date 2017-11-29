@@ -11,6 +11,7 @@ import {PhysicalInfoPage} from "../physical-info/physical-info";
 import {UserPage} from "../user/user";
 import {LoginPage} from "../login/login";
 import {Observable} from "rxjs/Observable";
+import {LocalDataProvider} from "../../providers/local-data/local-data";
 
 @Component({
   selector: 'page-tabs',
@@ -36,85 +37,140 @@ export class TabsPage {
       {id: 1, title: 'Mein Profil', icon: 'md-person', component: UserPage},
       {id: 2, title: 'Bye Bye', icon: 'md-log-out', component: LoginPage}
     ];
+
+
   }
 
   ionViewDidLoad() {
     Observable.interval(1000 * 60 * 10).startWith(0).subscribe(trigger => {
       console.log('No. ' + trigger + ': 10 minutes more');
-      this.getNewData()
+      this.refresh()
     });
   }
 
-  getNewData() {
+  refresh() {
+    this.polarData.listAvailableData().then(success => {
+      console.log('Refresh', success);
+      let alert = this.alertCtrl.create({
+        title: 'Neue Daten!',
+        message: 'Wollen Sie die neuen Daten herunterladen?',
+        buttons: [
+          {
+            text: 'Nein',
+            role: 'cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+            }
+          }, {
+            text: 'Ja',
+            handler: () => {
+              console.log('Ok clicked');
+              this.getNewData(success).then(success => {
+                console.log('Get new data', success);
+                this.dismissLoading();
+              }, error => {
+                console.error('Get new data', error);
+                this.dismissLoading();
+              });
+            }
+          }
+        ]
+      });
+      alert.present();
+    }, error => {
+      console.log('Refresh', error);
+      alert('Keine neuen Daten')
+    })
+  }
+
+  getNewData(success: any): Promise<any> {
     this.loading = this.loadingCtrl.create({
       content: 'Getting data ...',
     });
 
-    this.loading.present().then(() => {
-      this.polarData.listAvailableData().then(success => {
+    return new Promise(((resolve, reject) => {
+      this.loading.present().then(() => {
         success['available-user-data'].forEach((item, index) => {
           console.log('Available user data', item);
-          this.polarData.create(item['url']).then(transactionId => {
-            console.log('Create', item);
-            this.polarData.list(transactionId['resource-uri']).then(data => {
-              console.log('List', item);
+          this.polarData.create(item['url']).then(create => {
+            console.log('Create', create);
 
-              let exerciseLength = Object.keys(data['exercise']).length;
-              let exerciseData = [];
-              let exerciseInfo = [];
-              data['exercise'].forEach((item, index) => {
-                console.log('Exercise', item);
-              });
+            this.polarData.list(create['resource-uri']).then(list => {
+              console.log('List', list);
 
-              let activityLength = Object.keys(data['activity-log']).length;
-              let activityData = [];
-              let activityInfo = [];
-              data['activity-log'].forEach((item, index) => {
-                console.log('Activity log', item);
-              });
+              let exercise = list['exercise'];
+              console.log('Exercise', exercise);
+              if (exercise != null && exercise.constructor === Object) {
+                let exerciseLength = Object.keys(exercise).length;
+                let exerciseData = [];
+                let exerciseInfo = [];
+                exercise.forEach((item, index) => {
+                  console.log('Exercise', item);
+                });
+              }
 
-              let physicalLength = Object.keys(data['physical-informations']).length;
-              let physicalData = [];
-              let physicalInfo = [];
-              data['physical-information'].forEach((info, physicalIndex) => {
-                console.log('Physical Information', item);
-                Observable.forkJoin(
-                  this.polarData.get(item)
-                ).subscribe(success => {
-                  let splitUrl = info.split('/');
-                  let last = splitUrl.length - 1;
+              let activity = list['activity-log'];
+              console.log('Activity', activity);
+              if (activity != null && activity.constructor === Object) {
+                let activityLength = Object.keys(activity).length;
+                let activityData = [];
+                let activityInfo = [];
+                activity.forEach((item, index) => {
+                  console.log('Activity log', item);
+                });
+              }
 
-                  physicalData.push(data);
-                  physicalInfo.push(splitUrl[last]);//TODO change to exercise id.
+              let physical = list['physical-informations'];
+              console.log('Physical', physical);
+              if (physical) {
+                let physicalLength = Object.keys(physical).length;
+                let physicalData = [];
+                physical.forEach((info, physicalIndex) => {
+                  console.log('Physical Information', info);
 
-                  console.log('Data', physicalData);
-                  console.log('Info', physicalInfo);
-                  /*
-                  if (physicalIndex >= physicalLength - 1) {
-                    // Save the data.
-                    LocalDataProvider.savePhysical(transaction['transaction-id'], _info, _data);
+                  Observable.forkJoin(
+                    this.polarData.get(info)
+                  ).subscribe(get => {
+                    physicalData.push(get);
 
-                    // Commit the transaction.
-                    this.polarData.commit(transaction['resource-uri']).then(success => {
-                      resolve(success);
-                    }, error => {
-                      reject(error);
-                    })
-                  }
-                  */
-                }, error => {
+                    let splitUrl = info.split('/');
+                    let last = splitUrl.length - 1;
 
-                })
-              });
+                    console.log('Data', get, physicalData);
+                    console.log('Info', splitUrl[last]);
+
+                    if (physicalIndex >= physicalLength - 1) {
+                      console.log('DONE');
+                      // Save the data.
+                      LocalDataProvider.savePhysical(create['transaction-id'], splitUrl[last], physicalData);
+
+                      // Commit the transaction.
+                      this.polarData.commit(create['resource-uri']).then(success => {
+                        console.log(success);
+                        resolve(success);
+                      }, error => {
+                        reject(error);
+                      })
+
+                    }
+
+
+                  }, error => {
+                    console.log(error);
+                    reject(error);
+                  })
+                });
+
+                resolve('TOPKEK');
+              }
             })
           }, error => {
             console.log(error);
+            reject(error);
           })
         });
-      }, error => {
-        console.log(error);
       })
-    })
+    }))
   }
 
   goToPage(page) {
@@ -131,6 +187,7 @@ export class TabsPage {
    * Logout user, delete Token and set root to LoginPage.
    */
   logout() {
+    //TODO Do not delete token, rather than push to LoginPAge
     this.loading = this.loadingCtrl.create({
       content: 'Logging out ... ',
     });
@@ -151,35 +208,6 @@ export class TabsPage {
         alert(error.message);
         this.dismissLoading();
       })
-    })
-  }
-
-  refresh() {
-    this.polarData.listAvailableData().then(success => {
-      console.log('Refresh', success);
-      let alert = this.alertCtrl.create({
-        title: 'Neue Daten!',
-        message: 'Wollen Sie die neuen Daten herunterladen?',
-        buttons: [
-          {
-            text: 'Nein',
-            role: 'cancel',
-            handler: () => {
-              console.log('Cancel clicked');
-            }
-          },
-          {
-            text: 'Ja',
-            handler: () => {
-              console.log('Buy clicked');
-            }
-          }
-        ]
-      });
-      alert.present();
-    }, error => {
-      console.log('Refresh', error);
-      alert('Keine neuen Daten')
     })
   }
 

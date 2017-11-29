@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {InAppBrowser} from '@ionic-native/in-app-browser';
-import {LocalDataProvider} from "../local-data/local-data";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 
 @Injectable()
@@ -10,7 +9,6 @@ export class PolarDataProvider {
   id: string;
 
   constructor(private http: HttpClient,
-              private localData: LocalDataProvider,
               private iab: InAppBrowser) {
     console.log('Hello PolarDataProvider Provider');
 
@@ -24,9 +22,6 @@ export class PolarDataProvider {
     // TODO outsource id and secret.
   }
 
-  /*
-  Physical info
-   */
   /**
    *
    * @returns {Promise<any>}
@@ -70,7 +65,10 @@ export class PolarDataProvider {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      this.http.get(url, {headers: headers, observe: 'response'}).subscribe(success => {
+      this.http.get(url, {
+        headers: headers,
+        observe: 'response'
+      }).subscribe(success => {
         switch (success.status) {
           case 200:
             resolve(success.body);
@@ -100,7 +98,9 @@ export class PolarDataProvider {
 
       // let data = response.text() ? response.json() : [{}];
 
-      this.http.get(url, {headers: headers}).subscribe(success => {
+      this.http.get(url, {
+        headers: headers
+      }).subscribe(success => {
         resolve(success);
       }, error => {
         reject(error);
@@ -117,7 +117,10 @@ export class PolarDataProvider {
         .set('Accept', ' application/gpx+xml')
         .set('Content-Type', 'application/gpx+xml');
 
-      this.http.get(url, {headers: headers, responseType: 'text'}).subscribe(success => {
+      this.http.get(url, {
+        headers: headers,
+        responseType: 'text'
+      }).subscribe(success => {
         resolve(success);
       }, error => {
         reject(error);
@@ -134,7 +137,10 @@ export class PolarDataProvider {
         .set('Accept', ' application/vnd.garmin.tcx+xml')
         .set('Content-Type', 'application/vnd.garmin.tcx+xml');
 
-      this.http.get(url, {headers: headers, responseType: 'text'}).subscribe(success => {
+      this.http.get(url, {
+        headers: headers,
+        responseType: 'text'
+      }).subscribe(success => {
         resolve(success);
       }, error => {
         reject(error);
@@ -151,7 +157,10 @@ export class PolarDataProvider {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      this.http.put(url, null, {headers: headers, responseType: 'text', observe: 'response'}).subscribe(success => {
+      this.http.put(url, null, {
+        headers: headers,
+        responseType: 'text',
+        observe: 'response'}).subscribe(success => {
         switch (success.status) {
           case 200:
             resolve(success);
@@ -186,7 +195,10 @@ export class PolarDataProvider {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      this.http.get(url, {headers: headers, observe: 'response'}).subscribe(success => {
+      this.http.get(url, {
+        headers: headers,
+        observe: 'response'
+      }).subscribe(success => {
         switch (success.status) {
           case 200:
             console.log('List available data', 200);
@@ -238,7 +250,9 @@ export class PolarDataProvider {
       console.log('Register User Body:', body);
       console.log('Register User Header:', headers);
 
-      this.http.post(url, body, {headers: headers}).subscribe(success => {
+      this.http.post(url, body, {
+        headers: headers
+      }).subscribe(success => {
         resolve(success);
       }, error => {
         reject(error);
@@ -261,7 +275,9 @@ export class PolarDataProvider {
         .set('Content-Type', 'application/json');
 
       // Start request.
-      this.http.get(url, {headers: headers}).subscribe(success => {
+      this.http.get(url, {
+        headers: headers
+      }).subscribe(success => {
         resolve(success);
       }, error => {
         reject(error);
@@ -284,7 +300,9 @@ export class PolarDataProvider {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      this.http.delete(url, {headers: headers}).subscribe(success => {
+      this.http.delete(url, {
+        headers: headers
+      }).subscribe(success => {
         resolve(success);
       }, error => {
         reject(error);

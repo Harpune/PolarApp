@@ -33,10 +33,22 @@ export class PhysicalInfoPage {
     let token = JSON.parse(localStorage.getItem('token'));
     let json = JSON.parse(localStorage.getItem(String(token.x_user_id)));
     this.user = json['user'];
-    this.physical = json['physical-information-transaction'];
 
-    if (this.physical) {
-      console.log('Physical info', this.physical);
+    let physicalTransactions = json['physical-information-transaction'];
+    console.log('Physical transactions', physicalTransactions);
+    for (let transaction of physicalTransactions) {
+      console.log('Transaction',transaction);
+      let temp = JSON.parse(localStorage.getItem(transaction));
+      console.log('Temp', temp);
+      for (let physic of temp) {
+        this.physical.push(physic);
+        console.log('Physical', this.physical);
+      }
+    }
+
+    console.log('Physical', this.physical, Object.keys(this.physical).length);
+
+    if (Object.keys(this.physical).length != 0) {
       this.weight = this.physical[this.physical.length - 1]['weight'];
       this.updateCharts();
     } else {

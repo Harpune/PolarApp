@@ -38,7 +38,6 @@ export class TokenInterceptor implements HttpInterceptor {
           Authorization: `Bearer ${token.access_token}`
         }
       });
-      return next.handle(request);
     } else { // If the pathname is neither add the Basic header.
       console.log('Interceptor for v3 not user!');
 
@@ -50,6 +49,8 @@ export class TokenInterceptor implements HttpInterceptor {
         }
       });
     }
+
+    console.log('Interceptor', request.body, request.headers);
 
     // Send updated request.
     return next.handle(request);
