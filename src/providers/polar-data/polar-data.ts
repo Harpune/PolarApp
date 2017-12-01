@@ -35,7 +35,6 @@ export class PolarDataProvider {
         responseType: 'text',
         observe: 'response'
       }).subscribe(success => {
-        console.log('HEEEERREEEE!', success.body);
         switch (success.status) {
           case 200:
             //resolve(success.headers.get('Location'));

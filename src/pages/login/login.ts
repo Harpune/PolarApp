@@ -20,13 +20,21 @@ export class LoginPage {
               public localData: LocalDataProvider,
               public loadingCtrl: LoadingController,
               public iab: InAppBrowser) {
-    this.user = localData.getUser();
 
     this.json = {
       'exercise-transaction': [],
       'activity-transaction': [],
       'physical-information-transaction': [],
       'user': {}
+    }
+  }
+
+  ionViewDidLoad() {
+    let token = JSON.parse(localStorage.getItem('token'));
+    if (token) {
+      this.user = JSON.parse(localStorage.getItem(String(token['x_user_id'])))
+    } else {
+      console.log('Login Page', 'No token');
     }
   }
 
@@ -65,12 +73,14 @@ export class LoginPage {
 
             // Register the User.
             this.polarData.registerUser(tokenData).then(success => {
-
-              // Save user data.
-              this.json['user'] = success;
-              console.log('Register User Success: ', this.json);
-
-              localStorage.setItem(String(tokenData.x_user_id), JSON.stringify(this.json));
+              let exist = JSON.parse(localStorage.getItem(String(tokenData['x_user_id'])));
+              console.log('Login', 'Existing User?', exist);
+              if(!exist){
+                // Save user data.
+                this.json['user'] = success;
+                console.log('Register User Success: ', this.json);
+                localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(this.json));
+              }
               this.dismissLoading();
 
               // Set new root and go to TabsPage.
@@ -83,7 +93,7 @@ export class LoginPage {
               });
             }, error => {
               // Error by registration.
-              console.error('Register User error: ' + error);
+              console.error('Register User error', error);
 
               // Handle if user already exists.
               if (error.status == 409) {
@@ -136,23 +146,27 @@ export class LoginPage {
    * @param tokenData
    */
   private handle409(tokenData: any) {
-    console.log('409 response');
+    console.log('Handle 409', 'Token', tokenData);
     this.polarData.deleteCurrentUser().then(() => {
       this.polarData.registerUser(tokenData).then(success => {
-        // Save user data.
-        this.json['user'] = success;
-        console.log('Register User Success: ', this.json);
-        localStorage.setItem(String(tokenData.x_user_id), JSON.stringify(this.json));
+        let exist = JSON.parse(localStorage.getItem(String(tokenData['x_user_id'])));
+        console.log('Login', 'Existing User?', exist);
+        if(!exist){
+          // Save user data.
+          this.json['user'] = success;
+          console.log('Register User Success: ', this.json);
+          localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(this.json));
+        }
+
+        this.dismissLoading();
 
         this.navCtrl.setRoot(TabsPage).then(() => {
           this.navCtrl.popToRoot().then(() => {
-            console.log('Pushed to TabsPage')
+            console.log('Handle 409', 'Pushed to TabsPage');
           });
         });
-
-        this.dismissLoading();
       }, error => {
-        console.error('Register User error: ' + error);
+        console.log('Handle 409', 'Register User error', error);
         this.dismissLoading();
       })
     })

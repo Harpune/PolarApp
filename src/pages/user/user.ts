@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {Loading, LoadingController} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
+import {LocalDataProvider} from "../../providers/local-data/local-data";
 
 @Component({
   selector: 'page-user',
@@ -12,23 +13,24 @@ export class UserPage {
   user: any = [];
 
   constructor(public loadingCtrl: LoadingController,
+              public localData: LocalDataProvider,
               public polarData: PolarDataProvider) {
   }
 
   ionViewDidLoad() {
-    let token = JSON.parse(localStorage.getItem('token'));
-    this.user = JSON.parse(localStorage.getItem(String(token.x_user_id)));
-    if (this.user) {
-      console.log(this.user);
-    } else {
-      this.getUserData().then(success => {
-        this.user = success;
-        console.log('Get User Information', success);
-      }, error => {
-        console.log('Get User Information', error);
-      });
-    }
 
+    this.localData.getUser()
+      .then(success => {
+        this.user = success;
+      }, error => {
+        console.log('User Page', 'Get User', error);
+      }).then(() => {
+      this.getUserData().then(user => {
+        this.user = user;
+      }, error => {
+        console.log('User Page', 'Get User Data', error);
+      });
+    })
   }
 
   getUserData(): Promise<any> {

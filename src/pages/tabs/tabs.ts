@@ -31,14 +31,14 @@ export class TabsPage {
 
   constructor(private navCtrl: NavController,
               private polarData: PolarDataProvider,
+              private localData: LocalDataProvider,
               private loadingCtrl: LoadingController,
               private alertCtrl: AlertController) {
     this.menuPages = [
+      {id: 0, title: 'Über geiler JSON', icon: 'md-person', component: UserPage},
       {id: 1, title: 'Mein Profil', icon: 'md-person', component: UserPage},
       {id: 2, title: 'Bye Bye', icon: 'md-log-out', component: LoginPage}
     ];
-
-
   }
 
   ionViewDidLoad() {
@@ -50,7 +50,7 @@ export class TabsPage {
 
   refresh() {
     this.polarData.listAvailableData().then(success => {
-      console.log('Refresh', success);
+      console.log('Refresh', 'Neue Daten', success);
       let alert = this.alertCtrl.create({
         title: 'Neue Daten!',
         message: 'Wollen Sie die neuen Daten herunterladen?',
@@ -59,17 +59,17 @@ export class TabsPage {
             text: 'Nein',
             role: 'cancel',
             handler: () => {
-              console.log('Cancel clicked');
+              console.log('Refresh', 'Cancel clicked');
             }
           }, {
             text: 'Ja',
             handler: () => {
-              console.log('Ok clicked');
+              console.log('Refresh', 'Ok clicked');
               this.getNewData(success).then(success => {
-                console.log('Get new data', success);
+                console.log('Refresh', 'Success', success);
                 this.dismissLoading();
               }, error => {
-                console.error('Get new data', error);
+                console.error('Refresh', 'Error', error);
                 this.dismissLoading();
               });
             }
@@ -78,8 +78,7 @@ export class TabsPage {
       });
       alert.present();
     }, error => {
-      console.log('Refresh', error);
-      alert('Keine neuen Daten')
+      console.log('Refresh', 'Keine neue Daten', error);
     })
   }
 
@@ -91,81 +90,101 @@ export class TabsPage {
     return new Promise(((resolve, reject) => {
       this.loading.present().then(() => {
         success['available-user-data'].forEach((item, index) => {
-          console.log('Available user data', item);
+          console.log('Get new data', 'Available user data', item);
           this.polarData.create(item['url']).then(create => {
-            console.log('Create', create);
+            console.log('Get new data', 'Create', create);
 
             this.polarData.list(create['resource-uri']).then(list => {
-              console.log('List', list);
+              console.log('Get new data', 'List', list);
 
               let exercise = list['exercise'];
-              console.log('Exercise', exercise);
+              console.log('Get new data', 'Exercise', exercise);
               if (exercise != null && exercise.constructor === Object) {
                 let exerciseLength = Object.keys(exercise).length;
-                let exerciseData = [];
-                let exerciseInfo = [];
-                exercise.forEach((item, index) => {
-                  console.log('Exercise', item);
+                exercise.forEach((info, exerciseIndex) => {
+                  console.log('Get new data', 'Exercise', info);
                 });
               }
 
               let activity = list['activity-log'];
-              console.log('Activity', activity);
-              if (activity != null && activity.constructor === Object) {
+              console.log('Get new data', 'Activity', activity);
+              if (activity) {
                 let activityLength = Object.keys(activity).length;
-                let activityData = [];
-                let activityInfo = [];
-                activity.forEach((item, index) => {
-                  console.log('Activity log', item);
-                });
-              }
-
-              let physical = list['physical-informations'];
-              console.log('Physical', physical);
-              if (physical) {
-                let physicalLength = Object.keys(physical).length;
-                let physicalData = [];
-                physical.forEach((info, physicalIndex) => {
-                  console.log('Physical Information', info);
+                activity.forEach((info, activityIndex) => {
+                  console.log('Get new data', 'Activity log', info);
 
                   Observable.forkJoin(
-                    this.polarData.get(info)
+                    this.polarData.get(info),
+                    this.polarData.get(info + '/step-samples'),
+                    this.polarData.get(info + '/zone-samples'),
                   ).subscribe(get => {
-                    physicalData.push(get);
 
                     let splitUrl = info.split('/');
                     let last = splitUrl.length - 1;
 
-                    console.log('Data', get, physicalData);
-                    console.log('Info', splitUrl[last]);
+                    console.log('Get new data', 'Activity', 'Data', get);
+                    console.log('Get new data', 'Activity', 'Info', splitUrl[last]);
+                    /*
+                    // Save the data.
+                    LocalDataProvider.saveActivity(create['transaction-id'], splitUrl[last], get);
 
-                    if (physicalIndex >= physicalLength - 1) {
-                      console.log('DONE');
-                      // Save the data.
-                      LocalDataProvider.savePhysical(create['transaction-id'], splitUrl[last], physicalData);
+                    if (activityIndex >= activityLength - 1) {
+                      console.log('Get new data', 'Activity', 'Done');
 
                       // Commit the transaction.
                       this.polarData.commit(create['resource-uri']).then(success => {
-                        console.log(success);
                         resolve(success);
                       }, error => {
                         reject(error);
                       })
-
                     }
-
-
+                    */
+                    reject('Hallo');
                   }, error => {
-                    console.log(error);
                     reject(error);
                   })
                 });
+              }
 
-                resolve('TOPKEK');
+              let physical = list['physical-informations'];
+              console.log('Get new data', 'Physical', physical);
+              if (physical) {
+                let physicalLength = Object.keys(physical).length;
+                physical.forEach((info, physicalIndex) => {
+                  console.log('Get new data', 'Physical Information', info);
+
+                  Observable.forkJoin(
+                    this.polarData.get(info)
+                  ).subscribe(get => {
+
+                    let splitUrl = info.split('/');
+                    let last = splitUrl.length - 1;
+
+                    console.log('Get new data', 'Physical', 'Data', get);
+                    console.log('Get new data', 'Physical', 'Info', splitUrl[last]);
+
+                    // Save the data.
+                    LocalDataProvider.savePhysical(create['transaction-id'], splitUrl[last], get);
+
+                    if (physicalIndex >= physicalLength - 1) {
+                      console.log('Get new data', 'Physical', 'Done');
+
+                      // Commit the transaction.
+                      this.polarData.commit(create['resource-uri']).then(success => {
+                        resolve(success);
+                      }, error => {
+                        reject(error);
+                      })
+                    }
+                  }, error => {
+                    reject(error);
+                  })
+                });
+              } else {
+                reject();
               }
             })
           }, error => {
-            console.log(error);
             reject(error);
           })
         });
@@ -174,11 +193,21 @@ export class TabsPage {
   }
 
   goToPage(page) {
-    if (page.id == 2) {
+    if (page.id == 0) {
+      let token = JSON.parse(localStorage.getItem('token'));
+      let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
+
+      this.localData.getPhysical().then(success => {
+        console.log('Go To Page', 'Physical', 'Success', success);
+      }, error => {
+        console.log('Go To Page', 'Physical', 'Error', error);
+      });
+      console.log('Da hast du ihn', json);
+    } else if (page.id == 2) {
       this.logout();
     } else {
       this.navCtrl.push(page.component).then(() => {
-        console.log("Pushed to " + page.title);
+        console.log('Go To Page', page.title);
       })
     }
   }
@@ -194,13 +223,13 @@ export class TabsPage {
 
     this.loading.present().then(() => {
       this.polarData.deleteCurrentUser().then(success => {
-        console.log('Logout user', success);
+        console.log('Logout', success);
         localStorage.removeItem('currentUser');
         localStorage.removeItem('user');
         this.dismissLoading();
         this.navCtrl.setRoot(LoginPage).then(() => {
           this.navCtrl.popToRoot().then(() => {
-            console.log('TabsPage left')
+            console.log('Logout', 'TabsPage left')
           });
         });
       }, error => {

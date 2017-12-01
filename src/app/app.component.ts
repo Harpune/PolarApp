@@ -26,7 +26,7 @@ export class MyApp {
 
     if (this.token) {
       this.rootPage = TabsPage;
-      this.getAllData();
+      //this.getAllData(this.token);
     } else {
       this.rootPage = LoginPage;
     }
@@ -37,8 +37,8 @@ export class MyApp {
     });
   }
 
-  getAllData() {
-    let user = JSON.parse(localStorage.getItem(String(this.token.x_user_id)));
+  getAllData(token:any) {
+    let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
 
     let a_sum = JSON.parse(localStorage.getItem('activity_sum'));
     let a_step = JSON.parse(localStorage.getItem('activity_step'));
@@ -48,7 +48,7 @@ export class MyApp {
 
     let t_sum = JSON.parse(localStorage.getItem('trainingData'));
 
-    console.log('user', user);
+    console.log('json', json);
     console.log('activity_sum', a_sum);
     console.log('activity_step', a_step);
     console.log('activity_zone', a_zone);
