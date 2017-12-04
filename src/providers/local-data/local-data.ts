@@ -85,7 +85,7 @@ export class LocalDataProvider {
 
       // Save the transaction in user profile.
       let physical = json['activity-transaction'];
-      if (!(physical.indexOf(transaction) > -1)) {
+      if (!(physical.indexOf(transaction) > -1)) { // Check if transaction already exists.
         json['activity-transaction'].push(transaction);
       }
       localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));

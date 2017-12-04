@@ -2,7 +2,7 @@
 </ion-header>
 
 <ion-content>
-  <ng-container *ngFor="let act of activity; let i = index">
+  <ng-container *ngFor="let act of summary; let i = index">
     <ion-card
       *ngIf="act['duration']['hours'] != 0 && act['duration']['minutes'] != 0 && act['duration']['seconds'] != 0"
       (click)="showActivity(i)">

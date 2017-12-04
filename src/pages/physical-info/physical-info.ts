@@ -1,10 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
-import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {Chart} from 'chart.js';
 import {DatePipe} from "@angular/common";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {Observable} from 'rxjs/Rx';
-import {SQLitePorter} from "@ionic-native/sqlite-porter";
+import {Events} from "ionic-angular";
 
 @Component({
   selector: 'page-physical-info',
@@ -23,12 +22,25 @@ export class PhysicalInfoPage {
   aerobChart: any;
 
   constructor(private datePipe: DatePipe,
-              private localData: LocalDataProvider) {}
+              private events: Events,
+              private localData: LocalDataProvider) {
+    events.subscribe('physical:data', isData => {
+      console.log('PhysicalInfoPage', 'Event triggered', isData);
+      if(isData){
+        this.getPhysical()
+      }
+    })
+
+  }
 
   /**
    * Ionic View did load.
    */
   ionViewDidLoad() {
+   this.getPhysical();
+  }
+
+  getPhysical(){
     Observable.forkJoin(
       this.localData.getUser(),
       this.localData.getPhysical()

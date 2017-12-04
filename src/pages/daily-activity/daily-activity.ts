@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {App} from 'ionic-angular';
+import {App, Events} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {ActivityPage} from "../activity/activity";
@@ -12,32 +12,53 @@ import {Observable} from "rxjs/Rx";
 })
 export class DailyActivityPage {
   activity: any = [];
+  summary:any = [];
   user: any;
   progress: any = [];
 
   constructor(private polarData: PolarDataProvider,
               private localData: LocalDataProvider,
-              private app: App) {}
+              private events: Events,
+              private app: App) {
+    events.subscribe('activity:data', isData => {
+      console.log('DailyActivityPage', 'Event triggered', isData);
+      if(isData){
+        this.getLocalActivities()
+      }
+    })
+  }
 
   /**
    * Ionic View did load.
    */
   ionViewDidLoad() {
+    this.getLocalActivities();
+  }
+
+  getLocalActivities(){
     Observable.forkJoin(
       this.localData.getUser(),
       this.localData.getActivity()
     ).subscribe(success => {
       this.user = success[0];
       this.activity = success[1];
+      this.activity.forEach(item => {
+        let temp = item['summary'];
+        let dur = temp['duration'];
+        temp['duration'] = parse[dur];
+        item['summary'] = temp;
+        //TODO Save activity here
+      });
 
+      this.summary = this.activity.map(a => a['summary']);
       this.updateProgress();
 
-      console.log('Activity', this.user, this.activity);
+      console.log('Activity', this.user, this.activity, this.summary);
     });
   }
 
   updateProgress() {
-    this.activity.forEach((act, index) => {
+    this.summary.forEach((act, index) => {
       this.progress[index] = Math.floor((act['active-calories'] * 100) / act['calories']);
     });
   }

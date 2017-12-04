@@ -1,6 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 
-import {AlertController, Loading, LoadingController, NavController, Tabs} from 'ionic-angular';
+import {AlertController, Loading, LoadingController, NavController, Tabs, Events} from 'ionic-angular';
+
 
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 
@@ -12,6 +13,7 @@ import {UserPage} from "../user/user";
 import {LoginPage} from "../login/login";
 import {Observable} from "rxjs/Observable";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
+import {parse, end, toSeconds, pattern} from 'iso8601-duration';
 
 @Component({
   selector: 'page-tabs',
@@ -32,6 +34,7 @@ export class TabsPage {
   constructor(private navCtrl: NavController,
               private polarData: PolarDataProvider,
               private localData: LocalDataProvider,
+              private events: Events,
               private loadingCtrl: LoadingController,
               private alertCtrl: AlertController) {
     this.menuPages = [
@@ -49,146 +52,158 @@ export class TabsPage {
   }
 
   refresh() {
-    this.polarData.listAvailableData().then(success => {
-      console.log('Refresh', 'Neue Daten', success);
-      let alert = this.alertCtrl.create({
-        title: 'Neue Daten!',
-        message: 'Wollen Sie die neuen Daten herunterladen?',
-        buttons: [
-          {
-            text: 'Nein',
-            role: 'cancel',
-            handler: () => {
-              console.log('Refresh', 'Cancel clicked');
-            }
-          }, {
-            text: 'Ja',
-            handler: () => {
-              console.log('Refresh', 'Ok clicked');
-              this.getNewData(success).then(success => {
-                console.log('Refresh', 'Success', success);
-                this.dismissLoading();
-              }, error => {
-                console.error('Refresh', 'Error', error);
-                this.dismissLoading();
-              });
-            }
-          }
-        ]
-      });
-      alert.present();
-    }, error => {
-      console.log('Refresh', 'Keine neue Daten', error);
-    })
-  }
-
-  getNewData(success: any): Promise<any> {
+    //TODO add refresh icon animation instead of alert
     this.loading = this.loadingCtrl.create({
       content: 'Getting data ...',
     });
 
-    return new Promise(((resolve, reject) => {
-      this.loading.present().then(() => {
-        success['available-user-data'].forEach((item, index) => {
-          console.log('Get new data', 'Available user data', item);
-          this.polarData.create(item['url']).then(create => {
-            console.log('Get new data', 'Create', create);
-
-            this.polarData.list(create['resource-uri']).then(list => {
-              console.log('Get new data', 'List', list);
-
-              let exercise = list['exercise'];
-              console.log('Get new data', 'Exercise', exercise);
-              if (exercise != null && exercise.constructor === Object) {
-                let exerciseLength = Object.keys(exercise).length;
-                exercise.forEach((info, exerciseIndex) => {
-                  console.log('Get new data', 'Exercise', info);
+    this.loading.present().then(() => {
+      this.polarData.listAvailableData().then(success => {
+        console.log('Refresh', 'Neue Daten', success);
+        let alert = this.alertCtrl.create({
+          title: 'Neue Daten!',
+          message: 'Wollen Sie die neuen Daten herunterladen?',
+          buttons: [
+            {
+              text: 'Nein',
+              role: 'cancel',
+              handler: () => {
+                console.log('Refresh', 'Cancel clicked');
+                this.dismissLoading();
+              }
+            }, {
+              text: 'Ja',
+              handler: () => {
+                console.log('Refresh', 'Ok clicked');
+                this.getNewData(success).then(success => {
+                  console.log('Refresh', 'Success', success);
+                  this.dismissLoading();
+                }, error => {
+                  console.error('Refresh', 'Error', error);
+                  this.dismissLoading();
                 });
               }
-
-              let activity = list['activity-log'];
-              console.log('Get new data', 'Activity', activity);
-              if (activity) {
-                let activityLength = Object.keys(activity).length;
-                activity.forEach((info, activityIndex) => {
-                  console.log('Get new data', 'Activity log', info);
-
-                  Observable.forkJoin(
-                    this.polarData.get(info),
-                    this.polarData.get(info + '/step-samples'),
-                    this.polarData.get(info + '/zone-samples'),
-                  ).subscribe(get => {
-
-                    let splitUrl = info.split('/');
-                    let last = splitUrl.length - 1;
-
-                    console.log('Get new data', 'Activity', 'Data', get);
-                    console.log('Get new data', 'Activity', 'Info', splitUrl[last]);
-                    /*
-                    // Save the data.
-                    LocalDataProvider.saveActivity(create['transaction-id'], splitUrl[last], get);
-
-                    if (activityIndex >= activityLength - 1) {
-                      console.log('Get new data', 'Activity', 'Done');
-
-                      // Commit the transaction.
-                      this.polarData.commit(create['resource-uri']).then(success => {
-                        resolve(success);
-                      }, error => {
-                        reject(error);
-                      })
-                    }
-                    */
-                    reject('Hallo');
-                  }, error => {
-                    reject(error);
-                  })
-                });
-              }
-
-              let physical = list['physical-informations'];
-              console.log('Get new data', 'Physical', physical);
-              if (physical) {
-                let physicalLength = Object.keys(physical).length;
-                physical.forEach((info, physicalIndex) => {
-                  console.log('Get new data', 'Physical Information', info);
-
-                  Observable.forkJoin(
-                    this.polarData.get(info)
-                  ).subscribe(get => {
-
-                    let splitUrl = info.split('/');
-                    let last = splitUrl.length - 1;
-
-                    console.log('Get new data', 'Physical', 'Data', get);
-                    console.log('Get new data', 'Physical', 'Info', splitUrl[last]);
-
-                    // Save the data.
-                    LocalDataProvider.savePhysical(create['transaction-id'], splitUrl[last], get);
-
-                    if (physicalIndex >= physicalLength - 1) {
-                      console.log('Get new data', 'Physical', 'Done');
-
-                      // Commit the transaction.
-                      this.polarData.commit(create['resource-uri']).then(success => {
-                        resolve(success);
-                      }, error => {
-                        reject(error);
-                      })
-                    }
-                  }, error => {
-                    reject(error);
-                  })
-                });
-              } else {
-                reject();
-              }
-            })
-          }, error => {
-            reject(error);
-          })
+            }
+          ]
         });
+        alert.present();
+      }, error => {
+        this.dismissLoading();
+        console.log('Refresh', 'Keine neue Daten', error);
+        if (error == 'Timeout') {
+          alert('Das hat zu lange gedauert. Bitte überprüfe deine Internetverbingung.')
+        }
       })
+    });
+  }
+
+  getNewData(success: any): Promise<any> {
+    return new Promise(((resolve, reject) => {
+      success['available-user-data'].forEach((item, index) => {
+        console.log('Get new data', 'Available user data', item);
+        this.polarData.create(item['url']).then(create => {
+          console.log('Get new data', 'Create', create);
+
+          this.polarData.list(create['resource-uri']).then(list => {
+            console.log('Get new data', 'List', list);
+
+            let exercise = list['exercise'];
+            console.log('Get new data', 'Exercise', exercise);
+            if (exercise != null && exercise.constructor === Object) {
+              let exerciseLength = Object.keys(exercise).length;
+              exercise.forEach((info, exerciseIndex) => {
+                console.log('Get new data', 'Exercise', info);
+              });
+            }
+
+            let activity = list['activity-log'];
+            console.log('Get new data', 'Activity', activity);
+            if (activity) {
+              let activityLength = Object.keys(activity).length;
+              activity.forEach((info, activityIndex) => {
+                console.log('Get new data', 'Activity log', info);
+
+                Observable.forkJoin(
+                  this.polarData.get(info),
+                  this.polarData.get(info + '/step-samples'),
+                  this.polarData.get(info + '/zone-samples'),
+                ).subscribe(get => {
+
+                  let splitUrl = info.split('/');
+                  let last = splitUrl.length - 1;
+
+                  console.log('Get new data', 'Activity', 'Data', get);
+                  console.log('Get new data', 'Activity', 'Info', splitUrl[last]);
+
+                  let temp = get[0];
+                  get[0]['duration'] = parse(temp['duration']);
+
+                  // Save the data.
+                  LocalDataProvider.saveActivity(create['transaction-id'], splitUrl[last], get);
+
+                  if (activityIndex >= activityLength - 1) {
+                    console.log('Get new data', 'Activity', 'Done');
+
+                    // Commit the transaction.
+                    this.polarData.commit(create['resource-uri']).then(success => {
+                      this.events.publish('activity:data', true);
+                      resolve(success);
+                    }, error => {
+                      reject(error);
+                    })
+                  }
+
+                  reject('Hallo');
+                }, error => {
+                  reject(error);
+                })
+              });
+            }
+
+            let physical = list['physical-informations'];
+            console.log('Get new data', 'Physical', physical);
+            if (physical) {
+              let physicalLength = Object.keys(physical).length;
+              physical.forEach((info, physicalIndex) => {
+                console.log('Get new data', 'Physical Information', info);
+
+                Observable.forkJoin(
+                  this.polarData.get(info)
+                ).subscribe(get => {
+
+                  let splitUrl = info.split('/');
+                  let last = splitUrl.length - 1;
+
+                  console.log('Get new data', 'Physical', 'Data', get);
+                  console.log('Get new data', 'Physical', 'Info', splitUrl[last]);
+
+                  // Save the data.
+                  LocalDataProvider.savePhysical(create['transaction-id'], splitUrl[last], get);
+
+
+                  if (physicalIndex >= physicalLength - 1) {
+                    console.log('Get new data', 'Physical', 'Done');
+
+                    // Commit the transaction.
+                    this.polarData.commit(create['resource-uri']).then(success => {
+                      this.events.publish('physical:data', true);
+                      resolve(success);
+                    }, error => {
+                      reject(error);
+                    })
+                  }
+                }, error => {
+                  reject(error);
+                })
+              });
+            } else {
+              reject();
+            }
+          })
+        }, error => {
+          reject(error);
+        })
+      });
     }))
   }
 
@@ -197,12 +212,20 @@ export class TabsPage {
       let token = JSON.parse(localStorage.getItem('token'));
       let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
 
-      this.localData.getPhysical().then(success => {
-        console.log('Go To Page', 'Physical', 'Success', success);
-      }, error => {
-        console.log('Go To Page', 'Physical', 'Error', error);
-      });
       console.log('Da hast du ihn', json);
+
+      this.localData.getPhysical().then(success => {
+        console.log('Das auch noch', 'Physical', 'Success', success);
+      }, error => {
+        console.log('Das nicht', 'Physical', 'Error', error);
+      });
+
+      this.localData.getActivity().then(success => {
+        console.log('Das auch noch', 'Activity', 'Success', success);
+      }, error => {
+        console.log('Das nicht', 'Activity', 'Error', error);
+      });
+
     } else if (page.id == 2) {
       this.logout();
     } else {
