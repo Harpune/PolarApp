@@ -10,7 +10,7 @@
   <ion-content>
     <ion-list>
       <button *ngFor="let p of menuPages" ion-item menuClose (click)="goToPage(p)">
-        <ion-icon item-left name="md-person"></ion-icon>
+        <ion-icon item-left name="{{p.icon}}"></ion-icon>
         {{p.title}}
       </button>
     </ion-list>

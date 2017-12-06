@@ -45,8 +45,9 @@ export class TrainingDataPage {
     ).subscribe(success => {
       this.user = success[0];
       this.exercise = success[1];
-      console.log('Exercise', this.user, this.exercise, this.summary);
       this.summary = this.exercise.map(a => a['summary']);
+
+      console.log('Exercise', this.user, this.exercise, this.summary);
     });
   }
 

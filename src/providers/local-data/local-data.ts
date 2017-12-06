@@ -384,7 +384,7 @@ export class LocalDataProvider {
 
         // Go through all transactions and delete all.
         exerciseTransactions.forEach((item, index) => {
-          this.deleteActivity(item).then(success => {
+          this.deleteExercise(item).then(success => {
             if (index >= sLength - 1) {
               resolve(success);
             }
@@ -395,4 +395,6 @@ export class LocalDataProvider {
       }
     }))
   }
+
+
 }

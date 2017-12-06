@@ -14,6 +14,7 @@ import {LoginPage} from "../login/login";
 import {Observable} from "rxjs/Observable";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
+import {SettingsPage} from "../settings/settings";
 
 @Component({
   selector: 'page-tabs',
@@ -38,9 +39,10 @@ export class TabsPage {
               private loadingCtrl: LoadingController,
               private alertCtrl: AlertController) {
     this.menuPages = [
-      {id: 0, title: 'Über geiler JSON', icon: 'md-person', component: UserPage},
-      {id: 1, title: 'Mein Profil', icon: 'md-person', component: UserPage},
-      {id: 2, title: 'Bye Bye', icon: 'md-log-out', component: LoginPage}
+      {id: 0, title: 'Mein Profil', icon: 'person', component: UserPage},
+      {id: 1, title: 'Über geiler JSON', icon: 'bug', component: null},
+      {id: 2, title: 'Einstellungen', icon: 'settings', component: SettingsPage},
+      {id: 3, title: 'Bye Bye', icon: 'exit', component: LoginPage}
     ];
   }
 
@@ -294,9 +296,16 @@ export class TabsPage {
   }
 
   goToPage(page) {
-    console.log('Go to page', page);
+    this.menuPages = [
+      {id: 0, title: 'Mein Profil', icon: 'person', component: UserPage},
+      {id: 1, title: 'Über geiler JSON', icon: 'bug', component: null},
+      {id: 2, title: 'Einstellungen', icon: 'settings', component: SettingsPage},
+      {id: 3, title: 'Bye Bye', icon: 'exit', component: LoginPage}
+    ];
+
+    console.log('Page', page);
     switch (page.id) {
-      case 0:
+      case 1:
         let token = JSON.parse(localStorage.getItem('token'));
         let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
 
@@ -313,29 +322,25 @@ export class TabsPage {
         }, error => {
           console.log('Das nicht', 'Activity', 'Error', error);
         });
-        break;
-      case 1:
 
+        this.localData.getExercise().then(success => {
+          console.log('Das auch noch', 'Exercise', 'Success', success);
+        }, error => {
+          console.log('Das nicht', 'Exercise', 'Error', error);
+        });
         break;
-      case 2:
-        this.logout();
+      case 3:
+        this.navCtrl.setRoot(LoginPage).then(() => {
+          this.navCtrl.popToRoot().then(() => {
+            console.log('Logout', 'TabsPage left')
+          });
+        });
         break;
       default:
         this.navCtrl.push(page.component).then(() => {
           console.log('Go To Page', page.title);
         })
     }
-  }
-
-  /**
-   * Logout user, delete Token and set root to LoginPage.
-   */
-  logout() {
-    this.navCtrl.setRoot(LoginPage).then(() => {
-      this.navCtrl.popToRoot().then(() => {
-        console.log('Logout', 'TabsPage left')
-      });
-    });
   }
 
   /**
