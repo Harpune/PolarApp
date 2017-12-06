@@ -22,11 +22,11 @@ import {DailyActivityPage} from '../pages/daily-activity/daily-activity';
 import {PhysicalInfoPage} from '../pages/physical-info/physical-info';
 import {TrainingDataPage} from '../pages/training-data/training-data';
 import {ActivityPage} from "../pages/activity/activity";
+import {ExercisePage} from "../pages/exercise/exercise";
 
 import {PolarDataProvider} from '../providers/polar-data/polar-data';
 import {LocalDataProvider} from '../providers/local-data/local-data';
 import {TokenInterceptor} from '../providers/auth/interceptor';
-
 
 @NgModule({
   declarations: [
@@ -37,7 +37,8 @@ import {TokenInterceptor} from '../providers/auth/interceptor';
     DailyActivityPage,
     PhysicalInfoPage,
     TrainingDataPage,
-    ActivityPage
+    ActivityPage,
+    ExercisePage
   ],
   imports: [
     BrowserModule,
@@ -55,7 +56,8 @@ import {TokenInterceptor} from '../providers/auth/interceptor';
     DailyActivityPage,
     PhysicalInfoPage,
     TrainingDataPage,
-    ActivityPage
+    ActivityPage,
+    ExercisePage
   ],
   providers: [
     StatusBar,

@@ -4,7 +4,7 @@
 <ion-content>
   <ng-container *ngFor="let act of summary; let i = index">
     <ion-card
-      *ngIf="act['duration']['hours'] != 0 && act['duration']['minutes'] != 0 && act['duration']['seconds'] != 0"
+      *ngIf="act['active-calories'] != 0 || act['active-steps'] != 0"
       (click)="showActivity(i)">
       <ion-card-header>
         <p>Am {{act['date'] | date:'dd.MM.y'}}</p>

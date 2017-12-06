@@ -1,3 +1,13 @@
 page-training-data {
+  .wrapper {
+    width: 100%;
+    overflow: hidden;
+  }
 
+  .inner {
+    overflow: hidden;
+    float: left;
+    width: 33%;
+    text-align: center;
+  }
 }

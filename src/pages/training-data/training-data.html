@@ -1,6 +1,35 @@
 <ion-header>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
+  <ng-container *ngFor="let training of summary; let i = index">
+    <ion-card (click)="showExercise(i)">
+      <ion-card-header>
+        <p>{{training['detailed-sport-info']}}</p>
+        <p>{{training['device']}}</p>
+        <p>Am {{training['start-time'] | date}}</p>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="wrapper">
+          <div class="inner">
+            <ion-icon name="md-paper-plane"></ion-icon>
+            <ion-badge>{{training['distance']}}</ion-badge>
+            <p>Distanz</p>
+          </div>
+          <div class="inner">
+            <ion-icon name="md-timer"></ion-icon>
+            <ion-badge>{{training['duration']}}</ion-badge>
+            <p>Dauer</p>
+          </div>
+          <div class="inner">
+            <ion-icon name="md-flame"></ion-icon>
+            <ion-badge>{{training['calories']}}</ion-badge>
+            <p>Kalorien</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
 
 </ion-content>

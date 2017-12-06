@@ -52,6 +52,7 @@ export class TabsPage {
   }
 
   refresh() {
+    this.dismissLoading();
     //TODO add refresh icon animation instead of alert
     this.loading = this.loadingCtrl.create({
       content: 'Getting data ...',
@@ -97,46 +98,122 @@ export class TabsPage {
     });
   }
 
+  /**
+   * Get all the data provided by the Polar API.
+   * @param success
+   * @returns {Promise<JSON>}
+   */
   getNewData(success: any): Promise<any> {
     return new Promise(((resolve, reject) => {
-      success['available-user-data'].forEach((item, index) => {
+      // Run through the available user data.
+      success['available-user-data'].forEach((item) => {
         console.log('Get new data', 'Available user data', item);
+
+        // Create the transaction.
         this.polarData.create(item['url']).then(create => {
           console.log('Get new data', 'Create', create);
 
+          // List the transaction.
           this.polarData.list(create['resource-uri']).then(list => {
             console.log('Get new data', 'List', list);
 
-            let exercise = list['exercise'];
+
+            //////////////////////////////////////////////////////////////////////
+            // Get the exercise of the available data                           //
+            //////////////////////////////////////////////////////////////////////
+            let exercise = list['exercises'];
             console.log('Get new data', 'Exercise', exercise);
-            if (exercise != null && exercise.constructor === Object) {
+
+            if (exercise) { // If true there is new exercise data.
               let exerciseLength = Object.keys(exercise).length;
+
+              // Get all exercise data.
               exercise.forEach((info, exerciseIndex) => {
                 console.log('Get new data', 'Exercise', info);
+
+                // Get all data.
+                Observable.forkJoin([
+                  this.polarData.get(info),
+                  this.polarData.get(info + '/heart-rate-zones'),
+                  this.polarData.getGPX(info + '/gpx'),
+                  this.polarData.getTCX(info + '/tcx'),
+                  this.polarData.get(info + '/samples')
+                ]).subscribe(get => {
+                  // Get listID.
+                  let splitUrl = info.split('/');
+                  let last = splitUrl.length - 1;
+
+                  // Change duration format.
+                  let temp = get[0];
+                  get[0]['duration'] = parse(temp['duration']);
+
+                  // Get sample length.
+                  let sampleLength = Object.keys(get[4]['samples']).length;
+                  let samples = [];
+
+                  // Get all the samples.
+                  get[4]['samples'].forEach((sample, sampleIndex) => {
+                    this.polarData.get(sample).then(s => {
+                      samples.push(s);
+
+                      // When all sample responded.
+                      if (sampleIndex >= sampleLength - 1) {
+                        // Save the data.
+                        get[4] = samples;
+                        console.log('Get new data', 'Exercise', 'Data', get);
+
+                        // Save the data.
+                        LocalDataProvider.saveExercise(create['transaction-id'], splitUrl[last], get);
+
+                        // When all exercises responded.
+                        if (exerciseIndex >= exerciseLength - 1) {
+                          // Commit the transaction.
+                          this.polarData.commit(create['resource-uri']).then(success => {
+
+                            // Notify the Tab.
+                            this.events.publish('exercise:data', true);
+
+                            resolve(success);
+                          }, error => {
+                            reject(error);
+                          });
+
+                        }
+                      }
+                    })
+                  })
+                })
               });
             }
 
+            //////////////////////////////////////////////////////////////////////
+            // Get the activity of the available data                           //
+            //////////////////////////////////////////////////////////////////////
             let activity = list['activity-log'];
             console.log('Get new data', 'Activity', activity);
-            if (activity) {
+            if (activity) { // If true there is new activity data.
               let activityLength = Object.keys(activity).length;
+
+              // Get all activity data.
               activity.forEach((info, activityIndex) => {
                 console.log('Get new data', 'Activity log', info);
 
+                // Get all data.
                 Observable.forkJoin(
                   this.polarData.get(info),
                   this.polarData.get(info + '/step-samples'),
                   this.polarData.get(info + '/zone-samples'),
                 ).subscribe(get => {
-
+                  // Get listID.
                   let splitUrl = info.split('/');
                   let last = splitUrl.length - 1;
 
-                  console.log('Get new data', 'Activity', 'Data', get);
-                  console.log('Get new data', 'Activity', 'Info', splitUrl[last]);
-
+                  // Change duration format.
                   let temp = get[0];
                   get[0]['duration'] = parse(temp['duration']);
+
+                  console.log('Get new data', 'Activity', 'Data', get);
+                  console.log('Get new data', 'Activity', 'Info', splitUrl[last]);
 
                   // Save the data.
                   LocalDataProvider.saveActivity(create['transaction-id'], splitUrl[last], get);
@@ -146,7 +223,10 @@ export class TabsPage {
 
                     // Commit the transaction.
                     this.polarData.commit(create['resource-uri']).then(success => {
+
+                      // Notify the Tab.
                       this.events.publish('activity:data', true);
+
                       resolve(success);
                     }, error => {
                       reject(error);
@@ -160,26 +240,32 @@ export class TabsPage {
               });
             }
 
+            //////////////////////////////////////////////////////////////////////
+            // Get the physical of the available data                           //
+            //////////////////////////////////////////////////////////////////////
             let physical = list['physical-informations'];
             console.log('Get new data', 'Physical', physical);
-            if (physical) {
+            if (physical) { // If true there is new physical data.
               let physicalLength = Object.keys(physical).length;
+
+              // Get all physical data.
               physical.forEach((info, physicalIndex) => {
                 console.log('Get new data', 'Physical Information', info);
 
+                // Get all data.
                 Observable.forkJoin(
                   this.polarData.get(info)
                 ).subscribe(get => {
-
+                  // Get listID.
                   let splitUrl = info.split('/');
                   let last = splitUrl.length - 1;
 
+                  // Change duration format.
                   console.log('Get new data', 'Physical', 'Data', get);
                   console.log('Get new data', 'Physical', 'Info', splitUrl[last]);
 
                   // Save the data.
                   LocalDataProvider.savePhysical(create['transaction-id'], splitUrl[last], get);
-
 
                   if (physicalIndex >= physicalLength - 1) {
                     console.log('Get new data', 'Physical', 'Done');
@@ -208,30 +294,36 @@ export class TabsPage {
   }
 
   goToPage(page) {
-    if (page.id == 0) {
-      let token = JSON.parse(localStorage.getItem('token'));
-      let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
+    console.log('Go to page', page);
+    switch (page.id) {
+      case 0:
+        let token = JSON.parse(localStorage.getItem('token'));
+        let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
 
-      console.log('Da hast du ihn', json);
+        console.log('Da hast du ihn', json);
 
-      this.localData.getPhysical().then(success => {
-        console.log('Das auch noch', 'Physical', 'Success', success);
-      }, error => {
-        console.log('Das nicht', 'Physical', 'Error', error);
-      });
+        this.localData.getPhysical().then(success => {
+          console.log('Das auch noch', 'Physical', 'Success', success);
+        }, error => {
+          console.log('Das nicht', 'Physical', 'Error', error);
+        });
 
-      this.localData.getActivity().then(success => {
-        console.log('Das auch noch', 'Activity', 'Success', success);
-      }, error => {
-        console.log('Das nicht', 'Activity', 'Error', error);
-      });
+        this.localData.getActivity().then(success => {
+          console.log('Das auch noch', 'Activity', 'Success', success);
+        }, error => {
+          console.log('Das nicht', 'Activity', 'Error', error);
+        });
+        break;
+      case 1:
 
-    } else if (page.id == 2) {
-      this.logout();
-    } else {
-      this.navCtrl.push(page.component).then(() => {
-        console.log('Go To Page', page.title);
-      })
+        break;
+      case 2:
+        this.logout();
+        break;
+      default:
+        this.navCtrl.push(page.component).then(() => {
+          console.log('Go To Page', page.title);
+        })
     }
   }
 
@@ -239,39 +331,24 @@ export class TabsPage {
    * Logout user, delete Token and set root to LoginPage.
    */
   logout() {
-    //TODO Do not delete token, rather than push to LoginPAge
-    this.loading = this.loadingCtrl.create({
-      content: 'Logging out ... ',
+    this.navCtrl.setRoot(LoginPage).then(() => {
+      this.navCtrl.popToRoot().then(() => {
+        console.log('Logout', 'TabsPage left')
+      });
     });
-
-    this.loading.present().then(() => {
-      this.polarData.deleteCurrentUser().then(success => {
-        console.log('Logout', success);
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('user');
-        this.dismissLoading();
-        this.navCtrl.setRoot(LoginPage).then(() => {
-          this.navCtrl.popToRoot().then(() => {
-            console.log('Logout', 'TabsPage left')
-          });
-        });
-      }, error => {
-        console.error('Logout user', error);
-        alert(error.message);
-        this.dismissLoading();
-      })
-    })
   }
 
   /**
    * Dismiss loading.
    */
   dismissLoading() {
-    this.loading.dismiss().then(() => {
-      console.log('Loading dismissed');
-    }, () => {
-      console.error('Dismiss Loading');
-    });
-    this.loading = null;
+    if (this.loading) {
+      this.loading.dismiss().then(() => {
+        console.log('Loading dismissed');
+      }, () => {
+        console.error('Dismiss Loading');
+      });
+      this.loading = null;
+    }
   }
 }

@@ -1,14 +1,14 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Aktivität am {{activity['created'] | date:'dd.MM.y'}}</ion-title>
+    <ion-title>Aktivität am {{summary['created'] | date:'dd.MM.y'}}</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-  <p>Deine Schritte, die du am {{activity['created'] | date:'dd.MM.y'}} gemacht hast. Weiter so!</p>
+  <p>Deine Schritte, die du am {{summary['created'] | date:'dd.MM.y'}} gemacht hast. Weiter so!</p>
   <canvas #stepsCanvas></canvas>
   <p>In diesem Diagram werden deine Aktivitätszeiten dargestellt. Je dunkler, desto besser!</p>
   <canvas #zonesCanvas></canvas>

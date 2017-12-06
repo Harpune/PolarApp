@@ -32,7 +32,8 @@ export class LoginPage {
   ionViewDidLoad() {
     let token = JSON.parse(localStorage.getItem('token'));
     if (token) {
-      this.user = JSON.parse(localStorage.getItem(String(token['x_user_id'])))
+      let temp = JSON.parse(localStorage.getItem(String(token['x_user_id'])))
+      this.user = temp['user'];
     } else {
       console.log('Login Page', 'No token');
     }
@@ -115,18 +116,6 @@ export class LoginPage {
     }, idSecretError => {
       console.error('Get ID and secret', idSecretError);
     });//platform.
-  }
-
-  /**
-   * Open InAppBrowser and let user register.
-   */
-  register() {
-    this.platform.ready().then(() => {
-      let browser = this.iab.create('https://flow.polar.com/register', '_self', 'location=no');
-      browser.on('loadstart').subscribe(event => {
-        console.log('In App Browser', 'Event \'Loadstart\' is called', event.url);
-      });
-    })
   }
 
   /**

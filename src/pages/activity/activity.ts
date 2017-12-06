@@ -10,6 +10,8 @@ import {DatePipe} from "@angular/common";
 })
 export class ActivityPage {
   activity: any;
+
+  summary:any;
   stepSamples: any;
   zoneSamples: any;
 
@@ -20,11 +22,10 @@ export class ActivityPage {
 
   constructor(private navParams: NavParams) {
     this.activity = navParams.get('act');
-    let index = navParams.get('index');
 
-    this.stepSamples = JSON.parse(localStorage.getItem('activity_step'))[index];
-    this.zoneSamples = JSON.parse(localStorage.getItem('activity_zone'))[index];
-
+    this.summary = this.activity['summary'];
+    this.stepSamples = this.activity['steps'];
+    this.zoneSamples = this.activity['zones'];
 
     console.log('Activity', this.activity);
     console.log('Step samples', this.stepSamples);

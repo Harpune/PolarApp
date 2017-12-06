@@ -42,18 +42,11 @@ export class DailyActivityPage {
     ).subscribe(success => {
       this.user = success[0];
       this.activity = success[1];
-      this.activity.forEach(item => {
-        let temp = item['summary'];
-        let dur = temp['duration'];
-        temp['duration'] = parse[dur];
-        item['summary'] = temp;
-        //TODO Save activity here
-      });
-
       this.summary = this.activity.map(a => a['summary']);
+
       this.updateProgress();
 
-      console.log('Activity', this.user, this.activity, this.summary);
+      console.log('Activity', this.user, this.activity, this.summary, this.progress);
     });
   }
 
@@ -69,6 +62,7 @@ export class DailyActivityPage {
    */
   showActivity(index: number) {
     let act = this.activity[index];
-    this.app.getRootNav().push(ActivityPage, {act: act, index: index});
+    console.log('Show Activity', act);
+    this.app.getRootNav().push(ActivityPage, {act: act});
   }
 }
