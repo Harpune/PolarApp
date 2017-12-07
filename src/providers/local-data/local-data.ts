@@ -7,6 +7,8 @@ export class LocalDataProvider {
 
   constructor(public http: HttpClient) {
     console.log('Hello LocalDataProvider Provider');
+    // TODO create the enum like environment for simplifying the methods
+    // TODO https://github.com/wesdoyle/ng-run-journal/tree/master/src/app/shared
   }
 
   /**

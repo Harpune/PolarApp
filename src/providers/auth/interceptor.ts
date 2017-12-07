@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
-import {LocalDataProvider} from "../local-data/local-data";
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
@@ -54,6 +53,5 @@ export class TokenInterceptor implements HttpInterceptor {
 
     // Send updated request.
     return next.handle(request).timeoutWith(15000, Observable.throw('Timeout'));
-
   }
 }

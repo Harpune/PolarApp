@@ -1,6 +1,9 @@
 import {Injectable} from '@angular/core';
 import {InAppBrowser} from '@ionic-native/in-app-browser';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {environment} from "../../assets/data/environment";
+
+let polar_id = environment.polar_id;
 
 @Injectable()
 export class PolarDataProvider {
@@ -37,11 +40,9 @@ export class PolarDataProvider {
       }).subscribe(success => {
         switch (success.status) {
           case 200:
-            //resolve(success.headers.get('Location'));
             resolve(JSON.parse(success.body));
             break;
           case 201:
-            //resolve(success.headers.get('Location'));
             resolve(JSON.parse(success.body));
             break;
           case 204:
@@ -94,9 +95,6 @@ export class PolarDataProvider {
       let headers = new HttpHeaders()
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
-
-      // let data = response.text() ? response.json() : [{}];
-
       this.http.get(url, {
         headers: headers
       }).subscribe(success => {
@@ -332,7 +330,7 @@ export class PolarDataProvider {
       let authUrl = `https://flow.polar.com/oauth2/authorization?` +
         `response_type=code&` +
         `scope=accesslink.read_all&` +
-        `client_id=31496f50-2e27-4f94-8cd3-5e75249656ec`;
+        `client_id=${polar_id}`;
 
       console.log(authUrl);
       // TODO don't build auth url like this. Use params header!

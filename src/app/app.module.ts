@@ -29,7 +29,6 @@ import {PolarDataProvider} from '../providers/polar-data/polar-data';
 import {LocalDataProvider} from '../providers/local-data/local-data';
 import {TokenInterceptor} from '../providers/auth/interceptor';
 
-
 @NgModule({
   declarations: [
     MyApp,

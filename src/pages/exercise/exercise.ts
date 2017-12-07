@@ -1,21 +1,26 @@
 import {Component} from '@angular/core';
 import {NavParams} from 'ionic-angular';
+import {leaflet} from 'leaflet';
 
 @Component({
   selector: 'page-exercise',
   templateUrl: 'exercise.html',
 })
+
 export class ExercisePage {
   exercise: any;
-
   summary: any;
   samples: any;
   heartRateZone: any;
   gpx: any;
   tcx: any;
 
+  map: any;
+
 
   constructor(public navParams: NavParams) {
+
+
     this.exercise = navParams.get('exe');
 
     this.summary = this.exercise['summary'];
@@ -26,6 +31,4 @@ export class ExercisePage {
 
     console.log('Exercise', this.exercise);
   }
-
-
 }
