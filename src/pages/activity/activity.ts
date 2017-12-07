@@ -33,10 +33,10 @@ export class ActivityPage {
   }
 
   ionViewDidLoad() {
-    this.updateChart();
+    this.updateCharts();
   }
 
-  updateChart() {
+  updateCharts() {
     if (this.stepSamples) {
       let steps = [];
       let times = [];

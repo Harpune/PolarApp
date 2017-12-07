@@ -8,7 +8,6 @@ export class LocalDataProvider {
   constructor(public http: HttpClient) {
     console.log('Hello LocalDataProvider Provider');
     // TODO create the enum like environment for simplifying the methods
-    // TODO https://github.com/wesdoyle/ng-run-journal/tree/master/src/app/shared
   }
 
   /**
@@ -188,6 +187,7 @@ export class LocalDataProvider {
    */
   deleteActivity(transactionID: string): Promise<any> {
     return new Promise(((resolve, reject) => {
+      //TODO cehck before deleting if transaction bzw listid is used for other activity. Same in Exercise.
       let token = JSON.parse(localStorage.getItem('token'));
       if (token) {
         // Master-JSON.

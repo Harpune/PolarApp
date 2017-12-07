@@ -5,7 +5,7 @@
   <ng-container *ngFor="let act of summary; let i = index">
     <ion-card
       *ngIf="act['active-calories'] != 0 || act['active-steps'] != 0"
-      (click)="showActivity(i)">
+      (click)="showActivity(i)" (press)="delete(i)">
       <ion-card-header>
         <p>Am {{act['date'] | date:'dd.MM.y'}}</p>
       </ion-card-header>
@@ -19,7 +19,7 @@
         <div class="wrapper">
           <div class="inner">
             <ion-icon name="md-timer"></ion-icon>
-            <ion-badge>{{act['duration']['hours']}}:{{act['duration']['minutes']}}:{{act['duration']['seconds']}}
+            <ion-badge>{{act['duration']['hours'] | number:'2.0-0'}}:{{act['duration']['minutes'] | number:'2.0-0'}}:{{act['duration']['seconds'] | number:'2.0-0'}}
             </ion-badge>
             <p>Dauer</p>
           </div>
@@ -37,5 +37,4 @@
       </ion-card-content>
     </ion-card>
   </ng-container>
-
 </ion-content>

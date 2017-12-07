@@ -19,7 +19,9 @@
           </div>
           <div class="inner">
             <ion-icon name="md-timer"></ion-icon>
-            <ion-badge>{{training['duration']['hours']}}:{{training['duration']['minutes']}}:{{training['duration']['seconds']}}</ion-badge>
+            <ion-badge>
+              {{training['duration']['hours'] | number:'2.0-0'}}:{{training['duration']['minutes'] | number:'2.0-0'}}:{{training['duration']['seconds'] | number:'2.0-0'}}
+            </ion-badge>
             <p>Dauer</p>
           </div>
           <div class="inner">

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {App, Events} from 'ionic-angular';
+import {AlertController, App, Events} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {ActivityPage} from "../activity/activity";
@@ -12,17 +12,18 @@ import {Observable} from "rxjs/Rx";
 })
 export class DailyActivityPage {
   activity: any = [];
-  summary:any = [];
+  summary: any = [];
   user: any;
   progress: any = [];
 
   constructor(private polarData: PolarDataProvider,
               private localData: LocalDataProvider,
+              private alertCtrl: AlertController,
               private events: Events,
               private app: App) {
     events.subscribe('activity:data', isData => {
       console.log('DailyActivityPage', 'Event triggered', isData);
-      if(isData){
+      if (isData) {
         this.getLocalActivities()
       }
     })
@@ -35,7 +36,7 @@ export class DailyActivityPage {
     this.getLocalActivities();
   }
 
-  getLocalActivities(){
+  getLocalActivities() {
     Observable.forkJoin(
       this.localData.getUser(),
       this.localData.getActivity()
@@ -64,5 +65,34 @@ export class DailyActivityPage {
     let act = this.activity[index];
     console.log('Show Activity', act);
     this.app.getRootNav().push(ActivityPage, {act: act});
+  }
+
+  delete(index: number) {
+    let act = this.activity[index];
+    console.log('Delete Activity', act);
+    this.alertCtrl.create({
+      title: 'Löschen?',
+      message: 'Wollen Sie diese Aktivität wirklich löschen? Das kann nicht rückgängig gemacht werden!',
+      buttons: [
+        {
+          text: 'Nein',
+          role: 'cancel',
+          handler: () => {
+            console.log('Delete Activity', 'Cancel clicked');
+          }
+        }, {
+          text: 'Ja',
+          handler: () => {
+            console.log('Delete Activity', 'Ok clicked');
+            this.localData.deleteActivity(act['summary']['transaction-id']).then(success => {
+              this.activity.splice(index, 1);
+              console.log('Delete Activity', 'Success', success);
+            }, error => {
+              console.log('Delete Activity', 'Error', error);
+            });
+          }
+        }
+      ]
+    }).present();
   }
 }

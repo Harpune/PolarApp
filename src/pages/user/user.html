@@ -6,63 +6,47 @@
 
 
 <ion-content>
-  <ion-card>
-    <ion-card-header>
-      Geschlecht
-    </ion-card-header>
-    <ion-card-content *ngIf="user['gender']=='MALE';else female">
-      Männlich
-    </ion-card-content>
+
+  <ion-list>
+    <ion-item *ngIf="user['gender']=='MALE';else female">
+      <p>Geschlecht</p>
+      <p class="title">Männlich</p>
+    </ion-item>
+
     <ng-template #female>
-      <ion-card-content>
-        Weiblich
-      </ion-card-content>
+      <p>Geschlecht</p>
+      <p class="title">Weiblich</p>
     </ng-template>
-  </ion-card>
 
-  <ion-card>
-    <ion-card-header>
-      Vorname
-    </ion-card-header>
-    <ion-card-content>
-      {{user['first-name']}}
-    </ion-card-content>
-  </ion-card>
+    <ion-item>
+      <p>Vorname</p>
+      <p class="title">{{user['first-name']}}</p>
+    </ion-item>
 
-  <ion-card>
-    <ion-card-header>
-      Nachname
-    </ion-card-header>
-    <ion-card-content>
-      {{user['last-name']}}
-    </ion-card-content>
-  </ion-card>
+    <ion-item>
+      <p>Nachname</p>
+      <p class="title">{{user['last-name']}}</p>
+    </ion-item>
 
-  <ion-card>
-    <ion-card-header>
-      Geburstag
-    </ion-card-header>
-    <ion-card-content>
-      {{user['birthdate'] | date:'dd.MM.y'}}
-    </ion-card-content>
-  </ion-card>
+    <ion-item>
+      <p>Geburtstag am </p>
+      <p class="title">{{user['birthdate'] | date:'dd LLLL yyyy'}}</p>
+    </ion-item>
 
-  <ion-card>
-    <ion-card-header>
-      Gewicht
-    </ion-card-header>
-    <ion-card-content>
-      {{user['weight']}} kg
-    </ion-card-content>
-  </ion-card>
+    <ion-item>
+      <p>Gewicht</p>
+      <p class="title">{{user['weight']}} kg</p>
+    </ion-item>
 
-  <ion-card>
-    <ion-card-header>
-      Größe
-    </ion-card-header>
-    <ion-card-content>
-      {{user['height']}} cm
-    </ion-card-content>
-  </ion-card>
+    <ion-item>
+      <p>Größe</p>
+      <p class="title">{{user['height']}} cm</p>
+    </ion-item>
 
+    <ion-item>
+      <p>Registriert seit</p>
+      <p class="title">{{user['registration-date'] | date:'EEEE, dd LLLL yyyy'}} um {{user['registration-date'] | date:'HH:mm'}}</p>
+    </ion-item>
+
+  </ion-list>
 </ion-content>
