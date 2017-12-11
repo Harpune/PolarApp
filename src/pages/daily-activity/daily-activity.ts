@@ -20,20 +20,20 @@ export class DailyActivityPage {
               private localData: LocalDataProvider,
               private alertCtrl: AlertController,
               private events: Events,
-              private app: App) {
-    events.subscribe('activity:data', isData => {
-      console.log('DailyActivityPage', 'Event triggered', isData);
-      if (isData) {
-        this.getLocalActivities()
-      }
-    })
-  }
+              private app: App) {}
 
   /**
    * Ionic View did load.
    */
   ionViewDidLoad() {
     this.getLocalActivities();
+
+    this.events.subscribe('activity:data', isData => {
+      console.log('DailyActivityPage', 'Event triggered', isData);
+      if (isData) {
+        this.getLocalActivities()
+      }
+    })
   }
 
   getLocalActivities() {
@@ -72,7 +72,7 @@ export class DailyActivityPage {
     console.log('Delete Activity', act);
     this.alertCtrl.create({
       title: 'Löschen?',
-      message: 'Wollen Sie diese Aktivität wirklich löschen? Das kann nicht rückgängig gemacht werden!',
+      message: `Wollen Sie diese Aktivität wirklich löschen? Das kann nicht rückgängig gemacht werden!`,
       buttons: [
         {
           text: 'Nein',
@@ -84,7 +84,7 @@ export class DailyActivityPage {
           text: 'Ja',
           handler: () => {
             console.log('Delete Activity', 'Ok clicked');
-            this.localData.deleteActivity(act['summary']['transaction-id']).then(success => {
+            this.localData.deleteActivity(act['summary']['id']).then(success => {
               this.activity.splice(index, 1);
               console.log('Delete Activity', 'Success', success);
             }, error => {

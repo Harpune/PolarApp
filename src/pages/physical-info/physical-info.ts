@@ -23,21 +23,20 @@ export class PhysicalInfoPage {
 
   constructor(private datePipe: DatePipe,
               private events: Events,
-              private localData: LocalDataProvider) {
-    events.subscribe('physical:data', isData => {
-      console.log('PhysicalInfoPage', 'Event triggered', isData);
-      if(isData){
-        this.getPhysical()
-      }
-    })
-
-  }
+              private localData: LocalDataProvider) {}
 
   /**
    * Ionic View did load.
    */
   ionViewDidLoad() {
    this.getPhysical();
+
+   this.events.subscribe('physical:data', isData => {
+     console.log('PhysicalInfoPage', 'Event triggered', isData);
+     if(isData){
+       this.getPhysical()
+     }
+   })
   }
 
   getPhysical(){

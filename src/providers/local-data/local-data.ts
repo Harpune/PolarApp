@@ -180,79 +180,65 @@ export class LocalDataProvider {
     }))
   }
 
-  /**
-   * Delete specific Activity.
-   * @param {string} transactionID
-   * @returns {Promise<string>}
-   */
-  deleteActivity(transactionID: string): Promise<any> {
+
+  deleteActivity(activityID: string): Promise<any> {
     return new Promise(((resolve, reject) => {
-      //TODO cehck before deleting if transaction bzw listid is used for other activity. Same in Exercise.
+      console.log('////////////////////////////////////////////////////////////////////////////////////');
       let token = JSON.parse(localStorage.getItem('token'));
       if (token) {
         // Master-JSON.
         let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
+        console.log('Delete Activity', 'json', json);
 
-        // Activity-transactions.
-        let activityTransactions = json['activity-transaction'];
-        console.log('Delete Activity', 'All Transaction', activityTransactions);
+        // Get the activity.
+        let activity = JSON.parse(localStorage.getItem(activityID));
+        console.log('Delete Activity', 'activity', activity);
 
-        // Check if transactionId exists.
-        let index = activityTransactions.indexOf(transactionID, 0);
-        if (index > -1) {
-          // Find the transactionId in the Master-JSON.
-          let temp = JSON.parse(localStorage.getItem(transactionID));
-          for (let activity of temp) {
+        if (activity) {
+          // Get the transaction ID.
+          let transactionID = activity['summary']['transaction-id'];
+          console.log('Delete Activity', 'transactionID', transactionID);
 
-            // Delete the activity (summary, steps, zones).
-            localStorage.removeItem(activity);
+          // Delete activityID from its transactionID array.
+          let activities = JSON.parse(localStorage.getItem(transactionID));
+          console.log('Delete Activity', 'activities', activities);
+          let activityIndex = activities.indexOf(activityID, 0);
+          if (activityIndex > -1) {
+            activities.splice(activityIndex, 1);
+            if (activities.length != 0) {
+              console.log('Delete Activity', 'activities.length', '!= 0');
+              // More activities are saved under this transactionID.
+              localStorage.setItem(transactionID, activities);
 
-            // Delete the activity ID.
-            localStorage.removeItem(transactionID);
+              resolve();
+            } else {
+              console.log('Delete Activity', 'activities.length', '== 0');
+              // No more activities are saved under this transactionID.
+              localStorage.removeItem(transactionID);
+
+              // Delete transactionID from Master-JSON, if all its activities are deleted.
+              let transactions = json['activity-transaction'];
+              console.log('Delete Activity', 'transactions 1', transactions);
+              let transactionIndex = transactions.indexOf(transactionID, 0);
+              if (transactionIndex > -1) {
+                transactions.splice(transactionIndex, 1);
+                json['activity-transaction'] = transactions;
+                console.log('Delete Activity', 'transactions 2', transactions);
+                localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
+
+                resolve();
+              } else {
+                reject('Unsolvable transactionID');
+              }
+            }
+          } else {
+            reject('Unsolvable activityID');
           }
-
-          // Delete the transaction.
-          activityTransactions.splice(index, 1);
-          json['activity-transaction'] = activityTransactions;
-          localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
-
-          resolve();
         } else {
-          reject('Unsolvable transactionID');
+          reject('No such activity');
         }
       } else {
         reject('No token');
-      }
-    }))
-  }
-
-  /**
-   * Delete all activities.
-   * @returns {Promise<JSON>}
-   */
-  deleteAllActivities(): Promise<any> {
-    return new Promise(((resolve, reject) => {
-      let token = JSON.parse(localStorage.getItem('token'));
-      if (token) {
-        // Master-JSON.
-        let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
-
-        // Activity-transactions.
-        let activityTransactions = json['activity-transaction'];
-        console.log('Delete all activity', 'All transaction', activityTransactions);
-
-        let sLength = Object.keys(activityTransactions).length;
-
-        // Go through all transactions and delete all.
-        activityTransactions.forEach((item, index) => {
-          this.deleteActivity(item).then(success => {
-            if (index >= sLength - 1) {
-              resolve(success);
-            }
-          }, error => {
-            reject(error);
-          })
-        })
       }
     }))
   }
@@ -331,7 +317,7 @@ export class LocalDataProvider {
     }))
   }
 
-  deleteExercise(transactionID:string):Promise<any> {
+  deleteExercise(transactionID: string): Promise<any> {
     return new Promise(((resolve, reject) => {
       let token = JSON.parse(localStorage.getItem('token'));
       if (token) {

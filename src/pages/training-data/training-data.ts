@@ -22,20 +22,20 @@ export class TrainingDataPage {
   constructor(private polarData: PolarDataProvider,
               private localData: LocalDataProvider,
               private events: Events,
-              private app: App) {
-    events.subscribe('exercise:data', isData => {
-      console.log('DailyActivityPage', 'Event triggered', isData);
-      if (isData) {
-        this.getLocalExercises()
-      }
-    })
-  }
+              private app: App) {}
 
   /**
    * Ionic View did load.
    */
   ionViewDidLoad() {
     this.getLocalExercises();
+
+    this.events.subscribe('exercise:data', isData => {
+      console.log('DailyActivityPage', 'Event triggered', isData);
+      if (isData) {
+        this.getLocalExercises()
+      }
+    })
   }
 
   getLocalExercises() {

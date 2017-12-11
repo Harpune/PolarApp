@@ -3,7 +3,7 @@
 
 <ion-content>
   <div class="wrapper">
-    <div class="item" style="background-color: #cf102f">
+    <div class="half" style="background-color: #cf102f">
       <div class="imageContainer" *ngIf="user['gender']=='MALE'; else female">
         <img id="silhouette" src="assets/img/Silhouette_man.svg"/>
       </div>
@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <div class="item" style="background-color: #009de1">
+    <div class="half" style="background-color: #009de1">
       <div class="imageContainer">
         <img id="scale" src="assets/img/medical.svg" height="40px"/>
       </div>
@@ -27,20 +27,12 @@
     </div>
   </div>
 
-  <div padding>
-    <div>
-      <p style="padding-top: 140px">Puls und Ruhepuls</p>
-      <canvas #heartRateCanvas></canvas>
-    </div>
+  <ion-item-divider>Puls und Ruhepuls</ion-item-divider>
+  <canvas #heartRateCanvas></canvas>
 
-    <div>
-      <p>Sauerstoff Aufnahme</p>
-      <canvas #aerobCanvas></canvas>
-    </div>
+  <ion-item-divider>Sauerstoff Aufnahme</ion-item-divider>
+  <canvas #aerobCanvas></canvas>
 
-    <div>
-      <p>Statur</p>
-      <canvas #statureCanvas></canvas>
-    </div>
-  </div>
+  <ion-item-divider>Statur</ion-item-divider>
+  <canvas #statureCanvas></canvas>
 </ion-content>

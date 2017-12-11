@@ -10,7 +10,9 @@ import {Chart} from 'chart.js';
 
 export class ExercisePage {
   @ViewChild('sampleCanvas') sampleCanvas;
+  @ViewChild('heartRateCanvas') heartRateCanvas;
   sampleChart: any;
+  heartRateChart: any;
 
   exercise: any;
   summary: any;
@@ -24,7 +26,7 @@ export class ExercisePage {
 
     this.summary = this.exercise['summary'];
     this.samples = this.exercise['samples'];
-    this.heartRateZone = this.exercise['heart-rate-zone'];
+    this.heartRateZone = this.exercise['heart-rate-zone']['zone'];
     this.gpx = this.exercise['gpx'];
     this.tcx = this.exercise['tcx'];
 
@@ -123,8 +125,6 @@ export class ExercisePage {
 
             break;
           default:
-
-
         }
       }
 
@@ -132,9 +132,39 @@ export class ExercisePage {
         type: 'line',
         data: {
           datasets: datasets,
+        }
+      });
+
+      // Update Heart-Rate-Zones.
+      let zoneDuration = this.heartRateZone.map(a => toSeconds(parse(a['in-zone'])));
+      console.log('UpdateCharts', 'zoneDuration', zoneDuration);
+      this.heartRateChart = new Chart(this.heartRateCanvas.nativeElement, {
+        type: 'bar',
+        data: {
+          labels: ['88 bis 105', '105 bis 123', '123 bis 140', '140 bis 158', '158 bis 175'],
+          datasets: [{
+            label: 'Herzfrequenzzone',
+            data: zoneDuration,
+            backgroundColor: [
+              '#f2637a',
+              '#e22954',
+              '#cf102f',
+              '#a6041e',
+              '#810014'
+            ]
+          }],
         },
         options: {
-          maintainAspectRatio: false
+          legend: {
+            display: false
+          },
+          tooltips: {
+            callbacks: {
+              label: function (tooltipItem) {
+                return tooltipItem.yLabel;
+              }
+            }
+          }
         }
       });
     }

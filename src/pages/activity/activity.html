@@ -7,9 +7,17 @@
 </ion-header>
 
 
-<ion-content padding>
-  <p>Deine Schritte, die du am {{summary['created'] | date:'dd.MM.y'}} gemacht hast. Weiter so!</p>
-  <canvas #stepsCanvas></canvas>
-  <p>In diesem Diagram werden deine Aktivitätszeiten dargestellt. Je dunkler, desto besser!</p>
-  <canvas #zonesCanvas></canvas>
+<ion-content>
+  <ion-item-divider>Schritte</ion-item-divider>
+  <div padding>
+    Deine Schritte, die du am {{summary['created'] | date:'dd.MM.y'}} gemacht hast. Weiter so!
+    <canvas #stepsCanvas></canvas>
+  </div>
+
+  <ion-item-divider>Aktivitätszeiten</ion-item-divider>
+  <div padding>
+    In diesem Diagram werden deine Aktivitätszeiten dargestellt. Je dunkler, desto besser!
+    <canvas #zonesCanvas></canvas>
+  </div>
+
 </ion-content>

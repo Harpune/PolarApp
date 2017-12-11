@@ -7,6 +7,71 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
+  <!-- Overview -->
+  <ion-item-divider>
+    Überblick
+  </ion-item-divider>
+  <ion-item>
+    <ion-icon name="flame" item-start></ion-icon>
+    Verbrannte Kalorien
+    <ion-badge item-end>{{summary['calories']}}</ion-badge>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="paper-plane" item-start></ion-icon>
+    Distanz
+    <ion-badge item-end>{{summary['distance']}}m</ion-badge>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="time" item-start></ion-icon>
+    Start um
+    <ion-badge item-end>{{summary['start-time'] | date:'hh:mm:ss'}}</ion-badge>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="timer" item-start></ion-icon>
+    Dauer
+    <ion-badge item-end>{{summary['duration']['hours'] | number:'2.0-0'}}:{{summary['duration']['minutes'] | number:'2.0-0'}}:{{summary['duration']['seconds'] | number:'2.0-0'}}</ion-badge>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="game-controller-b" item-start></ion-icon>
+    Gerät
+    <ion-badge item-end>{{summary['device']}}</ion-badge>
+  </ion-item>
+
+  <!-- GPX -->
+  <ion-item-divider>
+    GPS-Daten
+  </ion-item-divider>
+
+  <p *ngIf="gpx;else noGPX">
+    GPX!
+  </p>
+
+  <ng-template padding #noGPX>
+    <p style="margin-left: 14px; margin-right: 14px">
+      Um ihre Laufstrecke einsehen zu können, aktivieren Sie Ihr GPS und achten Sie darauf, dass Sie genügend Empfang
+      haben.
+    </p>
+  </ng-template>
+
+  <ion-item-divider>
+    Herzfrequenzzone
+  </ion-item-divider>
+
+
+  <!-- Heart rate zone -->
+  <canvas #heartRateCanvas></canvas>
+
+  <ion-item-divider>
+    Trainingsüberblick
+  </ion-item-divider>
+
+  <!-- Samples -->
   <canvas #sampleCanvas></canvas>
+
+
 </ion-content>
