@@ -10,6 +10,8 @@ import {Events} from "ionic-angular";
   templateUrl: 'physical-info.html',
 })
 export class PhysicalInfoPage {
+  isPhysical:boolean = false;
+
   user: any = {};
   physical: any = [];
   weight: string;
@@ -51,14 +53,17 @@ export class PhysicalInfoPage {
 
       if (this.physical.length > 0) {
         this.weight = this.physical[this.physical.length - 1]['weight'];
+        this.isPhysical = false;
         this.updateCharts();
       } else {
         console.log('No physical info');
+        this.isPhysical = false;
       }
     });
   }
 
   updateCharts() {
+    // TODO check if there is any data, if not: dont show canvas OR show note that there is no data.
     if (this.physical) {
       let createdData = [];
       let heightData = [];

@@ -3,7 +3,7 @@
 
 <ion-content>
   <ng-container *ngFor="let training of summary; let i = index">
-    <ion-card (click)="showExercise(i)">
+    <ion-card (click)="showExercise(i)" (press)="removeExercise(i)">
       <ion-card-header>
         <p>{{training['detailed-sport-info']}}</p>
         <p>{{training['device']}}</p>

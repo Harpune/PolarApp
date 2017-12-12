@@ -225,7 +225,12 @@ export class TabsPage {
 
                     // Commit the transaction.
                     this.polarData.commit(create['resource-uri']).then(success => {
-
+                      /*
+                      TODO firgure out when to publish
+                      - after commit
+                      - before commit after done with requests
+                      - after every save
+                       */
                       // Notify the Tab.
                       this.events.publish('activity:data', true);
 

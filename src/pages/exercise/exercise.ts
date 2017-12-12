@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {NavParams} from 'ionic-angular';
-import {parse, end, toSeconds, pattern} from 'iso8601-duration';
+import {parse, toSeconds} from 'iso8601-duration';
 import {Chart} from 'chart.js';
 
 @Component({
@@ -134,7 +134,7 @@ export class ExercisePage {
           datasets: datasets,
         }
       });
-
+      // TODO read lower- and upper-limit from data.
       // Update Heart-Rate-Zones.
       let zoneDuration = this.heartRateZone.map(a => toSeconds(parse(a['in-zone'])));
       console.log('UpdateCharts', 'zoneDuration', zoneDuration);

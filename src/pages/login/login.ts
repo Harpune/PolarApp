@@ -76,12 +76,19 @@ export class LoginPage {
             this.polarData.registerUser(tokenData).then(success => {
               let exist = JSON.parse(localStorage.getItem(String(tokenData['x_user_id'])));
               console.log('Login', 'Existing User?', exist);
-              if(!exist){
+
+              if(exist){
+                // Edit the user.
+                exist['user'] = success;
+                console.log('Register User Success: ', this.json);
+                localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(this.json));
+              } else {
                 // Save user data.
                 this.json['user'] = success;
                 console.log('Register User Success: ', this.json);
                 localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(this.json));
               }
+
               this.dismissLoading();
 
               // Set new root and go to TabsPage.
@@ -135,12 +142,19 @@ export class LoginPage {
    * @param tokenData
    */
   private handle409(tokenData: any) {
+    //TODO outsource user registration and remove handle409.
     console.log('Handle 409', 'Token', tokenData);
     this.polarData.deleteCurrentUser().then(() => {
       this.polarData.registerUser(tokenData).then(success => {
         let exist = JSON.parse(localStorage.getItem(String(tokenData['x_user_id'])));
         console.log('Login', 'Existing User?', exist);
-        if(!exist){
+
+        if(exist){
+          // Edit the user.
+          exist['user'] = success;
+          console.log('Register User Success: ', exist);
+          localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(exist));
+        } else {
           // Save user data.
           this.json['user'] = success;
           console.log('Register User Success: ', this.json);
