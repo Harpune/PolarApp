@@ -1,7 +1,11 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {NavParams} from 'ionic-angular';
 import {parse, toSeconds} from 'iso8601-duration';
 import {Chart} from 'chart.js';
+import leaflet from 'leaflet';
+import {environment} from '../../assets/data/environment';
+
+let apiToken = environment.mapbox_id;
 
 @Component({
   selector: 'page-exercise',
@@ -9,6 +13,9 @@ import {Chart} from 'chart.js';
 })
 
 export class ExercisePage {
+  @ViewChild('map') mapContainer: ElementRef;
+  map: any;
+
   @ViewChild('sampleCanvas') sampleCanvas;
   @ViewChild('heartRateCanvas') heartRateCanvas;
   sampleChart: any;
@@ -35,6 +42,22 @@ export class ExercisePage {
 
   ionViewDidLoad() {
     this.updateCharts();
+    this.loadMap();
+  }
+
+  loadMap() {
+    this.map = leaflet.map('map', {
+      zoom: 13,
+      center: [48.3875039, 9.8023619]
+    });
+
+    leaflet.tileLayer('https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+      maxZoom: 18,
+      id: 'mapbox.run-bike-hike',
+      accessToken: apiToken
+    }).addTo(this.map);
+
   }
 
   private updateCharts() {

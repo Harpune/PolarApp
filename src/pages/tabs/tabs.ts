@@ -11,7 +11,7 @@ import {PhysicalInfoPage} from "../physical-info/physical-info";
 
 import {UserPage} from "../user/user";
 import {LoginPage} from "../login/login";
-import {Observable} from "rxjs/Observable";
+import {Observable} from 'rxjs/Rx';
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
 import {SettingsPage} from "../settings/settings";
@@ -323,7 +323,7 @@ export class TabsPage {
         });
 
         this.localData.getActivity().then(success => {
-          console.log('Das auch noch', 'Activity', 'Success', success);
+          console.log('Das auch noch', 'Activity', 'Success', JSON.stringify(success));
         }, error => {
           console.log('Das nicht', 'Activity', 'Error', error);
         });

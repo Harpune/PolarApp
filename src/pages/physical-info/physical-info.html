@@ -27,19 +27,13 @@
     </div>
   </div>
 
-  <div *ngIf="isPhysical; else noPhysical">
-    <ion-item-divider>Puls und Ruhepuls</ion-item-divider>
-    <canvas #heartRateCanvas></canvas>
+  <ion-item-divider>Puls und Ruhepuls</ion-item-divider>
+  <canvas #heartRateCanvas></canvas>
 
-    <ion-item-divider>Sauerstoff Aufnahme</ion-item-divider>
-    <canvas #aerobCanvas></canvas>
+  <ion-item-divider>Sauerstoff Aufnahme</ion-item-divider>
+  <canvas #aerobCanvas></canvas>
 
-    <ion-item-divider>Statur</ion-item-divider>
-    <canvas #statureCanvas></canvas>
-  </div>
+  <ion-item-divider>Statur</ion-item-divider>
+  <canvas #statureCanvas></canvas>
 
-  <ng-template #noPhysical>
-    <ion-item-divider>Hier könnten Ihre physische Daten stehen</ion-item-divider>
-    <div padding>Sie haben noch keine Daten synchronisiert.</div>
-  </ng-template>
 </ion-content>
