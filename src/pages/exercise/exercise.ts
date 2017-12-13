@@ -3,6 +3,7 @@ import {NavParams} from 'ionic-angular';
 import {parse, toSeconds} from 'iso8601-duration';
 import {Chart} from 'chart.js';
 import leaflet from 'leaflet';
+import toGeoJson from '@mapbox/togeojson'
 import {environment} from '../../assets/data/environment';
 
 let apiToken = environment.mapbox_id;
@@ -46,17 +47,19 @@ export class ExercisePage {
   }
 
   loadMap() {
-    this.map = leaflet.map('map', {
-      zoom: 13,
-      center: [48.3875039, 9.8023619]
-    });
+    this.map = leaflet.map('map').fitWorld();
 
+    // Setup the map.
     leaflet.tileLayer('https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
       maxZoom: 18,
       id: 'mapbox.run-bike-hike',
       accessToken: apiToken
     }).addTo(this.map);
+
+    // Add geoJson data and find its bounds.
+    let jsonLayer = leaflet.geoJSON(this.gpx).addTo(this.map);
+    this.map.fitBounds(jsonLayer.getBounds())
 
   }
 

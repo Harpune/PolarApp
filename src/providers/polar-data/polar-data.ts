@@ -20,9 +20,6 @@ export class PolarDataProvider {
 
     // Get local stored token if possible;
     this.token = JSON.parse(localStorage.getItem('token'));
-
-    // Get the id and secret.
-    // TODO outsource id and secret.
   }
 
   /**
@@ -333,7 +330,6 @@ export class PolarDataProvider {
         `client_id=${polar_id}`;
 
       console.log(authUrl);
-      // TODO don't build auth url like this. Use params header!
 
       // Open InAppBrowser to Login user.
       const browser = this.iab.create(authUrl, '_self', 'location=no');

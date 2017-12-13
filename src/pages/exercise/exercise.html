@@ -47,23 +47,11 @@
     Laufstrecke
   </ion-item-divider>
 
-  <p *ngIf="gpx;else noGPX">
-    GPX!
-  </p>
-
-  <div padding id="map" style="width:100%; height:50%;"></div>
-
-  <ng-template padding #noGPX>
-    <div padding>
-      Um ihre Laufstrecke einsehen zu können, aktivieren Sie Ihr GPS und achten Sie darauf, dass Sie genügend Empfang
-      haben.
-    </div>
-  </ng-template>
+  <div id="map" style="width:100%; height:75%;"></div>
 
   <ion-item-divider>
     Herzfrequenzzone
   </ion-item-divider>
-
 
   <!-- Heart rate zone -->
   <canvas #heartRateCanvas></canvas>

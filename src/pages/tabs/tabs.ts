@@ -118,7 +118,7 @@ export class TabsPage {
           // List the transaction.
           this.polarData.list(create['resource-uri']).then(list => {
             console.log('Get new data', 'List', list);
-
+            // TODO change duration format in save method.
 
             //////////////////////////////////////////////////////////////////////
             // Get the exercise of the available data                           //
@@ -268,7 +268,7 @@ export class TabsPage {
                   let last = splitUrl.length - 1;
 
                   // Change duration format.
-                  console.log('Get new data', 'Physical', 'Data', get);
+                  console.log('Get new data', 'Physical', 'Data', JSON.stringify(get));
                   console.log('Get new data', 'Physical', 'Info', splitUrl[last]);
 
                   // Save the data.

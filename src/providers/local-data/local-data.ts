@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import toGeoJson from '@mapbox/togeojson'
 import 'rxjs/add/operator/map';
 
 @Injectable()
@@ -251,6 +252,16 @@ export class LocalDataProvider {
   }
 
   static saveExercise(transactionID: string, listID: string, data: any) {
+    // Setup Data
+    // Parse gpx to geoJSON.
+    if(data[2]){
+      let gpx = new DOMParser().parseFromString(data[2]['gpx'], 'text/xml');
+      console.log('!!!!!!!!!!!!!', gpx);
+      let geoJSON = toGeoJson.gpx(gpx);
+      console.log('?????????????', geoJSON);
+      data[2] = geoJSON;
+    }
+
     let token = JSON.parse(localStorage.getItem('token'));
     if (token) {
       // Master-JSON.
