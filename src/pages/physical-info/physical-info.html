@@ -5,11 +5,11 @@
   <div class="wrapper">
     <div class="half" style="background-color: #cf102f">
       <div class="imageContainer" *ngIf="user['gender']=='MALE'; else female">
-        <img id="silhouette" src="assets/img/Silhouette_man.svg"/>
+        <img class="silhouette" src="assets/img/Silhouette_man.svg"/>
       </div>
 
       <ng-template #female>
-        <img src="assets/img/Silhouette_woman.svg"/>
+        <img class="silhouette" src="assets/img/Silhouette_woman.svg"/>
       </ng-template>
 
       <div class="caption">
@@ -27,12 +27,19 @@
     </div>
   </div>
 
-  <ion-item-divider>Puls und Ruhepuls</ion-item-divider>
-  <canvas #heartRateCanvas></canvas>
+  <div *ngIf="isPhysical; else noPhysical">
+    <ion-item-divider>Puls und Ruhepuls</ion-item-divider>
+    <canvas #heartRateCanvas></canvas>
 
-  <ion-item-divider>Sauerstoff Aufnahme</ion-item-divider>
-  <canvas #aerobCanvas></canvas>
+    <ion-item-divider>Sauerstoff Aufnahme</ion-item-divider>
+    <canvas #aerobCanvas></canvas>
 
-  <ion-item-divider>Statur</ion-item-divider>
-  <canvas #statureCanvas></canvas>
+    <ion-item-divider>Statur</ion-item-divider>
+    <canvas #statureCanvas></canvas>
+  </div>
+
+  <ng-template #noPhysical>
+    <ion-item-divider>Hier könnten Ihre physische Daten stehen</ion-item-divider>
+    <div padding>Sie haben noch keine Daten synchronisiert.</div>
+  </ng-template>
 </ion-content>

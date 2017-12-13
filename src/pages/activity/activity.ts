@@ -1,8 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {NavParams} from 'ionic-angular';
 import {Chart} from 'chart.js';
-import {parse, end, toSeconds, pattern} from 'iso8601-duration';
-import {DatePipe} from "@angular/common";
+import {parse, toSeconds} from 'iso8601-duration';
 
 @Component({
   selector: 'page-activity',
@@ -11,7 +10,7 @@ import {DatePipe} from "@angular/common";
 export class ActivityPage {
   activity: any;
 
-  summary:any;
+  summary: any;
   stepSamples: any;
   zoneSamples: any;
 
@@ -74,12 +73,12 @@ export class ActivityPage {
     if (this.zoneSamples) {
       let zones = [0, 0, 0, 0, 0, 0];
       for (let entry of this.zoneSamples['samples']) {
-        zones[0] = zones[0] + toSeconds(parse(entry['activity-zones'][0]['inzone']));
-        zones[1] = zones[1] + toSeconds(parse(entry['activity-zones'][1]['inzone']));
-        zones[2] = zones[2] + toSeconds(parse(entry['activity-zones'][2]['inzone']));
-        zones[3] = zones[3] + toSeconds(parse(entry['activity-zones'][3]['inzone']));
-        zones[4] = zones[4] + toSeconds(parse(entry['activity-zones'][4]['inzone']));
-        zones[5] = zones[5] + toSeconds(parse(entry['activity-zones'][5]['inzone']));
+
+        // TODO do this in loop so more or less zones are supported.
+        for (let i = 0; i < entry['activity-zones'].length; i++) {
+          zones[i] = zones[i] + toSeconds(parse(entry['activity-zones'][i]['inzone']));
+        }
+
       }
 
       this.zonesChart = new Chart(this.zonesCanvas.nativeElement, {

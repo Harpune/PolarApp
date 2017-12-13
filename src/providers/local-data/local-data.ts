@@ -123,8 +123,15 @@ export class LocalDataProvider {
 
       // Saving the exercise under the transaction id.
       let log = JSON.parse(localStorage.getItem(transaction));
-      if (log) { // Exists already.
-        log.push(listID);
+      console.log('Save Activity', 'log', log);
+      // Transaction already exists.
+      if (log) {
+        let index = log.indexOf(listID);
+        if (!(index > -1)) {// ListID already exists.
+          log.push(listID);
+        } else {
+          console.log('Save Activity', 'ListID', 'ListID already exists');
+        }
       } else { // Does not exist.
         log = [];
         log.push(listID);
@@ -196,13 +203,13 @@ export class LocalDataProvider {
 
         if (activity) {
           // Get the transaction ID.
-          let transactionID = activity['summary']['transaction-id'];
+          let transactionID = String(activity['summary']['transaction-id']);
           console.log('Delete Activity', 'transactionID', transactionID);
 
           // Delete activityID from its transactionID array.
           let activities = JSON.parse(localStorage.getItem(transactionID));
-          console.log('Delete Activity', 'activities', activities);
-          let activityIndex = activities.indexOf(activityID, 0);
+          console.log('Delete Activity', 'activities', JSON.stringify(activities), String(activityID));
+          let activityIndex = activities.indexOf(String(activityID));
           if (activityIndex > -1) {
             activities.splice(activityIndex, 1);
             if (activities.length != 0) {
@@ -219,7 +226,7 @@ export class LocalDataProvider {
               // Delete transactionID from Master-JSON, if all its activities are deleted.
               let transactions = json['activity-transaction'];
               console.log('Delete Activity', 'transactions 1', transactions);
-              let transactionIndex = transactions.indexOf(transactionID, 0);
+              let transactionIndex = transactions.indexOf(transactionID);
               if (transactionIndex > -1) {
                 transactions.splice(transactionIndex, 1);
                 json['activity-transaction'] = transactions;
@@ -228,11 +235,11 @@ export class LocalDataProvider {
 
                 resolve();
               } else {
-                reject('Unsolvable transactionID');
+                reject('Unresolvable transactionID');
               }
             }
           } else {
-            reject('Unsolvable activityID');
+            reject('Unresolvable activityID');
           }
         } else {
           reject('No such activity');
@@ -243,29 +250,35 @@ export class LocalDataProvider {
     }))
   }
 
-  static saveExercise(transaction: string, listID: string, data: any) {
+  static saveExercise(transactionID: string, listID: string, data: any) {
     let token = JSON.parse(localStorage.getItem('token'));
     if (token) {
       // Master-JSON.
       let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
 
-      // Save the transaction in user profile.
-      if (!(json['exercise-transaction'].indexOf(transaction) > -1)) { // Check if transaction already exists.
-        json['exercise-transaction'].push(transaction);
+      // Save the transactionID in user profile.
+      if (!(json['exercise-transaction'].indexOf(transactionID) > -1)) { // Check if transactionID already exists.
+        json['exercise-transaction'].push(transactionID);
       }
       localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
       console.log('Save Exercise', 'Transaction', json);
 
-      // Saving the exercise under the transaction id.
-      let log = JSON.parse(localStorage.getItem(transaction));
-      if (log) { // Exists already.
-        log.push(listID);
+      // Saving the exercise under the transactionID id.
+      let log = JSON.parse(localStorage.getItem(transactionID));
+      console.log('Save Exercise', 'log', log);
+      if (log) {
+        let index = log.indexOf(listID);
+        if (!(index > -1)) {// ListID already exists.
+          log.push(listID);
+        } else {
+          console.log('Save Activity', 'ListID', 'ListID already exists');
+        }
       } else { // Does not exist.
         log = [];
         log.push(listID);
       }
-      localStorage.setItem(transaction, JSON.stringify(log));
-      console.log('Save Exercise', 'Exercise Id', JSON.parse(localStorage.getItem(transaction)));
+      localStorage.setItem(transactionID, JSON.stringify(log));
+      console.log('Save Exercise', 'Exercise Id', JSON.parse(localStorage.getItem(transactionID)));
 
       // Save the data to given exercise.
       let temp = {};
@@ -317,39 +330,59 @@ export class LocalDataProvider {
     }))
   }
 
-  deleteExercise(transactionID: string): Promise<any> {
+  deleteExercise(exerciseID: string): Promise<any> {
     return new Promise(((resolve, reject) => {
+      console.log('///////////////////////////////////////////////////////////////////');
       let token = JSON.parse(localStorage.getItem('token'));
       if (token) {
         // Master-JSON.
         let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
+        console.log('Delete Exercise', 'json', json);
 
-        // Activity-transactions.
-        let exerciseTransactions = json['exercise-transaction'];
-        console.log('Delete Exercise', 'All Transaction', exerciseTransactions);
+        let exercise = JSON.parse(localStorage.getItem(exerciseID));
+        console.log('Delete Exercise', 'exercise', exercise);
 
-        // Check if transactionId exists.
-        let index = exerciseTransactions.indexOf(transactionID, 0);
-        if (index > -1) {
-          // Find the transactionId in the Master-JSON.
-          let temp = JSON.parse(localStorage.getItem(transactionID));
-          for (let exercise of temp) {
+        if (exercise) {
+          let transactionID = String(exercise['summary']['transaction-id']);
+          console.log('Delete Exercise', 'transactionID', transactionID);
 
-            // Delete the activity (summary, steps, zones).
-            localStorage.removeItem(exercise);
+          let exercises = JSON.parse(localStorage.getItem(transactionID));
+          console.log('Delete Exercise', 'exercises', exercises);
 
-            // Delete the activity ID.
-            localStorage.removeItem(transactionID);
+          let exerciseIndex = exercises.indexOf(String(exerciseID));
+          if (exerciseIndex > -1) {
+            exercises.splice(exerciseIndex, 1);
+            if (exercises.length != 0) {
+              console.log('Delete Activity', 'activities.length', '!= 0');
+              // More activities are saved under this transactionID.
+              localStorage.setItem(transactionID, exercises);
+
+              resolve();
+            } else {
+              console.log('Delete Activity', 'activities.length', '== 0');
+              // No more activities are saved under this transactionID.
+              localStorage.removeItem(transactionID);
+
+              // Delete transactionID from Master-JSON, if all its activities are deleted.
+              let transactions = json['activity-transaction'];
+              console.log('Delete Activity', 'transactions 1', transactions);
+              let transactionIndex = transactions.indexOf(transactionID);
+              if (transactionIndex > -1) {
+                transactions.splice(transactionIndex, 1);
+                json['activity-transaction'] = transactions;
+                console.log('Delete Activity', 'transactions 2', transactions);
+                localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
+
+                resolve();
+              } else {
+                reject('Unresolvable transactionID');
+              }
+            }
+          } else {
+            reject('Unresolvable activityID');
           }
-
-          // Delete the transaction.
-          exerciseTransactions.splice(index, 1);
-          json['exercise-transaction'] = exerciseTransactions;
-          localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
-
-          resolve();
         } else {
-          reject('Unsolvable transactionID');
+          reject('No such exercise');
         }
       } else {
         reject('No token');

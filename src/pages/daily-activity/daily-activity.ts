@@ -1,9 +1,7 @@
 import {Component} from '@angular/core';
 import {AlertController, App, Events} from 'ionic-angular';
-import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {ActivityPage} from "../activity/activity";
-import {parse, end, toSeconds, pattern} from 'iso8601-duration';
 import {Observable} from "rxjs/Rx";
 
 @Component({
@@ -16,8 +14,7 @@ export class DailyActivityPage {
   user: any;
   progress: any = [];
 
-  constructor(private polarData: PolarDataProvider,
-              private localData: LocalDataProvider,
+  constructor(private localData: LocalDataProvider,
               private alertCtrl: AlertController,
               private events: Events,
               private app: App) {}
@@ -67,7 +64,7 @@ export class DailyActivityPage {
     this.app.getRootNav().push(ActivityPage, {act: act});
   }
 
-  delete(index: number) {
+  removeActivity(index: number) {
     let act = this.activity[index];
     console.log('Delete Activity', act);
     this.alertCtrl.create({
@@ -85,7 +82,7 @@ export class DailyActivityPage {
           handler: () => {
             console.log('Delete Activity', 'Ok clicked');
             this.localData.deleteActivity(act['summary']['id']).then(success => {
-              this.activity.splice(index, 1);
+              this.getLocalActivities();
               console.log('Delete Activity', 'Success', success);
             }, error => {
               console.log('Delete Activity', 'Error', error);
