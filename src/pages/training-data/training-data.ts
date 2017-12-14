@@ -5,7 +5,7 @@ import {AlertController, App, Events} from "ionic-angular";
 import {ExercisePage} from "../exercise/exercise";
 import 'rxjs/Rx'
 import 'rxjs/add/observable/forkJoin'
-
+import {datatypes} from "../../assets/data/datatypes";
 
 @Component({
   selector: 'page-training-data',
@@ -20,7 +20,8 @@ export class TrainingDataPage {
   constructor(private localData: LocalDataProvider,
               private alertCtrl: AlertController,
               private events: Events,
-              private app: App) {}
+              private app: App) {
+  }
 
   /**
    * Ionic View did load.
@@ -39,7 +40,7 @@ export class TrainingDataPage {
   getLocalExercises() {
     Observable.forkJoin(
       this.localData.getUser(),
-      this.localData.getExercise()
+      this.localData.get(datatypes['exercise'])
     ).subscribe(success => {
       this.user = success[0];
       this.exercise = success[1];
@@ -59,7 +60,7 @@ export class TrainingDataPage {
     this.app.getRootNav().push(ExercisePage, {exe: exe});
   }
 
-  removeExercise(index:number){
+  removeExercise(index: number) {
     let exe = this.exercise[index];
     console.log('Delete Exercise', exe);
 
@@ -77,7 +78,7 @@ export class TrainingDataPage {
           text: 'Ja',
           handler: () => {
             console.log('Delete Activity', 'Ok clicked');
-            this.localData.deleteExercise(exe['summary']['id']).then(success => {
+            this.localData.delete(exe['summary']['transaction-id'], exe['summary']['id'], datatypes['exercise']).then(success => {
               this.getLocalExercises();
               console.log('Delete Activity', 'Success', success);
             }, error => {

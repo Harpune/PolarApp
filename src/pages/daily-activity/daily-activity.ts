@@ -3,6 +3,7 @@ import {AlertController, App, Events} from 'ionic-angular';
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {ActivityPage} from "../activity/activity";
 import {Observable} from "rxjs/Rx";
+import {datatypes} from "../../assets/data/datatypes";
 
 @Component({
   selector: 'page-daily-activity',
@@ -17,7 +18,8 @@ export class DailyActivityPage {
   constructor(private localData: LocalDataProvider,
               private alertCtrl: AlertController,
               private events: Events,
-              private app: App) {}
+              private app: App) {
+  }
 
   /**
    * Ionic View did load.
@@ -36,7 +38,7 @@ export class DailyActivityPage {
   getLocalActivities() {
     Observable.forkJoin(
       this.localData.getUser(),
-      this.localData.getActivity()
+      this.localData.get(datatypes['activity'])
     ).subscribe(success => {
       this.user = success[0];
       this.activity = success[1];
@@ -81,7 +83,7 @@ export class DailyActivityPage {
           text: 'Ja',
           handler: () => {
             console.log('Delete Activity', 'Ok clicked');
-            this.localData.deleteActivity(act['summary']['id']).then(success => {
+            this.localData.delete(act['summary']['transaction-id'], act['summary']['id'], datatypes['activity']).then(success => {
               this.getLocalActivities();
               console.log('Delete Activity', 'Success', success);
             }, error => {

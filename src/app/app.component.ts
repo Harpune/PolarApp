@@ -8,6 +8,7 @@ import {SplashScreen} from '@ionic-native/splash-screen';
 import {LoginPage} from "../pages/login/login";
 import {TabsPage} from "../pages/tabs/tabs";
 import {LocalDataProvider} from "../providers/local-data/local-data";
+import {datatypes} from "../assets/data/datatypes";
 
 @Component({
   templateUrl: 'app.html'
@@ -50,7 +51,7 @@ export class MyApp {
         "created": "2016-04-27T20:11:33.000Z",
         "calories": 2329,
         "active-calories": 428,
-        "duration": {"hours": 2, "minutes": 45, "seconds": 0},
+        "duration": "PT2H30M",
         "active-steps": 1600
       }, {
         "interval": 0,
@@ -156,7 +157,9 @@ export class MyApp {
         ]
       }
     ];
-    LocalDataProvider.saveActivity("1234", "123", activityData);
+    LocalDataProvider.save(datatypes['activity'], activityData);
+
+
 
     let trainingData = [
       {
@@ -166,7 +169,7 @@ export class MyApp {
         "transaction-id": 5678,
         "device": "Polar M400",
         "start-time": "2008-10-13T10:40:02.000Z",
-        "duration": {"hours": 2, "minutes": 45, "seconds": 0},
+        "duration": "PT2H30M",
         "calories": 530,
         "distance": 1600,
         "heart-rate": {
@@ -8384,26 +8387,7 @@ export class MyApp {
         "data": "0,100,102,97,97,101,103,106,96,89,88,87,98,108,113,112,114,115,118,121,121,121,121,123,117,119,122"
       }
     ];
-    LocalDataProvider.saveExercise('5678', '567', trainingData);
-  }
-
-  getAllData(token: any) {
-    let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
-
-    let a_sum = JSON.parse(localStorage.getItem('activity_sum'));
-    let a_step = JSON.parse(localStorage.getItem('activity_step'));
-    let a_zone = JSON.parse(localStorage.getItem('activity_zone'));
-
-    let p_info = JSON.parse(localStorage.getItem('physicalInfo'));
-
-    let t_sum = JSON.parse(localStorage.getItem('trainingData'));
-
-    console.log('json', json);
-    console.log('activity_sum', a_sum);
-    console.log('activity_step', a_step);
-    console.log('activity_zone', a_zone);
-    console.log('physicalInfo', p_info);
-    console.log('trainingData', t_sum);
+    LocalDataProvider.save(datatypes['exercise'], trainingData);
   }
 }
 

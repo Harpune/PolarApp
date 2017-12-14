@@ -2,19 +2,20 @@ import {Component, ViewChild} from '@angular/core';
 
 import {AlertController, Loading, LoadingController, NavController, Tabs, Events} from 'ionic-angular';
 
-
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
+import {LocalDataProvider} from "../../providers/local-data/local-data";
 
 import {TrainingDataPage} from "../training-data/training-data";
 import {DailyActivityPage} from "../daily-activity/daily-activity";
 import {PhysicalInfoPage} from "../physical-info/physical-info";
-
+import {SettingsPage} from "../settings/settings";
 import {UserPage} from "../user/user";
 import {LoginPage} from "../login/login";
+
+import {datatypes} from "../../assets/data/datatypes";
+
 import {Observable} from 'rxjs/Rx';
-import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
-import {SettingsPage} from "../settings/settings";
 
 @Component({
   selector: 'page-tabs',
@@ -141,13 +142,7 @@ export class TabsPage {
                   this.polarData.getTCX(info + '/tcx'),
                   this.polarData.get(info + '/samples')
                 ]).subscribe(get => {
-                  // Get listID.
-                  let splitUrl = info.split('/');
-                  let last = splitUrl.length - 1;
 
-                  // Change duration format.
-                  let temp = get[0];
-                  get[0]['duration'] = parse(temp['duration']);
 
                   // Get sample length.
                   let sampleLength = Object.keys(get[4]['samples']).length;
@@ -165,7 +160,7 @@ export class TabsPage {
                         console.log('Get new data', 'Exercise', 'Data', get);
 
                         // Save the data.
-                        LocalDataProvider.saveExercise(create['transaction-id'], splitUrl[last], get);
+                        LocalDataProvider.save(datatypes['exercise'], get);
 
                         // When all exercises responded.
                         if (exerciseIndex >= exerciseLength - 1) {
@@ -206,19 +201,10 @@ export class TabsPage {
                   this.polarData.get(info + '/step-samples'),
                   this.polarData.get(info + '/zone-samples'),
                 ).subscribe(get => {
-                  // Get listID.
-                  let splitUrl = info.split('/');
-                  let last = splitUrl.length - 1;
-
-                  // Change duration format.
-                  let temp = get[0];
-                  get[0]['duration'] = parse(temp['duration']);
-
                   console.log('Get new data', 'Activity', 'Data', get);
-                  console.log('Get new data', 'Activity', 'Info', splitUrl[last]);
 
                   // Save the data.
-                  LocalDataProvider.saveActivity(create['transaction-id'], splitUrl[last], get);
+                  LocalDataProvider.save(datatypes['activity'], get);
 
                   if (activityIndex >= activityLength - 1) {
                     console.log('Get new data', 'Activity', 'Done');
@@ -263,16 +249,11 @@ export class TabsPage {
                 Observable.forkJoin(
                   this.polarData.get(info)
                 ).subscribe(get => {
-                  // Get listID.
-                  let splitUrl = info.split('/');
-                  let last = splitUrl.length - 1;
-
                   // Change duration format.
                   console.log('Get new data', 'Physical', 'Data', JSON.stringify(get));
-                  console.log('Get new data', 'Physical', 'Info', splitUrl[last]);
 
                   // Save the data.
-                  LocalDataProvider.savePhysical(create['transaction-id'], splitUrl[last], get);
+                  LocalDataProvider.save(datatypes['physical'], get);
 
                   if (physicalIndex >= physicalLength - 1) {
                     console.log('Get new data', 'Physical', 'Done');
@@ -316,19 +297,19 @@ export class TabsPage {
 
         console.log('Da hast du ihn', json);
 
-        this.localData.getPhysical().then(success => {
+        this.localData.get(datatypes['physical']).then(success => {
           console.log('Das auch noch', 'Physical', 'Success', success);
         }, error => {
           console.log('Das nicht', 'Physical', 'Error', error);
         });
 
-        this.localData.getActivity().then(success => {
+        this.localData.get('activity').then(success => {
           console.log('Das auch noch', 'Activity', 'Success', JSON.stringify(success));
         }, error => {
           console.log('Das nicht', 'Activity', 'Error', error);
         });
 
-        this.localData.getExercise().then(success => {
+        this.localData.get('exercise').then(success => {
           console.log('Das auch noch', 'Exercise', 'Success', success);
         }, error => {
           console.log('Das nicht', 'Exercise', 'Error', error);

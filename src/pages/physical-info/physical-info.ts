@@ -4,13 +4,14 @@ import {DatePipe} from "@angular/common";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {Observable} from 'rxjs/Rx';
 import {Events} from "ionic-angular";
+import {datatypes} from "../../assets/data/datatypes";
 
 @Component({
   selector: 'page-physical-info',
   templateUrl: 'physical-info.html',
 })
 export class PhysicalInfoPage {
-  isPhysical:boolean = false;
+  isPhysical: boolean = false;
 
   user: any = {};
   physical: any = [];
@@ -25,29 +26,31 @@ export class PhysicalInfoPage {
 
   constructor(private datePipe: DatePipe,
               private events: Events,
-              private localData: LocalDataProvider) {}
+              private localData: LocalDataProvider) {
+  }
 
   /**
    * Ionic View did load.
    */
   ionViewDidLoad() {
-   this.getPhysical();
+    this.getLocalPhysical();
 
-   this.events.subscribe('physical:data', isData => {
-     console.log('PhysicalInfoPage', 'Event triggered', isData);
-     if(isData){
-       this.getPhysical()
-     }
-   })
+    this.events.subscribe('physical:data', isData => {
+      console.log('PhysicalInfoPage', 'Event triggered', isData);
+      if (isData) {
+        this.getLocalPhysical()
+      }
+    })
   }
 
-  getPhysical(){
+  getLocalPhysical() {
     Observable.forkJoin(
       this.localData.getUser(),
-      this.localData.getPhysical()
+      this.localData.get(datatypes['physical'])
     ).subscribe(success => {
       this.user = success[0];
-      this.physical = success[1];
+      let tempPhysical = success[1];
+      this.physical = tempPhysical.map(a => a['summary']);
 
       console.log('Physical', this.user, this.physical);
 
