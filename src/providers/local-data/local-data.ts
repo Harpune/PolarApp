@@ -29,7 +29,7 @@ export class LocalDataProvider {
   }
 
   static save(type: any, data: any) {
-    console.log('Get', 'type', type);
+    console.log('Save', 'type', type);
 
     // Parse data.
     switch (type['id']) {
@@ -61,8 +61,8 @@ export class LocalDataProvider {
       let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
 
       // Setup data.
-      let transactionID = String(data[0]['transaction-id']);
-      let listID = String(data[0]['id']);
+      let transactionID = data[0]['transaction-id'];
+      let listID = data[0]['id'];
 
       // Save the transactionID.
       let jsonType = json[type['name']];
@@ -75,7 +75,13 @@ export class LocalDataProvider {
       // Saving the exercise under the transaction id.
       let log = JSON.parse(localStorage.getItem(transactionID));
       if (log) {
-        log.push(listID);
+        if (!(log.indexOf(listID) > -1)) {
+          console.log('Save', 'log', 'doesn\'t exists');
+          log.push(listID);
+        } else {
+          console.log('Save', 'log', 'exists');
+        }
+
       } else {
         log = [];
         log.push(listID);
@@ -126,8 +132,8 @@ export class LocalDataProvider {
   }
 
   delete(transactionID: number, logID: number, type: any): Promise<any> {
+    console.log('Delete', transactionID, logID, type);
     return new Promise(((resolve, reject) => {
-      console.log('////////////////////////////////////////////////////////////////////////////////////');
       let token = JSON.parse(localStorage.getItem('token'));
       if (token) {
 

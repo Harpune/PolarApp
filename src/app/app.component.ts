@@ -27,6 +27,8 @@ export class MyApp {
     this.token = JSON.parse(localStorage.getItem('token'));
     console.log('Token logged in ', this.token);
 
+    //this.resetData();
+
     if (this.token) {
       this.rootPage = TabsPage;
       this.saveDummyData();
@@ -39,6 +41,21 @@ export class MyApp {
       statusBar.styleDefault();
       splashScreen.hide();
     });
+  }
+
+  resetData() {
+    let user = JSON.parse(localStorage.getItem(String(this.token.x_user_id)))['user'];
+
+    let json = {
+      'exercise-transaction': [],
+      'activity-transaction': [],
+      'physical-information-transaction': [],
+      'user': user
+    };
+
+    localStorage.setItem(String(this.token.x_user_id), JSON.stringify(json));
+    localStorage.removeItem('1234');
+    localStorage.removeItem('5678');
   }
 
   saveDummyData() {
@@ -158,8 +175,6 @@ export class MyApp {
       }
     ];
     LocalDataProvider.save(datatypes['activity'], activityData);
-
-
 
     let trainingData = [
       {

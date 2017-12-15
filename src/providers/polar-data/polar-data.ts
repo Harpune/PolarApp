@@ -317,13 +317,6 @@ export class PolarDataProvider {
   getAuthorizationCode(): Promise<any> {
     return new Promise((resolve, reject) => {
       // Url to authorization.
-      /*
-      let authUrl = `https://flow.polar.com/oauth2/authorization?` +
-        `response_type=code&` +
-        `scope=accesslink.read_all&` +
-        `client_id=${this.id}`;
-      */
-
       let authUrl = `https://flow.polar.com/oauth2/authorization?` +
         `response_type=code&` +
         `scope=accesslink.read_all&` +

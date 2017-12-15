@@ -1,9 +1,10 @@
 import {Component} from '@angular/core';
-import {Loading, LoadingController, NavController, Platform} from 'ionic-angular';
+import {AlertController, Loading, LoadingController, NavController, Platform} from 'ionic-angular';
 import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 import {TabsPage} from "../tabs/tabs";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
+import {datatypes} from "../../assets/data/datatypes";
 
 @Component({
   selector: 'page-login',
@@ -19,6 +20,7 @@ export class LoginPage {
               public polarData: PolarDataProvider,
               public localData: LocalDataProvider,
               public loadingCtrl: LoadingController,
+              private alertCtrl: AlertController,
               public iab: InAppBrowser) {
 
     this.json = {
@@ -50,79 +52,116 @@ export class LoginPage {
     });
   }
 
-  login() {
-    // Triggered when Platform is ready.
-    this.platform.ready().then(() => {
-
-      // Start Authorization Process.
-      this.polarData.getAuthorizationCode().then(code => {
-
-        this.loading = this.loadingCtrl.create({
-          content: 'Micro momentito...',
-          dismissOnPageChange: true
-        });
-
-        // Presents the loading Icon.
-        this.loading.present().then(() => {
-
-          // Get the Access-Token.
-          this.polarData.getAccessToken(code).then(tokenData => {
-
-            // Parse data to Json and read.
-            console.log('AccessToken', tokenData);
-            localStorage.setItem('token', JSON.stringify(tokenData));
-
-            // Register the User.
-            this.polarData.registerUser(tokenData).then(success => {
-              let exist = JSON.parse(localStorage.getItem(String(tokenData['x_user_id'])));
-              console.log('Login', 'Existing User?', exist);
-
-              if(exist){
-                // Edit the user.
-                exist['user'] = success;
-                console.log('Register User Success: ', this.json);
-                localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(this.json));
-              } else {
-                // Save user data.
-                this.json['user'] = success;
-                console.log('Register User Success: ', this.json);
-                localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(this.json));
-              }
-
-              this.dismissLoading();
-
-              // Set new root and go to TabsPage.
-              this.navCtrl.setRoot(TabsPage).then(() => {
-                this.navCtrl.popToRoot().then(() => {
-                  console.log('Pop to root');
-                }, () => {
-                  console.log('Pop to root failed');
-                });
+  tryLogin() {
+    let token = JSON.parse(localStorage.getItem('token'));
+    if (token) {
+      this.alertCtrl.create({
+        title: 'Sind sie sicher?',
+        message: `${this.user['first-name']} ${this.user['last-name']} wird damit abgemeldet! Der Fortschritt geht jedoch nicht verloren.`,
+        buttons: [
+          {
+            text: 'Nein',
+            role: 'cancel',
+            handler: () => {
+              console.log('tryLogin', 'Cancel clicked');
+            }
+          }, {
+            text: 'Ja',
+            handler: () => {
+              console.log('tryLogin', 'Ok clicked');
+              this.loading = this.loadingCtrl.create({
+                content: `${this.user['first-name']} ${this.user['last-name']} wird abgemeldet!`,
+                dismissOnPageChange: true
               });
-            }, error => {
-              // Error by registration.
-              console.error('Register User error', error);
 
-              // Handle if user already exists.
-              if (error.status == 409) {
-                this.handle409(tokenData);
-              }
+              // Presents the loading Icon.
+              this.loading.present().then(() => {
+                this.polarData.deleteCurrentUser().then(success => {
+                  console.log('tryLogin', 'Success', success);
+                  this.dismissLoading();
+                  this.login();
+                }, error => {
+                  console.log('tryLogin', 'Error', error);
+                  this.dismissLoading();
+                })
+              });
+            }
+          }
+        ]
+      }).present();
+    }
+  }
 
-            });
-          }, accessTokenError => {
-            console.error('Get Access Token', accessTokenError);
+  login() {
+    // Start Authorization Process.
+    this.polarData.getAuthorizationCode().then(code => {
+
+      this.loading = this.loadingCtrl.create({
+        content: 'Micro momentito...',
+        dismissOnPageChange: true
+      });
+
+      // Presents the loading Icon.
+      this.loading.present().then(() => {
+
+        // Get the Access-Token.
+        this.polarData.getAccessToken(code).then(tokenData => {
+
+          // Parse data to Json and read.
+          console.log('AccessToken', tokenData);
+          localStorage.setItem('token', JSON.stringify(tokenData));
+
+          // Register the User.
+          this.polarData.registerUser(tokenData).then(success => {
+            let exist = JSON.parse(localStorage.getItem(String(tokenData['x_user_id'])));
+            console.log('Login', 'Existing User?', exist);
+
+            if (exist) {
+              // Edit the user.
+              exist['user'] = success;
+              console.log('Register User Success: ', this.json);
+              localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(this.json));
+            } else {
+              // Save user data.
+              this.json['user'] = success;
+              console.log('Register User Success: ', this.json);
+              localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(this.json));
+            }
+
             this.dismissLoading();
-          });//getAccessToken
-        }, loadingError => {
-          console.error('Present Loading', loadingError);
+
+            // Set new root and go to TabsPage.
+            this.navCtrl.setRoot(TabsPage).then(() => {
+              this.navCtrl.popToRoot().then(() => {
+                console.log('Pop to root');
+              }, () => {
+                console.log('Pop to root failed');
+              });
+            });
+          }, error => {
+            // Error by registration.
+            console.error('Register User error', error);
+
+            /*
+            // Handle if user already exists.
+            if (error.status == 409) {
+              this.handle409(tokenData);
+            }
+            */
+
+          });
+        }, accessTokenError => {
+          console.error('Get Access Token', accessTokenError);
           this.dismissLoading();
-        });//loading
-      }, authError => {
-        console.error('Get Authorization Code', authError);
-      });//getAuthorizationCode
-    }, idSecretError => {
-      console.error('Get ID and secret', idSecretError);
-    });//platform.
+        });//getAccessToken
+      }, loadingError => {
+        console.error('Present Loading', loadingError);
+        this.dismissLoading();
+      });//loading
+    }, authError => {
+      console.error('Get Authorization Code', authError);
+    });//getAuthorizationCode
+
   }
 
   /**
@@ -149,7 +188,7 @@ export class LoginPage {
         let exist = JSON.parse(localStorage.getItem(String(tokenData['x_user_id'])));
         console.log('Login', 'Existing User?', exist);
 
-        if(exist){
+        if (exist) {
           // Edit the user.
           exist['user'] = success;
           console.log('Register User Success: ', exist);

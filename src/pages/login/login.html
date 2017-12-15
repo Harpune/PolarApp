@@ -8,7 +8,7 @@
         <img src="assets/img/polar_icon.png"/>
         <div *ngIf="user;else login_content">
           <button ion-button full (click)='goToHome()'>{{user['first-name']}} {{user['last-name']}}</button>
-          <button ion-button full (click)='login()'>Nicht du? Anmelden!</button>
+          <button ion-button full (click)='tryLogin()'>Nicht du? Anmelden!</button>
         </div>
         <ng-template #login_content>
           <button ion-button full (click)='login()'>Anmelden</button>
