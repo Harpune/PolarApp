@@ -5,9 +5,10 @@
   <ng-container *ngFor="let training of summary; let i = index">
     <ion-card (click)="showExercise(i)" (press)="removeExercise(i)">
       <ion-card-header>
-        <p>{{training['detailed-sport-info']}}</p>
+        <p style="font-weight: bold">{{training['detailed-sport-info']}}</p>
+        <p class="alignRight">{{training['start-time'] | date:'dd.MM.y'}}</p>
         <p>{{training['device']}}</p>
-        <p>Am {{training['start-time'] | date:'dd.MM.y'}}</p>
+
       </ion-card-header>
 
       <ion-card-content>
@@ -20,7 +21,8 @@
           <div class="inner">
             <ion-icon name="md-timer"></ion-icon>
             <ion-badge>
-              {{training['duration']['hours'] | number:'2.0-0'}}:{{training['duration']['minutes'] | number:'2.0-0'}}:{{training['duration']['seconds'] | number:'2.0-0'}}
+              {{training['duration']['hours'] | number:'2.0-0'}}:{{training['duration']['minutes'] |
+              number:'2.0-0'}}:{{training['duration']['seconds'] | number:'2.0-0'}}
             </ion-badge>
             <p>Dauer</p>
           </div>

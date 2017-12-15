@@ -62,6 +62,7 @@ export class LocalDataProvider {
     if (token) {
       // Master-JSON.
       let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
+      console.log('Save', 'json', json);
 
       // Setup data.
       let transactionID = data[0]['transaction-id'];

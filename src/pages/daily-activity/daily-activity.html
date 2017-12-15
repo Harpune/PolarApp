@@ -7,7 +7,7 @@
       *ngIf="act['active-calories'] != 0 || act['active-steps'] != 0"
       (click)="showActivity(i)" (press)="removeActivity(i)">
       <ion-card-header>
-        <p>Am {{act['date'] | date:'dd.MM.y'}}</p>
+        <p class="alignRight" style="font-weight: bold">{{act['date'] | date:'dd.MM.y'}}</p>
       </ion-card-header>
 
       <div id="progressBar">

@@ -54,8 +54,6 @@ export class MyApp {
     };
 
     localStorage.setItem(String(this.token.x_user_id), JSON.stringify(json));
-    localStorage.removeItem('1234');
-    localStorage.removeItem('5678');
   }
 
   saveDummyData() {

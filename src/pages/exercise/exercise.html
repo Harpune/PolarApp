@@ -42,26 +42,26 @@
     <ion-badge item-end>{{summary['device']}}</ion-badge>
   </ion-item>
 
+  <!-- Heart rate zone -->
+  <ion-item-divider>
+    Herzfrequenzzone
+  </ion-item-divider>
+
+  <canvas #heartRateCanvas></canvas>
+
+  <!-- Samples -->
+  <ion-item-divider>
+    Trainingsüberblick
+  </ion-item-divider>
+
+  <canvas #sampleCanvas></canvas>
+
   <!-- GPX -->
   <ion-item-divider>
     Laufstrecke
   </ion-item-divider>
 
   <div id="map" style="width:100%; height:75%;"></div>
-
-  <ion-item-divider>
-    Herzfrequenzzone
-  </ion-item-divider>
-
-  <!-- Heart rate zone -->
-  <canvas #heartRateCanvas></canvas>
-
-  <ion-item-divider>
-    Trainingsüberblick
-  </ion-item-divider>
-
-  <!-- Samples -->
-  <canvas #sampleCanvas></canvas>
 
 
 </ion-content>

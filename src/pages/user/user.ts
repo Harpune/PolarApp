@@ -8,27 +8,26 @@ import {LocalDataProvider} from "../../providers/local-data/local-data";
 })
 
 export class UserPage {
-  user: any = [];
+  user: any;
 
   constructor(public localData: LocalDataProvider,
               public polarData: PolarDataProvider) {
   }
 
   ionViewDidLoad() {
+    let token = JSON.parse(localStorage.getItem('token'));
+    if (token) {
+      let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
+      this.user = json['user'];
 
-    this.localData.getUser()
-      .then(success => {
-        this.user = success;
-      }, error => {
-        console.log('User Page', 'Get User', error);
-      }).then(() => {
       this.getUserData().then(user => {
         this.user = user;
         console.log('User Page', 'Get User Data', 'success', user);
       }, error => {
         console.log('User Page', 'Get User Data', 'error', error);
       });
-    })
+
+    }
   }
 
   getUserData(): Promise<any> {

@@ -5,6 +5,7 @@ import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {Observable} from 'rxjs/Rx';
 import {Events} from "ionic-angular";
 import {datatypes} from "../../assets/data/datatypes";
+import {PolarDataProvider} from "../../providers/polar-data/polar-data";
 
 @Component({
   selector: 'page-physical-info',
@@ -26,6 +27,7 @@ export class PhysicalInfoPage {
 
   constructor(private datePipe: DatePipe,
               private events: Events,
+              private polarData: PolarDataProvider,
               private localData: LocalDataProvider) {
   }
 
@@ -34,6 +36,7 @@ export class PhysicalInfoPage {
    */
   ionViewDidLoad() {
     this.getLocalPhysical();
+    this.getUserData();
 
     this.events.subscribe('physical:data', isData => {
       console.log('PhysicalInfoPage', 'Event triggered', isData);
@@ -41,6 +44,22 @@ export class PhysicalInfoPage {
         this.getLocalPhysical()
       }
     })
+  }
+
+  getUserData() {
+    let token = JSON.parse(localStorage.getItem('token'));
+    if (token) {
+      let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
+      this.polarData.getUserInformation().then(user => {
+        this.user = user;
+        json['user'] = user;
+        localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
+        console.log('GetUserData', 'Success', user);
+      }, error => {
+        console.log('GetUserData', 'Error', error);
+      })
+    }
+
   }
 
   getLocalPhysical() {
