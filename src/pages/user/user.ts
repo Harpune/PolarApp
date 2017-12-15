@@ -24,8 +24,9 @@ export class UserPage {
       }).then(() => {
       this.getUserData().then(user => {
         this.user = user;
+        console.log('User Page', 'Get User Data', 'success', user);
       }, error => {
-        console.log('User Page', 'Get User Data', error);
+        console.log('User Page', 'Get User Data', 'error', error);
       });
     })
   }

@@ -3,6 +3,8 @@ import {HttpClient} from "@angular/common/http";
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
 import toGeoJson from '@mapbox/togeojson'
 import 'rxjs/add/operator/map';
+import {datatypes} from "../../assets/data/datatypes";
+import {dictionary} from "../../assets/data/dictionary";
 
 @Injectable()
 export class LocalDataProvider {
@@ -37,12 +39,13 @@ export class LocalDataProvider {
 
         break;
       case 1: // activity
-        // Change duration format.
+              // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         break;
       case 2: // exercise
-        // Change duration format.
+              // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
+        data[0]['detailed-sport-info'] = dictionary[data[0]['detailed-sport-info']];
 
         // Parse GPX to geoJSON.
         if (data[2]) {

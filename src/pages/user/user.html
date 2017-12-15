@@ -14,8 +14,10 @@
     </ion-item>
 
     <ng-template #female>
-      <p>Geschlecht</p>
-      <p class="title">Weiblich</p>
+      <ion-item>
+        <p>Geschlecht</p>
+        <p class="title">Weiblich</p>
+      </ion-item>
     </ng-template>
 
     <ion-item>
@@ -45,7 +47,8 @@
 
     <ion-item>
       <p>Registriert seit</p>
-      <p class="title">{{user['registration-date'] | date:'EEEE, dd LLLL yyyy'}} um {{user['registration-date'] | date:'HH:mm'}}</p>
+      <p class="title">{{user['registration-date'] | date:'EEEE, dd LLLL yyyy'}} um {{user['registration-date'] |
+        date:'HH:mm'}}</p>
     </ion-item>
 
   </ion-list>
