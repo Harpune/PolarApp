@@ -162,12 +162,14 @@ export class ExercisePage {
       });
       // TODO read lower- and upper-limit from data.
       // Update Heart-Rate-Zones.
+
       let zoneDuration = this.heartRateZone.map(a => toSeconds(parse(a['in-zone'])));
+      let zoneHeartRateLimit = this.heartRateZone.map(a => a['lower-limit'] + ' bis ' + a['upper-limit']);
       console.log('UpdateCharts', 'zoneDuration', zoneDuration);
       this.heartRateChart = new Chart(this.heartRateCanvas.nativeElement, {
         type: 'bar',
         data: {
-          labels: ['88 bis 105', '105 bis 123', '123 bis 140', '140 bis 158', '158 bis 175'],
+          labels: zoneHeartRateLimit,
           datasets: [{
             label: 'Herzfrequenzzone',
             data: zoneDuration,

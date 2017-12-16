@@ -270,8 +270,6 @@ export class TabsPage {
                   reject(error);
                 })
               });
-            } else {
-              reject();
             }
           })
         }, error => {
@@ -303,13 +301,13 @@ export class TabsPage {
           console.log('Das nicht', 'Physical', 'Error', error);
         });
 
-        this.localData.get('activity').then(success => {
-          console.log('Das auch noch', 'Activity', 'Success', JSON.stringify(success));
+        this.localData.get(datatypes['activity']).then(success => {
+          console.log('Das auch noch', 'Activity', 'Success', success);
         }, error => {
           console.log('Das nicht', 'Activity', 'Error', error);
         });
 
-        this.localData.get('exercise').then(success => {
+        this.localData.get(datatypes['exercise']).then(success => {
           console.log('Das auch noch', 'Exercise', 'Success', success);
         }, error => {
           console.log('Das nicht', 'Exercise', 'Error', error);

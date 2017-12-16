@@ -3,7 +3,6 @@ import {HttpClient} from "@angular/common/http";
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
 import toGeoJson from '@mapbox/togeojson'
 import 'rxjs/add/operator/map';
-import {datatypes} from "../../assets/data/datatypes";
 import {dictionary} from "../../assets/data/dictionary";
 
 @Injectable()
@@ -196,5 +195,50 @@ export class LocalDataProvider {
         reject('No token');
       }
     }))
+  }
+
+  deleteAll(type: any): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      let token = JSON.parse(localStorage.getItem('token'));
+      if (token) {
+        let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
+        console.log('Delete all', 'json', json);
+
+        let transactions = json[type['name']];
+        let transactionsLength = Object.keys(transactions).length;
+        console.log('Delete all', 'transactions', transactionsLength, transactions);
+
+        transactions.forEach((transactionID, transactionIndex) => {
+          let lists = JSON.parse(localStorage.getItem(transactionID));
+          let listLength = Object.keys(lists).length;
+          console.log('Delete all', 'lists', listLength, lists);
+
+          lists.forEach((listID, listIndex) => {
+            this.delete(transactionID, listID, type).then(success => {
+              if (listIndex >= listLength - 1) {
+                console.log('Delete all', 'lists done', lists, success);
+                if (transactionIndex >= transactionsLength - 1) {
+                  console.log('Delete all', 'transactions done', transactions, success);
+                  resolve(success);
+                }
+              }
+            }, error => {
+              reject(error);
+            });
+          });
+        });
+
+
+      } else {
+        reject('No token');
+      }
+    })
+
+  }
+
+  reset() {
+    return new Promise<any>((resolve, reject) => {
+
+    })
   }
 }

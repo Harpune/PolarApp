@@ -198,10 +198,30 @@ export class MyApp {
       }, {
         "zone": [
           {
+            "index": 0,
+            "lower-limit": 88,
+            "upper-limit": 105,
+            "in-zone": "PT18M4S"
+          },{
             "index": 1,
-            "lower-limit": 110,
-            "upper-limit": 130,
-            "in-zone": "PT4S"
+            "lower-limit": 105,
+            "upper-limit": 123,
+            "in-zone": "PT35M0S"
+          },{
+            "index": 2,
+            "lower-limit": 123,
+            "upper-limit": 140,
+            "in-zone": "PT45M0S"
+          },{
+            "index": 3,
+            "lower-limit": 140,
+            "upper-limit": 158,
+            "in-zone": "PT55M15S"
+          },{
+            "index": 4,
+            "lower-limit": 158,
+            "upper-limit": 175,
+            "in-zone": "PT5M0S"
           }
         ]
       }, {

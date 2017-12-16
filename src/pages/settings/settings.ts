@@ -16,4 +16,8 @@ export class SettingsPage {
     console.log('ionViewDidLoad SettingsPage');
   }
 
+  resetData(){
+
+  }
+
 }

@@ -12,32 +12,32 @@ export class UserPage {
 
   constructor(public localData: LocalDataProvider,
               public polarData: PolarDataProvider) {
-  }
-
-  ionViewDidLoad() {
     let token = JSON.parse(localStorage.getItem('token'));
     if (token) {
       let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
       this.user = json['user'];
-
-      this.getUserData().then(user => {
-        this.user = user;
-        console.log('User Page', 'Get User Data', 'success', user);
-      }, error => {
-        console.log('User Page', 'Get User Data', 'error', error);
-      });
-
+    } else{
+      console.log('UserPage', 'token', token);
     }
   }
 
-  getUserData(): Promise<any> {
-    return new Promise(((resolve, reject) => {
-      this.polarData.getUserInformation().then(success => {
-        resolve(success);
-      }, error => {
-        reject(error);
+  ionViewDidLoad() {
+    this.getUserData().then(user => {
+      console.log('UserPage', 'get User data', user);
+      this.user = user;
+    },error => {
+      console.log('UserPage', 'get User data', error);
+    });
+  }
 
-      });
-    }));
+  getUserData():Promise<any> {
+    return new Promise<any>((resolve, reject)=> {
+      this.polarData.getUserInformation().then(data => {
+        resolve(data);
+      },error => {
+        reject(error);
+      })
+    });
+
   }
 }

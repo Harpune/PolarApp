@@ -19,6 +19,7 @@ export class DailyActivityPage {
               private alertCtrl: AlertController,
               private events: Events,
               private app: App) {
+    // TODO settings: enable to see all data Or just relevant data.
   }
 
   /**
