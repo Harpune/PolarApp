@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import {Component} from '@angular/core';
+import {ModalController, NavController, NavParams} from 'ionic-angular';
 
 @Component({
   selector: 'page-settings',
@@ -7,7 +7,9 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class SettingsPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              public modalCtrl: ModalController) {
     // TODO ionic modals with map-chooser
     // TODO reset data
   }
@@ -16,7 +18,7 @@ export class SettingsPage {
     console.log('ionViewDidLoad SettingsPage');
   }
 
-  resetData(){
+  resetData() {
 
   }
 
