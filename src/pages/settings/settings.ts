@@ -1,22 +1,25 @@
 import {Component} from '@angular/core';
-import {ModalController, NavController, NavParams} from 'ionic-angular';
 
 @Component({
   selector: 'page-settings',
   templateUrl: 'settings.html',
 })
 export class SettingsPage {
+  toggleActivity: boolean;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              public modalCtrl: ModalController) {
+  constructor() {
+    this.toggleActivity = JSON.parse(localStorage.getItem('toggleActivity')) === true;
+    console.log('constructor', 'toggleActivity', this.toggleActivity);
     // TODO ionic modals with map-chooser
     // TODO reset data
+    // TODO show all dailyactivity or just those with steps
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad SettingsPage');
+  updateActivites() {
+    console.log('toggleActivity', this.toggleActivity);
+    localStorage.setItem('toggleActivity', JSON.stringify(this.toggleActivity));
   }
+
 
   resetData() {
 

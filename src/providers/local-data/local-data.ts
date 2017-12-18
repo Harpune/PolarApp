@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
-import toGeoJson from '@mapbox/togeojson'
+import parseGPX from '@mapbox/togeojson'
+import parseTcx from 'tcx';
 import 'rxjs/add/operator/map';
 import {dictionary} from "../../assets/data/dictionary";
 
@@ -10,7 +11,9 @@ export class LocalDataProvider {
 
   constructor(public http: HttpClient) {
     console.log('Hello LocalDataProvider Provider');
+    console.dir(parseTcx);
     // TODO create the enum like environment for simplifying the methods
+    // TODO save with token: user-id:id und user-id:transaction-id
   }
 
   /**
@@ -38,19 +41,30 @@ export class LocalDataProvider {
 
         break;
       case 1: // activity
-              // Change duration format.
+        // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         break;
       case 2: // exercise
-              // Change duration format.
+        // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         data[0]['detailed-sport-info'] = dictionary[data[0]['detailed-sport-info']];
 
         // Parse GPX to geoJSON.
         if (data[2]) {
+          // Remove GPX.
           let gpx = new DOMParser().parseFromString(data[2]['gpx'], 'text/xml');
-          data[2] = toGeoJson.gpx(gpx);
+          data[2] = parseGPX.gpx(gpx);
+          console.log('GPX', data[2]);
         }
+
+        // Parse TCX to geoJSON.
+        if (data[3]) {
+          // Remove TCX.
+          let tcx = new DOMParser().parseFromString(data[3]['tcx'], 'text/xml');
+          data[3] = parseTcx(tcx);
+          console.log('TCX', data[3]);
+        }
+
         break;
       default:
         console.log('Save', 'Default', 'Something went wrong');
@@ -62,6 +76,9 @@ export class LocalDataProvider {
       // Master-JSON.
       let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
       console.log('Save', 'json', json);
+
+      let userID = String(json['user']['polar-user-id']);
+      console.log('Save', 'userId', userID);
 
       // Setup data.
       let transactionID = data[0]['transaction-id'];
@@ -119,13 +136,16 @@ export class LocalDataProvider {
 
         // Go through all physical transactionIds.
         for (let transaction of transactions) {
+          console.log('Get', 'transaction', transaction);
 
           // Get the ListId.
-          let log = JSON.parse(localStorage.getItem(transaction));
+          let log = JSON.parse(localStorage.getItem(String(transaction)));
+          console.log('Get', 'log', log);
 
           // Get all physical data save under the listID.
           for (let item of log) {
-            data.push(JSON.parse(localStorage.getItem(item)));
+            console.log('Get', 'item', item);
+            data.push(JSON.parse(localStorage.getItem(String(item))));
           }
         }
         console.log('Get', 'Data', data);
@@ -151,15 +171,17 @@ export class LocalDataProvider {
 
           // Delete activityID from its transactionID array.
           let log = JSON.parse(localStorage.getItem(String(transactionID)));
-          console.log('Delete', 'activities', JSON.stringify(log), String(logID));
+          console.log('Delete', 'activities', 'log', log, transactionID);
 
-          let index = log.indexOf(String(logID));
+          let index = log.indexOf(logID);
           if (index > -1) {
             log.splice(index, 1);
 
+            console.log('Delete', 'length', log);
             if (log.length != 0) {
-              console.log('Delete', 'length', '!= 0');
               // More activities are saved under this transactionID.
+              console.log('Delete', 'length', '!= 0');
+
               localStorage.setItem(String(transactionID), log);
 
               resolve();

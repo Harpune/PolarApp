@@ -27,7 +27,7 @@ export class MyApp {
     this.token = JSON.parse(localStorage.getItem('token'));
     console.log('Token logged in ', this.token);
 
-    //this.resetData();
+    // this.resetData();
 
     if (this.token) {
       this.rootPage = TabsPage;
@@ -59,9 +59,9 @@ export class MyApp {
   saveDummyData() {
     let activityData = [
       {
-        "id": 123,
+        "id": 222,
         "polar-user": "https://www.polaraccesslink/v3/users/1",
-        "transaction-id": 1234,
+        "transaction-id": 1111,
         "date": "2010-12-31",
         "created": "2016-04-27T20:11:33.000Z",
         "calories": 2329,
@@ -177,9 +177,9 @@ export class MyApp {
     let trainingData = [
       {
         "upload-time": "2008-10-13T10:40:02.000Z",
-        "id": 567,
+        "id": 999,
         "polar-user": "https://www.polaraccesslink/v3/users/1",
-        "transaction-id": 5678,
+        "transaction-id": 9999,
         "device": "Polar M400",
         "start-time": "2008-10-13T10:40:02.000Z",
         "duration": "PT2H30M",
@@ -202,22 +202,22 @@ export class MyApp {
             "lower-limit": 88,
             "upper-limit": 105,
             "in-zone": "PT18M4S"
-          },{
+          }, {
             "index": 1,
             "lower-limit": 105,
             "upper-limit": 123,
             "in-zone": "PT35M0S"
-          },{
+          }, {
             "index": 2,
             "lower-limit": 123,
             "upper-limit": 140,
             "in-zone": "PT45M0S"
-          },{
+          }, {
             "index": 3,
             "lower-limit": 140,
             "upper-limit": 158,
             "in-zone": "PT55M15S"
-          },{
+          }, {
             "index": 4,
             "lower-limit": 158,
             "upper-limit": 175,
@@ -8414,11 +8414,148 @@ export class MyApp {
     </extensions>
   </wpt>
 </gpx>`
-      }, {}, {
+      }, {
+        'tcx': `<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation
+="http://www.garmin.com/xmlschemas/ActivityExtension/v2 http://www.garmin.com/xmlschemas/ActivityExtensionv2.xsd http://www.garmin.com/xmlschemas/TrainingCenterDat
+abase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">
+
+  <Activities>
+    <Activity Sport="Biking">
+      <Id>2010-06-26T10:06:11Z</Id>
+      <Lap StartTime="2010-06-26T10:06:11Z">
+        <TotalTimeSeconds>906.1800000</TotalTimeSeconds>
+        <DistanceMeters>9762.4433594</DistanceMeters>
+        <MaximumSpeed>15.2404995</MaximumSpeed>
+        <Calories>493</Calories>
+        <AverageHeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+          <Value>179</Value>
+        </AverageHeartRateBpm>
+        <MaximumHeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+          <Value>194</Value>
+        </MaximumHeartRateBpm>
+        <Intensity>Active</Intensity>
+        <Cadence>84</Cadence>
+        <TriggerMethod>Location</TriggerMethod>
+        <Track>
+          <Trackpoint>
+            <Time>2010-06-26T10:06:11Z</Time>
+            <Position>
+              <LatitudeDegrees>40.7780135</LatitudeDegrees>
+              <LongitudeDegrees>-73.9665795</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>36.1867676</AltitudeMeters>
+            <DistanceMeters>0.0629519</DistanceMeters>
+            <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+              <Value>148</Value>
+            </HeartRateBpm>
+            <SensorState>Absent</SensorState>
+          </Trackpoint>
+          <Trackpoint>
+            <Time>2010-06-26T10:06:12Z</Time>
+            <Position>
+              <LatitudeDegrees>40.7780136</LatitudeDegrees>
+              <LongitudeDegrees>-73.9665778</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>35.2254639</AltitudeMeters>
+            <DistanceMeters>0.1698548</DistanceMeters>
+            <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+              <Value>148</Value>
+            </HeartRateBpm>
+            <SensorState>Absent</SensorState>
+          </Trackpoint>
+          <Trackpoint>
+            <Time>2010-06-26T10:06:17Z</Time>
+            <Position>
+              <LatitudeDegrees>40.7780147</LatitudeDegrees>
+              <LongitudeDegrees>-73.9665789</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>34.2641602</AltitudeMeters>
+            <DistanceMeters>0.5907414</DistanceMeters>
+            <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+              <Value>152</Value>
+            </HeartRateBpm>
+            <SensorState>Absent</SensorState>
+          </Trackpoint>
+          <Trackpoint>
+            <Time>2010-06-26T10:06:24Z</Time>
+            <Position>
+              <LatitudeDegrees>40.7780246</LatitudeDegrees>
+              <LongitudeDegrees>-73.9665919</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>34.7448730</AltitudeMeters>
+            <DistanceMeters>1.9415363</DistanceMeters>
+            <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+              <Value>147</Value>
+            </HeartRateBpm>
+            <SensorState>Absent</SensorState>
+          </Trackpoint>
+          <Trackpoint>
+            <Time>2010-06-26T10:06:25Z</Time>
+            <Position>
+              <LatitudeDegrees>40.7780338</LatitudeDegrees>
+              <LongitudeDegrees>-73.9665851</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>34.7448730</AltitudeMeters>
+            <DistanceMeters>1.9993043</DistanceMeters>
+            <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+              <Value>147</Value>
+            </HeartRateBpm>
+            <SensorState>Present</SensorState>
+          </Trackpoint>
+          <Trackpoint>
+            <Time>2010-06-26T10:06:28Z</Time>
+            <Position>
+              <LatitudeDegrees>40.7780800</LatitudeDegrees>
+              <LongitudeDegrees>-73.9665492</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>34.2641602</AltitudeMeters>
+            <DistanceMeters>7.9581327</DistanceMeters>
+            <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+              <Value>148</Value>
+            </HeartRateBpm>
+            <Cadence>1</Cadence>
+            <SensorState>Present</SensorState>
+            <Extensions>
+              <TPX xmlns="http://www.garmin.com/xmlschemas/ActivityExtension/v2" CadenceSensor="Bike"/>
+            </Extensions>
+          </Trackpoint>
+          <Trackpoint>
+            <Time>2010-06-26T10:06:30Z</Time>
+            <Position>
+              <LatitudeDegrees>40.7781448</LatitudeDegrees>
+              <LongitudeDegrees>-73.9665005</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>32.8222656</AltitudeMeters>
+            <DistanceMeters>15.3775177</DistanceMeters>
+            <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+              <Value>151</Value>
+            </HeartRateBpm>
+            <Cadence>42</Cadence>
+            <SensorState>Present</SensorState>
+            <Extensions>
+              <TPX xmlns="http://www.garmin.com/xmlschemas/ActivityExtension/v2" CadenceSensor="Bike"/>
+            </Extensions>
+          </Trackpoint>
+        </Track>
+      </Lap>
+    </Activity>
+  </Activities>
+
+</TrainingCenterDatabase>`
+      }, [{
         "recording-rate": 5000,
         "sample-type": "1",
         "data": "0,100,102,97,97,101,103,106,96,89,88,87,98,108,113,112,114,115,118,121,121,121,121,123,117,119,122"
-      }
+      },{
+        "recording-rate": 5000,
+        "sample-type": "3",
+        "data": "650,640,645,647,655,660,670,690,650,640,635,630,630,634,635,640,650,660,650,640,610,670,680,640,660,650,680"
+      },{
+        "recording-rate": 5000,
+        "sample-type": "9",
+        "data": "22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22"
+      }]
     ];
     LocalDataProvider.save(datatypes['exercise'], trainingData);
   }

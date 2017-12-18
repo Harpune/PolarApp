@@ -15,11 +15,15 @@ export class DailyActivityPage {
   user: any;
   progress: any = [];
 
+  toggleActivity: boolean;
+
   constructor(private localData: LocalDataProvider,
               private alertCtrl: AlertController,
               private events: Events,
               private app: App) {
     // TODO settings: enable to see all data Or just relevant data.
+    this.toggleActivity = JSON.parse(localStorage.getItem('toggleActivity')) === true;
+    console.log('Toggle Activity', this.toggleActivity);
   }
 
   /**
@@ -33,7 +37,10 @@ export class DailyActivityPage {
       if (isData) {
         this.getLocalActivities()
       }
-    })
+    });
+  }
+
+  ionViewDidEnter() {
   }
 
   getLocalActivities() {
@@ -44,6 +51,7 @@ export class DailyActivityPage {
       this.user = success[0];
       this.activity = success[1];
       this.summary = this.activity.map(a => a['summary']);
+
 
       this.updateProgress();
 
