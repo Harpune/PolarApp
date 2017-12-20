@@ -225,9 +225,7 @@ export class TabsPage {
                       reject(error);
                     })
                   }
-
-                  reject('Hallo');
-                }, error => {
+                  }, error => {
                   reject(error);
                 })
               });
