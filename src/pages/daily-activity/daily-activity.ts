@@ -40,9 +40,6 @@ export class DailyActivityPage {
     });
   }
 
-  ionViewDidEnter() {
-  }
-
   getLocalActivities() {
     Observable.forkJoin(
       this.localData.getUser(),
