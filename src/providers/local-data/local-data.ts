@@ -41,11 +41,11 @@ export class LocalDataProvider {
 
         break;
       case 1: // activity
-        // Change duration format.
+              // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         break;
       case 2: // exercise
-        // Change duration format.
+              // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         data[0]['detailed-sport-info'] = dictionary[data[0]['detailed-sport-info']];
 
@@ -154,113 +154,65 @@ export class LocalDataProvider {
     }))
   }
 
-  delete(transactionID: number, logID: number, type: any): Promise<any> {
-    console.log('Delete', 'transactionID', transactionID, 'logID', logID, 'type', type);
+  delete(data: any, type: any): Promise<any> {
+    console.log('Delete', 'data', data, 'type', type);
     return new Promise(((resolve, reject) => {
       let token = JSON.parse(localStorage.getItem('token'));
       if (token) {
+        // Master-JSON.
+        let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
+        console.log('Delete', 'json', json);
 
-        // Get the activity.
-        let data = JSON.parse(localStorage.getItem(String(logID)));
-        console.log('Delete', 'data', data);
+        // Setup data.
+        let userID = json['user']['polar-user-id'];
+        let transactionID = data['summary']['transaction-id'];
+        let listID = data['summary']['id'];
+        console.log('Delete', type['name'], 'userId', userID, 'transactionID', transactionID, 'listID', listID);
 
-        if (data) {
-          // Master-JSON.
-          let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
-          console.log('Delete', 'json', json);
+        // Delete activityID from its transactionID array.
+        let list = JSON.parse(localStorage.getItem(String(transactionID)));
+        console.log('Delete', type['name'], 'list', list);
 
-          // Delete activityID from its transactionID array.
-          let log = JSON.parse(localStorage.getItem(String(transactionID)));
-          console.log('Delete', 'activities', 'log', log, transactionID);
+        let listIndex = list.indexOf(listID);
+        if (listIndex > -1) {
+          list.splice(listIndex, 1);
 
-          let index = log.indexOf(logID);
-          if (index > -1) {
-            log.splice(index, 1);
+          console.log('Delete', 'length', list.length);
+          if (list.length != 0) {
+            // More activities are saved under this transactionID.
+            console.log('Delete', 'length', '> 0');
 
-            console.log('Delete', 'length', log);
-            if (log.length != 0) {
-              // More activities are saved under this transactionID.
-              console.log('Delete', 'length', '!= 0');
+            localStorage.setItem(String(transactionID), list);
 
-              localStorage.setItem(String(transactionID), log);
+            resolve();
+          } else {
+            console.log('Delete', 'length', '== 0');
+            // No more activities are saved under this transactionID.
+            localStorage.removeItem(String(transactionID));
+
+            // Delete transactionID from Master-JSON.
+            let transactions = json[type['name']];
+            console.log('Delete', 'transactions', transactions);
+
+            let transactionIndex = transactions.indexOf(transactionID);
+            if (transactionIndex > -1) {
+              transactions.splice(transactionIndex, 1);
+              json[type['name']] = transactions;
+
+              console.log('Delete', 'transactions', transactions);
+              localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
 
               resolve();
             } else {
-              console.log('Delete', 'length', '== 0');
-              // No more activities are saved under this transactionID.
-              localStorage.removeItem(String(transactionID));
-
-              // Delete transactionID from Master-JSON, if all its activities are deleted.
-              let transactions = json[type['name']];
-              console.log('Delete', 'transactions 1', transactions);
-
-              let transactionIndex = transactions.indexOf(transactionID);
-              if (transactionIndex > -1) {
-                transactions.splice(transactionIndex, 1);
-                json[type['name']] = transactions;
-
-                console.log('Delete', 'transactions 2', transactions);
-                localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
-
-                resolve();
-              } else {
-                reject('Unresolvable transactionID');
-              }
+              reject('Unresolvable transactionID');
             }
-          } else {
-            reject('Unresolvable listID');
           }
         } else {
-          reject('No such item');
+          reject('Unresolvable listID');
         }
       } else {
         reject('No token');
       }
     }))
-  }
-
-  deleteAll(type: any): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      let token = JSON.parse(localStorage.getItem('token'));
-      if (token) {
-        let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
-        console.log('Delete all', 'json', json);
-
-        let transactions = json[type['name']];
-        let transactionsLength = Object.keys(transactions).length;
-        console.log('Delete all', 'transactions', transactionsLength, transactions);
-
-        transactions.forEach((transactionID, transactionIndex) => {
-          let lists = JSON.parse(localStorage.getItem(transactionID));
-          let listLength = Object.keys(lists).length;
-          console.log('Delete all', 'lists', listLength, lists);
-
-          lists.forEach((listID, listIndex) => {
-            this.delete(transactionID, listID, type).then(success => {
-              if (listIndex >= listLength - 1) {
-                console.log('Delete all', 'lists done', lists, success);
-                if (transactionIndex >= transactionsLength - 1) {
-                  console.log('Delete all', 'transactions done', transactions, success);
-                  resolve(success);
-                }
-              }
-            }, error => {
-              reject(error);
-            });
-          });
-        });
-
-
-      } else {
-        reject('No token');
-      }
-    })
-
-  }
-
-  reset() {
-    return new Promise<any>((resolve, reject) => {
-
-    })
   }
 }

@@ -78,7 +78,7 @@ export class TrainingDataPage {
           text: 'Ja',
           handler: () => {
             console.log('Delete Activity', 'Ok clicked');
-            this.localData.delete(exe['summary']['transaction-id'], exe['summary']['id'], datatypes['exercise']).then(success => {
+            this.localData.delete(exe, datatypes['exercise']).then(success => {
               this.getLocalExercises();
               console.log('Delete Activity', 'Success', success);
             }, error => {

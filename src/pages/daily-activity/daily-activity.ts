@@ -92,7 +92,7 @@ export class DailyActivityPage {
           text: 'Ja',
           handler: () => {
             console.log('Delete Activity', 'Ok clicked');
-            this.localData.delete(act['summary']['transaction-id'], act['summary']['id'], datatypes['activity']).then(success => {
+            this.localData.delete(act, datatypes['activity']).then(success => {
               this.getLocalActivities();
               console.log('Delete Activity', 'Success', success);
             }, error => {
