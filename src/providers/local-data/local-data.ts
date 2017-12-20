@@ -1,10 +1,13 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
+import {dictionary} from "../../assets/data/dictionary";
+import {datatypes} from "../../assets/data/datatypes";
 import parseGPX from '@mapbox/togeojson'
 import parseTcx from 'tcx';
 import 'rxjs/add/operator/map';
-import {dictionary} from "../../assets/data/dictionary";
+import {Observable} from "rxjs/Observable";
+
 
 @Injectable()
 export class LocalDataProvider {
@@ -93,7 +96,8 @@ export class LocalDataProvider {
       localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
 
       // Saving the exercise under the transaction id.
-      let log = JSON.parse(localStorage.getItem(transactionID));
+      localStorage.removeItem(String(transactionID));
+      let log = JSON.parse(localStorage.getItem(String(transactionID)));
       console.log('Save', type['name'], 'log', log);
       if (log) {
         if (!(log.indexOf(listID) > -1)) {
@@ -107,7 +111,7 @@ export class LocalDataProvider {
         log.push(listID);
       }
       console.log('Save', type['name'], 'log', log);
-      localStorage.setItem(transactionID, JSON.stringify(log));
+      localStorage.setItem(String(transactionID), JSON.stringify(log));
 
       // Save the data to given exercise.
       let temp = {};
@@ -177,12 +181,12 @@ export class LocalDataProvider {
         if (listIndex > -1) {
           list.splice(listIndex, 1);
 
-          console.log('Delete', 'length', list.length);
+          console.log('Delete', 'list', list);
           if (list.length != 0) {
             // More activities are saved under this transactionID.
             console.log('Delete', 'length', '> 0');
 
-            localStorage.setItem(String(transactionID), list);
+            localStorage.setItem(String(transactionID), JSON.stringify(list));
 
             resolve();
           } else {
@@ -214,5 +218,39 @@ export class LocalDataProvider {
         reject('No token');
       }
     }))
+  }
+
+  deleteAll(type: any): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.get(type).then(success => {
+        let length = Object.keys(success).length;
+        success.forEach((data, index) => {
+          this.delete(data, type).then(done => {
+            if (index >= length - 1) {
+              resolve();
+            }
+          }, error => {
+            reject(error);
+          })
+        })
+      }, error => {
+        reject(error);
+      })
+    });
+  }
+
+  reset(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      Observable.forkJoin([
+        this.deleteAll(datatypes['exercise']),
+        this.deleteAll(datatypes['activity']),
+        this.deleteAll(datatypes['physical'])
+      ]).subscribe(success => {
+        resolve(success);
+      }, error => {
+        reject(error);
+      })
+    })
+
   }
 }

@@ -3,9 +3,10 @@ import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {Observable} from 'rxjs/Observable';
 import {AlertController, App, Events} from "ionic-angular";
 import {ExercisePage} from "../exercise/exercise";
+import {datatypes} from "../../assets/data/datatypes";
 import 'rxjs/Rx'
 import 'rxjs/add/observable/forkJoin'
-import {datatypes} from "../../assets/data/datatypes";
+
 
 @Component({
   selector: 'page-training-data',
