@@ -96,7 +96,6 @@ export class LocalDataProvider {
       localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
 
       // Saving the exercise under the transaction id.
-      localStorage.removeItem(String(transactionID));
       let log = JSON.parse(localStorage.getItem(String(transactionID)));
       console.log('Save', type['name'], 'log', log);
       if (log) {

@@ -59,7 +59,7 @@ export class MyApp {
   saveDummyData() {
     let activityData = [
       {
-        "id": 222,
+        "id": 111,
         "polar-user": "https://www.polaraccesslink/v3/users/1",
         "transaction-id": 1111,
         "date": "2010-12-31",
