@@ -12,11 +12,10 @@ import {PolarDataProvider} from "../../providers/polar-data/polar-data";
   templateUrl: 'physical-info.html',
 })
 export class PhysicalInfoPage {
-  isPhysical: boolean = false;
-
   user: any = {};
   physical: any = [];
   weight: string;
+  height: string;
 
   @ViewChild('statureCanvas') statureCanvas;
   @ViewChild('heartRateCanvas') heartRateCanvas;
@@ -59,7 +58,6 @@ export class PhysicalInfoPage {
         console.log('GetUserData', 'Error', error);
       })
     }
-
   }
 
   getLocalPhysical() {
@@ -68,18 +66,16 @@ export class PhysicalInfoPage {
       this.localData.get(datatypes['physical'])
     ).subscribe(success => {
       this.user = success[0];
-      let tempPhysical = success[1];
-      this.physical = tempPhysical.map(a => a['summary']);
+      this.physical = success[1].map(a => a['summary']);
 
       console.log('Physical', this.user, this.physical);
 
       if (this.physical.length > 0) {
         this.weight = this.physical[this.physical.length - 1]['weight'];
-        this.isPhysical = false;
+        this.height = this.physical[this.physical.length - 1]['height'];
         this.updateCharts();
       } else {
         console.log('No physical info');
-        this.isPhysical = false;
       }
     });
   }

@@ -33,6 +33,8 @@ export class TabsPage {
   loading: Loading;
   user: any;
 
+  refreshing: boolean = false;
+
   constructor(private navCtrl: NavController,
               private polarData: PolarDataProvider,
               private localData: LocalDataProvider,
@@ -55,50 +57,44 @@ export class TabsPage {
   }
 
   refresh() {
-    this.dismissLoading();
-    //TODO add refresh icon animation instead of alert
-    this.loading = this.loadingCtrl.create({
-      content: 'Getting data ...',
-    });
+    this.refreshing = true;
 
-    this.loading.present().then(() => {
-      this.polarData.listAvailableData().then(success => {
-        console.log('Refresh', 'Neue Daten', success);
-        let alert = this.alertCtrl.create({
-          title: 'Neue Daten!',
-          message: 'Wollen Sie die neuen Daten herunterladen?',
-          buttons: [
-            {
-              text: 'Nein',
-              role: 'cancel',
-              handler: () => {
-                console.log('Refresh', 'Cancel clicked');
-                this.dismissLoading();
-              }
-            }, {
-              text: 'Ja',
-              handler: () => {
-                console.log('Refresh', 'Ok clicked');
-                this.getNewData(success).then(success => {
-                  console.log('Refresh', 'Success', success);
-                  this.dismissLoading();
-                }, error => {
-                  console.error('Refresh', 'Error', error);
-                  this.dismissLoading();
-                });
-              }
+    this.polarData.listAvailableData().then(success => {
+      console.log('Refresh', 'Neue Daten', success);
+      let alert = this.alertCtrl.create({
+        title: 'Neue Daten!',
+        message: 'Wollen Sie die neuen Daten herunterladen?',
+        buttons: [
+          {
+            text: 'Nein',
+            role: 'cancel',
+            handler: () => {
+              console.log('Refresh', 'Cancel clicked');
+              this.refreshing = false;
             }
-          ]
-        });
-        alert.present();
-      }, error => {
-        this.dismissLoading();
-        console.log('Refresh', 'Keine neue Daten', error);
-        if (error == 'Timeout') {
-          alert('Das hat zu lange gedauert. Bitte überprüfe deine Internetverbingung.')
-        }
-      })
-    });
+          }, {
+            text: 'Ja',
+            handler: () => {
+              console.log('Refresh', 'Ok clicked');
+              this.getNewData(success).then(success => {
+                console.log('Refresh', 'Success', success);
+                this.refreshing = false;
+              }, error => {
+                console.error('Refresh', 'Error', error);
+                this.refreshing = false;
+              });
+            }
+          }
+        ]
+      });
+      alert.present();
+    }, error => {
+      this.refreshing = false;
+      console.log('Refresh', 'Keine neue Daten', error);
+      if (error == 'Timeout') {
+        alert('Das hat zu lange gedauert. Bitte überprüfe deine Internetverbingung.')
+      }
+    })
   }
 
   /**
@@ -225,7 +221,7 @@ export class TabsPage {
                       reject(error);
                     })
                   }
-                  }, error => {
+                }, error => {
                   reject(error);
                 })
               });
@@ -322,20 +318,6 @@ export class TabsPage {
         this.navCtrl.push(page.component).then(() => {
           console.log('Go To Page', page.title);
         })
-    }
-  }
-
-  /**
-   * Dismiss loading.
-   */
-  dismissLoading() {
-    if (this.loading) {
-      this.loading.dismiss().then(() => {
-        console.log('Loading dismissed');
-      }, () => {
-        console.error('Dismiss Loading');
-      });
-      this.loading = null;
     }
   }
 }

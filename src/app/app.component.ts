@@ -27,7 +27,7 @@ export class MyApp {
     this.token = JSON.parse(localStorage.getItem('token'));
     console.log('Token logged in ', this.token);
 
-    this.resetData();
+    //this.resetData();
 
     if (this.token) {
       this.rootPage = TabsPage;

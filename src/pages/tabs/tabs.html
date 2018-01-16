@@ -25,14 +25,24 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title><img src="assets/img/polar_logo.svg" alt="Polar" height="40" width="150"/></ion-title>
-    <i end class="icon ion-refreshing"></i>
+
+    <ion-buttons end *ngIf="refreshing; else notRefreshing">
+      <ion-spinner></ion-spinner>
+    </ion-buttons>
+
+    <ng-template #notRefreshing>
+      <ion-buttons end>
+        <button ion-button icon-only (click)="refresh()">
+          <ion-icon name="refresh"></ion-icon>
+        </button>
+      </ion-buttons>
+    </ng-template>
+
   </ion-toolbar>
 </ion-header>
 
 
-
 <ion-content>
-  <div class="loader"></div>
   <ion-tabs #tabs selectedIndex="1">
     <ion-tab [root]="page1" tabTitle="Training" tabIcon="american-football"></ion-tab>
     <ion-tab [root]="page2" tabTitle="Tägliche Aktivität" tabIcon="walk"></ion-tab>
