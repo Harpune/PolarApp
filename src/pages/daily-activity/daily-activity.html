@@ -3,8 +3,10 @@
 
 <ion-content>
   <ng-container *ngFor="let act of summary; let i = index">
-    <ion-card
+    <!--<ion-card
       *ngIf="act['active-calories'] != 0 || act['active-steps'] != 0"
+      (click)="showActivity(i)" (press)="removeActivity(i)">-->
+    <ion-card
       (click)="showActivity(i)" (press)="removeActivity(i)">
       <ion-card-header>
         <p class="alignRight" style="font-weight: bold">{{act['date'] | date:'dd.MM.y'}}</p>

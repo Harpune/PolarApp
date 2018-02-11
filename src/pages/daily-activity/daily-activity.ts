@@ -46,13 +46,11 @@ export class DailyActivityPage {
       this.localData.get(datatypes['activity'])
     ).subscribe(success => {
       this.user = success[0];
-      this.activity = success[1];
+      this.activity = success[1].sort((a, b) => {
+        return new Date(b['summary']['date']).getTime() - new Date(a['summary']['date']).getTime();
+      });
       this.summary = this.activity
-        .map(a => a['summary'])
-        .sort((a, b) => {
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
-        });
-
+        .map(a => a['summary']);
 
       this.updateProgress();
 

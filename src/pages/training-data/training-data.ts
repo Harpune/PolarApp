@@ -44,12 +44,12 @@ export class TrainingDataPage {
       this.localData.get(datatypes['exercise'])
     ).subscribe(success => {
       this.user = success[0];
-      this.exercise = success[1];
+      this.exercise = success[1].sort((a, b) => {
+        return new Date(b['summary']['start-time']).getTime() - new Date(a['summary']['start-time']).getTime();
+      });
       this.summary = this.exercise
-        .map(a => a['summary'])
-        .sort((a, b) => {
-          return new Date(b['start-time']).getTime() - new Date(a['start-time']).getTime();
-        });
+        .map(a => a['summary']);
+
 
 
       console.log('Exercise', this.user, this.exercise, this.summary);

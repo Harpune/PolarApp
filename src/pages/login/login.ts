@@ -119,8 +119,8 @@ export class LoginPage {
             if (exist) {
               // Edit the user.
               exist['user'] = success;
-              console.log('Register User Success: ', this.json);
-              localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(this.json));
+              console.log('Register User Success: ', exist);
+              localStorage.setItem(String(tokenData['x_user_id']), JSON.stringify(exist));
             } else {
               // Save user data.
               this.json['user'] = success;
