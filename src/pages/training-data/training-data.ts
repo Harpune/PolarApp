@@ -45,7 +45,12 @@ export class TrainingDataPage {
     ).subscribe(success => {
       this.user = success[0];
       this.exercise = success[1];
-      this.summary = this.exercise.map(a => a['summary']);
+      this.summary = this.exercise
+        .map(a => a['summary'])
+        .sort((a, b) => {
+          return new Date(b['start-time']).getTime() - new Date(a['start-time']).getTime();
+        });
+
 
       console.log('Exercise', this.user, this.exercise, this.summary);
     });

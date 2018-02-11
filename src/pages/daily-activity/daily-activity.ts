@@ -47,7 +47,11 @@ export class DailyActivityPage {
     ).subscribe(success => {
       this.user = success[0];
       this.activity = success[1];
-      this.summary = this.activity.map(a => a['summary']);
+      this.summary = this.activity
+        .map(a => a['summary'])
+        .sort((a, b) => {
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
 
 
       this.updateProgress();

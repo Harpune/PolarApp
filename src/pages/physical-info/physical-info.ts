@@ -66,7 +66,12 @@ export class PhysicalInfoPage {
       this.localData.get(datatypes['physical'])
     ).subscribe(success => {
       this.user = success[0];
-      this.physical = success[1].map(a => a['summary']);
+      this.physical = success[1]
+        .map(a => a['summary'])
+        .sort((a, b) => {
+          return new Date(a.created).getTime() - new Date(b.created).getTime();
+        });
+
 
       console.log('Physical', this.user, this.physical);
 

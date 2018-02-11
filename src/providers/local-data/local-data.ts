@@ -9,6 +9,11 @@ import 'rxjs/add/operator/map';
 import {Observable} from "rxjs/Observable";
 
 
+function sortByDate(a, b) {
+  console.log('a: ', a, 'b: ', b);
+  return new Date(a['summary']['start-time']).getTime() - new Date(b['summary']['start-time']).getTime();
+}
+
 @Injectable()
 export class LocalDataProvider {
 
@@ -44,11 +49,11 @@ export class LocalDataProvider {
 
         break;
       case 1: // activity
-        // Change duration format.
+              // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         break;
       case 2: // exercise
-              // Change duration format.
+        // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         data[0]['detailed-sport-info'] = dictionary[data[0]['detailed-sport-info']];
 
@@ -153,6 +158,7 @@ export class LocalDataProvider {
             data.push(JSON.parse(localStorage.getItem(String(item))));
           }
         }
+
         console.log('Get', 'data', data);
         resolve(data);
       }
