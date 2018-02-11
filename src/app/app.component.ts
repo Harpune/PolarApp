@@ -20,8 +20,7 @@ export class MyApp {
 
   constructor(private platform: Platform,
               private statusBar: StatusBar,
-              private splashScreen: SplashScreen,
-              private localData: LocalDataProvider) {
+              private splashScreen: SplashScreen) {
 
     //localStorage.removeItem('token');
     this.token = JSON.parse(localStorage.getItem('token'));
@@ -174,58 +173,62 @@ export class MyApp {
     ];
     LocalDataProvider.save(datatypes['activity'], activityData);
 
-    let trainingData = [
-      {
-        "upload-time": "2008-10-13T10:40:02.000Z",
-        "id": 999,
-        "polar-user": "https://www.polaraccesslink/v3/users/1",
-        "transaction-id": 9999,
-        "device": "Polar M400",
-        "start-time": "2008-10-13T10:40:02.000Z",
-        "duration": "PT2H30M",
-        "calories": 530,
-        "distance": 1600,
-        "heart-rate": {
-          "average": 129,
-          "maximum": 147
-        },
-        "training-load": 143.22,
-        "sport": "RUNNING",
-        "has-route": true,
-        "club-id": 999,
-        "club-name": "Polar Club",
-        "detailed-sport-info": "RUNNING"
-      }, {
-        "zone": [
-          {
-            "index": 0,
-            "lower-limit": 88,
-            "upper-limit": 105,
-            "in-zone": "PT18M4S"
-          }, {
-            "index": 1,
-            "lower-limit": 105,
-            "upper-limit": 123,
-            "in-zone": "PT35M0S"
-          }, {
-            "index": 2,
-            "lower-limit": 123,
-            "upper-limit": 140,
-            "in-zone": "PT45M0S"
-          }, {
-            "index": 3,
-            "lower-limit": 140,
-            "upper-limit": 158,
-            "in-zone": "PT55M15S"
-          }, {
-            "index": 4,
-            "lower-limit": 158,
-            "upper-limit": 175,
-            "in-zone": "PT5M0S"
-          }
-        ]
-      }, {
-        'gpx': `<?xml version="1.0" encoding="utf-8"?><gpx creator="Garmin Desktop App" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/ActivityExtension/v1 http://www8.garmin.com/xmlschemas/ActivityExtensionv1.xsd http://www.garmin.com/xmlschemas/AdventuresExtensions/v1 http://www8.garmin.com/xmlschemas/AdventuresExtensionv1.xsd http://www.garmin.com/xmlschemas/PressureExtension/v1 http://www.garmin.com/xmlschemas/PressureExtensionv1.xsd" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1" xmlns:gpxtrx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:trp="http://www.garmin.com/xmlschemas/TripExtensions/v1" xmlns:adv="http://www.garmin.com/xmlschemas/AdventuresExtensions/v1" xmlns:prs="http://www.garmin.com/xmlschemas/PressureExtension/v1">
+    let trainingData = [];
+
+    trainingData[0] = {
+      "upload-time": "2008-10-13T10:40:02.000Z",
+      "id": 999,
+      "polar-user": "https://www.polaraccesslink/v3/users/1",
+      "transaction-id": 9999,
+      "device": "Polar M400",
+      "start-time": "2008-10-13T10:40:02.000Z",
+      "duration": "PT2H30M",
+      "calories": 530,
+      "distance": 1600,
+      "heart-rate": {
+        "average": 129,
+        "maximum": 147
+      },
+      "training-load": 143.22,
+      "sport": "RUNNING",
+      "has-route": true,
+      "club-id": 999,
+      "club-name": "Polar Club",
+      "detailed-sport-info": "RUNNING"
+    };
+
+    trainingData[1] = {
+      "zone": [
+        {
+          "index": 0,
+          "lower-limit": 88,
+          "upper-limit": 105,
+          "in-zone": "PT18M4S"
+        }, {
+          "index": 1,
+          "lower-limit": 105,
+          "upper-limit": 123,
+          "in-zone": "PT35M0S"
+        }, {
+          "index": 2,
+          "lower-limit": 123,
+          "upper-limit": 140,
+          "in-zone": "PT45M0S"
+        }, {
+          "index": 3,
+          "lower-limit": 140,
+          "upper-limit": 158,
+          "in-zone": "PT55M15S"
+        }, {
+          "index": 4,
+          "lower-limit": 158,
+          "upper-limit": 175,
+          "in-zone": "PT5M0S"
+        }
+      ]
+    };
+
+    trainingData[2] = `<?xml version="1.0" encoding="utf-8"?><gpx creator="Garmin Desktop App" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/ActivityExtension/v1 http://www8.garmin.com/xmlschemas/ActivityExtensionv1.xsd http://www.garmin.com/xmlschemas/AdventuresExtensions/v1 http://www8.garmin.com/xmlschemas/AdventuresExtensionv1.xsd http://www.garmin.com/xmlschemas/PressureExtension/v1 http://www.garmin.com/xmlschemas/PressureExtensionv1.xsd" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1" xmlns:gpxtrx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:trp="http://www.garmin.com/xmlschemas/TripExtensions/v1" xmlns:adv="http://www.garmin.com/xmlschemas/AdventuresExtensions/v1" xmlns:prs="http://www.garmin.com/xmlschemas/PressureExtension/v1">
 
   <metadata>
     <link href="http://www.garmin.com">
@@ -8413,9 +8416,9 @@ export class MyApp {
       </gpxx:WaypointExtension>
     </extensions>
   </wpt>
-</gpx>`
-      }, {
-        'tcx': `<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+</gpx>`;
+
+    trainingData[3] = `<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation
 ="http://www.garmin.com/xmlschemas/ActivityExtension/v2 http://www.garmin.com/xmlschemas/ActivityExtensionv2.xsd http://www.garmin.com/xmlschemas/TrainingCenterDat
 abase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">
@@ -8542,21 +8545,24 @@ abase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">
     </Activity>
   </Activities>
 
-</TrainingCenterDatabase>`
-      }, [{
-        "recording-rate": 5000,
-        "sample-type": "1",
-        "data": "0,100,102,97,97,101,103,106,96,89,88,87,98,108,113,112,114,115,118,121,121,121,121,123,117,119,122"
-      }, {
-        "recording-rate": 5000,
-        "sample-type": "3",
-        "data": "650,640,645,647,655,660,670,690,650,640,635,630,630,634,635,640,650,660,650,640,610,670,680,640,660,650,680"
-      }, {
-        "recording-rate": 5000,
-        "sample-type": "9",
-        "data": "22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22"
-      }]
-    ];
+</TrainingCenterDatabase>`;
+
+    trainingData[4] = [{
+      "recording-rate": 5000,
+      "sample-type": "1",
+      "data": "0,100,102,97,97,101,103,106,96,89,88,87,98,108,113,112,114,115,118,121,121,121,121,123,117,119,122"
+    }, {
+      "recording-rate": 5000,
+      "sample-type": "3",
+      "data": "650,640,645,647,655,660,670,690,650,640,635,630,630,634,635,640,650,660,650,640,610,670,680,640,660,650,680"
+    }, {
+      "recording-rate": 5000,
+      "sample-type": "9",
+      "data": "22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22"
+    }];
+
+    console.log('Start dummy', trainingData);
+
     LocalDataProvider.save(datatypes['exercise'], trainingData);
   }
 }
