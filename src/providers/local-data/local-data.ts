@@ -59,7 +59,6 @@ export class LocalDataProvider {
 
         // Parse GPX to geoJSON.
         if (data[2]) {
-          console.log('GPX', data[2]);
           // Remove GPX.
           let gpx = new DOMParser().parseFromString(data[2], 'text/xml');
           data[2] = parseGPX.gpx(gpx);
@@ -68,7 +67,6 @@ export class LocalDataProvider {
 
         // Parse TCX to geoJSON.
         if (data[3]) {
-          console.log('TCX', data[3]);
           // Remove TCX.
           let tcx = new DOMParser().parseFromString(data[3], 'text/xml');
           data[3] = parseTcx(tcx);

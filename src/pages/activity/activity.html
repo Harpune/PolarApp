@@ -1,22 +1,56 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Aktivität am {{summary['created'] | date:'dd.MM.y'}}</ion-title>
+    <ion-title>Aktivität am {{summary['date'] | date:'dd.MM.y'}}</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content>
+  <!-- Overview -->
+  <ion-item-divider>
+    Überblick
+  </ion-item-divider>
+  <ion-item>
+    <ion-icon name="flame" item-start></ion-icon>
+    Verbrannte Kalorien
+    <ion-badge item-end>{{summary['active-calories']}}</ion-badge>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="person" item-start></ion-icon>
+    Kalorienbedarf
+    <ion-badge item-end>{{summary['calories']}}</ion-badge>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="walk" item-start></ion-icon>
+    Schitte gesamt
+    <ion-badge item-end>{{summary['active-steps']}}</ion-badge>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="timer" item-start></ion-icon>
+    Dauer
+    <ion-badge item-end>{{summary['duration']['hours'] | number:'2.0-0'}}:{{summary['duration']['minutes'] | number:'2.0-0'}}:{{summary['duration']['seconds'] | number:'2.0-0'}}</ion-badge>
+  </ion-item>
+
+  <ion-item>
+    <ion-icon name="create" item-start></ion-icon>
+    Synchronisiert am
+    <ion-badge item-end>{{summary['created'] | date:'dd.MM.y'}}</ion-badge>
+  </ion-item>
+
   <ion-item-divider>Schritte</ion-item-divider>
   <div padding>
-    Deine Schritte, die du am {{summary['created'] | date:'dd.MM.y'}} gemacht hast. Weiter so!
+    In diesem Diagram sehen Sie die Anzahl der Schritte zu jeder Stunde des Tages.
     <canvas #stepsCanvas></canvas>
   </div>
 
   <ion-item-divider>Aktivitätszeiten</ion-item-divider>
   <div padding>
-    In diesem Diagram werden deine Aktivitätszeiten dargestellt. Je dunkler, desto besser!
+    Ihre Aktivitätszeiten werden in diesem Kuchendiagram angezeigt. Durch Klicken auf den jeweiligen Abschnitt sehen Sie die Zeit, die sie in der Aktivitätszone waren.
     <canvas #zonesCanvas></canvas>
   </div>
 
