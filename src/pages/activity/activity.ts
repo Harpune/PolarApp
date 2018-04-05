@@ -73,8 +73,6 @@ export class ActivityPage {
     if (this.zoneSamples) {
       let zones = [0, 0, 0, 0, 0, 0];
       for (let entry of this.zoneSamples['samples']) {
-
-        // TODO do this in loop so more or less zones are supported.
         for (let i = 0; i < entry['activity-zones'].length; i++) {
           zones[i] = zones[i] + toSeconds(parse(entry['activity-zones'][i]['inzone']));
         }
