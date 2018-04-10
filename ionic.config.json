@@ -1,6 +1,6 @@
 {
   "name": "PolarApp",
-  "app_id": "",
+  "app_id": "ab780a2d",
   "type": "ionic-angular",
   "integrations": {
     "cordova": {}

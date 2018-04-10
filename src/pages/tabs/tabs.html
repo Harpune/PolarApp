@@ -25,13 +25,22 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title><img src="assets/img/polar_logo.svg" alt="Polar" height="40" width="150"/></ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only #button2 (click)="refresh()">
-        <ion-icon name="md-refresh"></ion-icon>
-      </button>
+
+    <ion-buttons end *ngIf="refreshing; else notRefreshing">
+      <ion-spinner></ion-spinner>
     </ion-buttons>
+
+    <ng-template #notRefreshing>
+      <ion-buttons end>
+        <button ion-button icon-only (click)="refresh()">
+          <ion-icon name="refresh"></ion-icon>
+        </button>
+      </ion-buttons>
+    </ng-template>
+
   </ion-toolbar>
 </ion-header>
+
 
 <ion-content>
   <ion-tabs #tabs selectedIndex="1">

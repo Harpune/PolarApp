@@ -9,6 +9,11 @@ import 'rxjs/add/operator/map';
 import {Observable} from "rxjs/Observable";
 
 
+function sortByDate(a, b) {
+  console.log('a: ', a, 'b: ', b);
+  return new Date(a['summary']['start-time']).getTime() - new Date(b['summary']['start-time']).getTime();
+}
+
 @Injectable()
 export class LocalDataProvider {
 
@@ -47,14 +52,14 @@ export class LocalDataProvider {
         data[0]['duration'] = parse(data[0]['duration']);
         break;
       case 2: // exercise
-              // Change duration format.
+        // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         data[0]['detailed-sport-info'] = dictionary[data[0]['detailed-sport-info']];
 
         // Parse GPX to geoJSON.
         if (data[2]) {
           // Remove GPX.
-          let gpx = new DOMParser().parseFromString(data[2]['gpx'], 'text/xml');
+          let gpx = new DOMParser().parseFromString(data[2], 'text/xml');
           data[2] = parseGPX.gpx(gpx);
           console.log('GPX', data[2]);
         }
@@ -62,7 +67,7 @@ export class LocalDataProvider {
         // Parse TCX to geoJSON.
         if (data[3]) {
           // Remove TCX.
-          let tcx = new DOMParser().parseFromString(data[3]['tcx'], 'text/xml');
+          let tcx = new DOMParser().parseFromString(data[3], 'text/xml');
           data[3] = parseTcx(tcx);
           console.log('TCX', data[3]);
         }
@@ -150,6 +155,7 @@ export class LocalDataProvider {
             data.push(JSON.parse(localStorage.getItem(String(item))));
           }
         }
+
         console.log('Get', 'data', data);
         resolve(data);
       }
