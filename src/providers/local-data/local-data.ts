@@ -15,7 +15,6 @@ export class LocalDataProvider {
   constructor(public http: HttpClient) {
     console.log('Hello LocalDataProvider Provider');
     console.dir(parseTcx);
-    // TODO create the enum like environment for simplifying the methods
     // TODO save with token: user-id:id und user-id:transaction-id
   }
 
@@ -226,7 +225,7 @@ export class LocalDataProvider {
         success.forEach((data, index) => {
           this.delete(data, type).then(done => {
             if (index >= length - 1) {
-              resolve();
+              resolve(done);
             }
           }, error => {
             reject(error);
