@@ -61,6 +61,7 @@ export class TabsPage {
 
     this.polarData.listAvailableData().then(success => {
       console.log('Refresh', 'Neue Daten', success);
+
       let alert = this.alertCtrl.create({
         title: 'Neue Daten!',
         message: 'Wollen Sie die neuen Daten herunterladen?',
