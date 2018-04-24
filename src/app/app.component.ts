@@ -26,7 +26,7 @@ export class MyApp {
     this.token = JSON.parse(localStorage.getItem('token'));
     console.log('Token logged in ', this.token);
 
-    //this.resetData();
+    //this.lazyResetData();
 
     if (this.token) {
       this.rootPage = TabsPage;
@@ -42,7 +42,7 @@ export class MyApp {
     });
   }
 
-  resetData() {
+  lazyResetData() {
     let user = JSON.parse(localStorage.getItem(String(this.token.x_user_id)))['user'];
 
     let json = {

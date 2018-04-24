@@ -55,6 +55,7 @@ export class PhysicalInfoPage {
         localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
         console.log('GetUserData', 'Success', user);
       }, error => {
+
         console.log('GetUserData', 'Error', error);
       })
     }
