@@ -3,7 +3,6 @@ import {AlertController, Events, NavController, NavParams} from 'ionic-angular';
 import {parse, toSeconds} from 'iso8601-duration';
 import {Chart} from 'chart.js';
 import leaflet from 'leaflet';
-import toGeoJson from '@mapbox/togeojson'
 import {environment} from '../../assets/data/environment';
 import {datatypes} from "../../assets/data/datatypes";
 import {LocalDataProvider} from "../../providers/local-data/local-data";
