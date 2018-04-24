@@ -2,8 +2,14 @@
 
   <ion-navbar>
     <ion-title>Aktivität am {{summary['date'] | date:'dd.MM.y'}}</ion-title>
-  </ion-navbar>
 
+    <ion-buttons end>
+      <button ion-button icon-only (click)="removeActivity()">
+        <ion-icon name="trash"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-navbar>
 </ion-header>
 
 

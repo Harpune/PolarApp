@@ -49,9 +49,6 @@ export class TrainingDataPage {
       });
       this.summary = this.exercise
         .map(a => a['summary']);
-
-
-
       console.log('Exercise', this.user, this.exercise, this.summary);
     });
   }
@@ -72,23 +69,23 @@ export class TrainingDataPage {
 
     this.alertCtrl.create({
       title: 'Löschen?',
-      message: `Wollen Sie dieses Trainging wirklich löschen? Das kann nicht rückgängig gemacht werden!`,
+      message: `Wollen Sie dieses Training wirklich löschen? Das kann nicht rückgängig gemacht werden!`,
       buttons: [
         {
           text: 'Nein',
           role: 'cancel',
           handler: () => {
-            console.log('Delete Activity', 'Cancel clicked');
+            console.log('Delete Exercise', 'Cancel clicked');
           }
         }, {
           text: 'Ja',
           handler: () => {
-            console.log('Delete Activity', 'Ok clicked');
+            console.log('Delete Exercise', 'Ok clicked');
             this.localData.delete(exe, datatypes['exercise']).then(success => {
               this.getLocalExercises();
-              console.log('Delete Activity', 'Success', success);
+              console.log('Delete Exercise', 'Success', success);
             }, error => {
-              console.log('Delete Activity', 'Error', error);
+              console.log('Delete Exercise', 'Error', error);
             });
           }
         }

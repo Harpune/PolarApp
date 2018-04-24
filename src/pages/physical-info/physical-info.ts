@@ -46,18 +46,17 @@ export class PhysicalInfoPage {
   }
 
   getUserData() {
-    let token = JSON.parse(localStorage.getItem('token'));
-    if (token) {
-      let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
-      this.polarData.getUserInformation().then(user => {
-        this.user = user;
-        json['user'] = user;
-        localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
-        console.log('GetUserData', 'Success', user);
-      }, error => {
-        console.log('GetUserData', 'Error', error);
-      })
-    }
+      this.localData.getMasterJson().then(json => {
+        this.polarData.getUserInformation().then(user => {
+          this.user = user;
+          json['user'] = user;
+          this.localData.setMasterJson(json).then(() => {
+            console.log('GetUserData', 'Success', user);
+          });
+        }, error => {
+          console.log('GetUserData', 'Error', error);
+        })
+      });
   }
 
   getLocalPhysical() {

@@ -2,6 +2,13 @@
 
   <ion-navbar>
     <ion-title>{{summary['detailed-sport-info']}} am {{summary['start-time'] | date:'dd.MM.y'}}</ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only (click)="removeExercise()">
+        <ion-icon name="trash"></ion-icon>
+      </button>
+    </ion-buttons>
+
   </ion-navbar>
 
 </ion-header>

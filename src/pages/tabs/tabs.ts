@@ -76,8 +76,11 @@ export class TabsPage {
             text: 'Ja',
             handler: () => {
               console.log('Refresh', 'Ok clicked');
-              this.getNewData(success).then(success => {
-                console.log('Refresh', 'Success', success);
+
+              this.loadData(success).then(success => {
+                let urls = success.map(a => a['available-user-data']);
+                console.log('Refresh', 'Success', success, 'URLs', urls);
+                Observable.forkJoin(urls).
                 this.refreshing = false;
               }, error => {
                 console.error('Refresh', 'Error', error);
@@ -102,7 +105,7 @@ export class TabsPage {
    * @param success
    * @returns {Promise<JSON>}
    */
-  getNewData(success: any): Promise<any> {
+  loadData(success: any): Promise<any> {
     return new Promise(((resolve, reject) => {
       // Run through the available user data.
       success['available-user-data'].forEach((item) => {
@@ -115,7 +118,6 @@ export class TabsPage {
           // List the transaction.
           this.polarData.list(create['resource-uri']).then(list => {
             console.log('Get new data', 'List', list);
-            // TODO change duration format in save method.
 
             //////////////////////////////////////////////////////////////////////
             // Get the exercise of the available data                           //
@@ -156,22 +158,20 @@ export class TabsPage {
                         console.log('Get new data', 'Exercise', 'Data', get);
 
                         // Save the data.
-                        LocalDataProvider.save(datatypes['exercise'], get);
+                        this.localData.save(datatypes['exercise'], get).then(() => {
+                          // When all exercises responded.
+                          if (exerciseIndex >= exerciseLength - 1) {
+                            // Commit the transaction.
+                            this.polarData.commit(create['resource-uri']).then(success => {
+                              // Notify the Tab.
+                              this.events.publish('exercise:data', true);
+                              resolve(success);
+                            }, error => {
+                              reject(error);
+                            });
 
-                        // When all exercises responded.
-                        if (exerciseIndex >= exerciseLength - 1) {
-                          // Commit the transaction.
-                          this.polarData.commit(create['resource-uri']).then(success => {
-
-                            // Notify the Tab.
-                            this.events.publish('exercise:data', true);
-
-                            resolve(success);
-                          }, error => {
-                            reject(error);
-                          });
-
-                        }
+                          }
+                        });
                       }
                     })
                   })
@@ -200,27 +200,22 @@ export class TabsPage {
                   console.log('Get new data', 'Activity', 'Data', get);
 
                   // Save the data.
-                  LocalDataProvider.save(datatypes['activity'], get);
+                  this.localData.save(datatypes['activity'], get).then(() => {
+                    if (activityIndex >= activityLength - 1) {
+                      console.log('Get new data', 'Activity', 'Done');
 
-                  if (activityIndex >= activityLength - 1) {
-                    console.log('Get new data', 'Activity', 'Done');
-
-                    // Commit the transaction.
-                    this.polarData.commit(create['resource-uri']).then(success => {
-                      /*
-                      TODO firgure out when to publish
-                      - after commit
-                      - before commit after done with requests
-                      - after every save
-                       */
-                      // Notify the Tab.
-                      this.events.publish('activity:data', true);
-
-                      resolve(success);
-                    }, error => {
-                      reject(error);
-                    })
-                  }
+                      // Commit the transaction.
+                      this.polarData.commit(create['resource-uri']).then(success => {
+                        // Notify the Tab.
+                        this.events.publish('activity:data', true);
+                        resolve(success);
+                      }, error => {
+                        reject(error);
+                      })
+                    }
+                  }, error => {
+                    reject(error);
+                  });
                 }, error => {
                   reject(error);
                 })
@@ -247,19 +242,22 @@ export class TabsPage {
                   console.log('Get new data', 'Physical', 'Data', JSON.stringify(get));
 
                   // Save the data.
-                  LocalDataProvider.save(datatypes['physical'], get);
+                  this.localData.save(datatypes['physical'], get).then(() => {
+                    if (physicalIndex >= physicalLength - 1) {
+                      console.log('Get new data', 'Physical', 'Done');
 
-                  if (physicalIndex >= physicalLength - 1) {
-                    console.log('Get new data', 'Physical', 'Done');
-
-                    // Commit the transaction.
-                    this.polarData.commit(create['resource-uri']).then(success => {
-                      this.events.publish('physical:data', true);
-                      resolve(success);
-                    }, error => {
-                      reject(error);
-                    })
-                  }
+                      // Commit the transaction.
+                      this.polarData.commit(create['resource-uri']).then(success => {
+                        // Notify the Tab.
+                        this.events.publish('physical:data', true);
+                        resolve(success);
+                      }, error => {
+                        reject(error);
+                      })
+                    }
+                  }, error => {
+                    reject(error);
+                  });
                 }, error => {
                   reject(error);
                 })
@@ -284,27 +282,27 @@ export class TabsPage {
     console.log('Page', page);
     switch (page.id) {
       case 1:
-        let token = JSON.parse(localStorage.getItem('token'));
-        let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
+        this.localData.getMasterJson().then(json => {
+          console.log('Da hast du ihn', json);
 
-        console.log('Da hast du ihn', json);
+          this.localData.get(datatypes['physical']).then(success => {
+            console.log('Das auch noch', 'Physical', 'Success', success);
+          }, error => {
+            console.log('Das nicht', 'Physical', 'Error', error);
+          });
 
-        this.localData.get(datatypes['physical']).then(success => {
-          console.log('Das auch noch', 'Physical', 'Success', success);
-        }, error => {
-          console.log('Das nicht', 'Physical', 'Error', error);
-        });
+          this.localData.get(datatypes['activity']).then(success => {
+            console.log('Das auch noch', 'Activity', 'Success', success);
+          }, error => {
+            console.log('Das nicht', 'Activity', 'Error', error);
+          });
 
-        this.localData.get(datatypes['activity']).then(success => {
-          console.log('Das auch noch', 'Activity', 'Success', success);
-        }, error => {
-          console.log('Das nicht', 'Activity', 'Error', error);
-        });
+          this.localData.get(datatypes['exercise']).then(success => {
+            console.log('Das auch noch', 'Exercise', 'Success', success);
+          }, error => {
+            console.log('Das nicht', 'Exercise', 'Error', error);
+          });
 
-        this.localData.get(datatypes['exercise']).then(success => {
-          console.log('Das auch noch', 'Exercise', 'Success', success);
-        }, error => {
-          console.log('Das nicht', 'Exercise', 'Error', error);
         });
         break;
       case 3:

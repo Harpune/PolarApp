@@ -9,6 +9,8 @@ import {SplashScreen} from '@ionic-native/splash-screen';
 import {StatusBar} from '@ionic-native/status-bar';
 import {InAppBrowser} from '@ionic-native/in-app-browser';
 
+import {IonicStorageModule} from '@ionic/storage';
+
 import {SuperTabsModule} from 'ionic2-super-tabs';
 
 import {MyApp} from './app.component';
@@ -45,7 +47,7 @@ import {TokenInterceptor} from '../providers/auth/interceptor';
     HttpModule,
     HttpClientModule,
     IonicModule.forRoot(MyApp),
-    SuperTabsModule.forRoot()
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [

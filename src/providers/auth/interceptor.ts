@@ -1,7 +1,8 @@
-import {Injectable} from '@angular/core';
-import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor} from '@angular/common/http';
+import {Injectable, Injector} from '@angular/core';
+import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {environment} from "../../assets/data/environment";
+import {LocalDataProvider} from "../local-data/local-data";
 
 let polar_id = environment.polar_id;
 let polar_secret = environment.polar_secret;
@@ -9,7 +10,7 @@ let polar_secret = environment.polar_secret;
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
-  constructor() {
+  constructor(private injector: Injector) {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -39,6 +40,7 @@ export class TokenInterceptor implements HttpInterceptor {
           Authorization: `Bearer ${token.access_token}`
         }
       });
+
     } else { // If the pathname is neither add the Basic header.
       console.log('Interceptor for v3 not user!');
 
@@ -54,6 +56,6 @@ export class TokenInterceptor implements HttpInterceptor {
     console.log('Interceptor', request.body, request.headers);
 
     // Send updated request.
-    return next.handle(request).timeoutWith(15000, Observable.throw('Timeout'));
+    return next.handle(request).timeoutWith(20000, Observable.throw('Timeout'));
   }
 }

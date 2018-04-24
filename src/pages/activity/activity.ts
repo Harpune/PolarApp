@@ -1,7 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavParams} from 'ionic-angular';
+import {AlertController, Events, NavController, NavParams} from 'ionic-angular';
 import {Chart} from 'chart.js';
 import {parse, toSeconds} from 'iso8601-duration';
+import {datatypes} from "../../assets/data/datatypes";
+import {LocalDataProvider} from "../../providers/local-data/local-data";
 
 @Component({
   selector: 'page-activity',
@@ -19,7 +21,11 @@ export class ActivityPage {
   stepsChart: any;
   zonesChart: any;
 
-  constructor(private navParams: NavParams) {
+  constructor(private navParams: NavParams,
+              private localData: LocalDataProvider,
+              private events: Events,
+              private alertCtrl: AlertController,
+              private navCtrl: NavController) {
     this.activity = navParams.get('act');
 
     this.summary = this.activity['summary'];
@@ -100,5 +106,37 @@ export class ActivityPage {
         }
       });
     }
+  }
+
+  removeActivity() {
+    this.alertCtrl.create({
+      title: 'Löschen?',
+      message: `Wollen Sie diese Aktivität wirklich löschen? Das kann nicht rückgängig gemacht werden!`,
+      buttons: [
+        {
+          text: 'Nein',
+          role: 'cancel',
+          handler: () => {
+            console.log('Delete Activity', 'Cancel clicked');
+          }
+        }, {
+          text: 'Ja',
+          handler: () => {
+            console.log('Delete Activity', 'Ok clicked');
+            this.localData.delete(this.activity, datatypes['activity']).then(success => {
+              console.log('Delete Activity', 'Success', success);
+
+              // Notify the Tab.
+              this.events.publish('activity:data', true);
+
+              // Pop to tabs page.
+              this.navCtrl.pop();
+            }, error => {
+              console.log('Delete Activity', 'Error', error);
+            });
+          }
+        }
+      ]
+    }).present();
   }
 }

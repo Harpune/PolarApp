@@ -9,6 +9,7 @@ import {LoginPage} from "../pages/login/login";
 import {TabsPage} from "../pages/tabs/tabs";
 import {LocalDataProvider} from "../providers/local-data/local-data";
 import {datatypes} from "../assets/data/datatypes";
+import {PolarDataProvider} from "../providers/polar-data/polar-data";
 
 @Component({
   templateUrl: 'app.html'
@@ -16,23 +17,22 @@ import {datatypes} from "../assets/data/datatypes";
 export class MyApp {
   pages: Array<{ title: string, icon: string, component: any }>;
   rootPage: any = LoginPage;
-  token: any;
 
   constructor(private platform: Platform,
               private statusBar: StatusBar,
+              private localData: LocalDataProvider,
+              private polarData: PolarDataProvider,
               private splashScreen: SplashScreen) {
 
     //localStorage.removeItem('token');
-    this.token = JSON.parse(localStorage.getItem('token'));
-    console.log('Token logged in ', this.token);
-
-    //this.resetData();
-
-    if (this.token) {
+    //localData.clear();
+    let token = JSON.parse(localStorage.getItem('token'));
+    if (token) {
+      console.log('Token logged in ', token);
       this.rootPage = TabsPage;
       this.saveDummyData();
-      //this.getAllData(this.token);
     } else {
+      console.log('No token');
       this.rootPage = LoginPage;
     }
 
@@ -42,8 +42,8 @@ export class MyApp {
     });
   }
 
-  resetData() {
-    let user = JSON.parse(localStorage.getItem(String(this.token.x_user_id)))['user'];
+  resetData(token: any) {
+    let user = this.localData.getUser();
 
     let json = {
       'exercise-transaction': [],
@@ -51,8 +51,7 @@ export class MyApp {
       'physical-information-transaction': [],
       'user': user
     };
-
-    localStorage.setItem(String(this.token.x_user_id), JSON.stringify(json));
+    this.localData.setMasterJson(json);
   }
 
   saveDummyData() {
@@ -171,8 +170,6 @@ export class MyApp {
         ]
       }
     ];
-    LocalDataProvider.save(datatypes['activity'], activityData);
-
     let trainingData = [];
 
     trainingData[0] = {
@@ -8563,7 +8560,17 @@ abase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">
 
     console.log('Start dummy', trainingData);
 
-    LocalDataProvider.save(datatypes['exercise'], trainingData);
+    this.localData.save(datatypes['exercise'], trainingData).then(success => {
+      console.log("Dummy ExerciseData", 'success', success);
+
+    }, error => {
+      console.log("Dummy ExerciseData", 'error', error);
+    });
+    this.localData.save(datatypes['activity'], activityData).then(success => {
+      console.log("Dummy ActivityData", 'success', success);
+    }, error => {
+      console.log("Dummy ActivityData", 'error', error);
+    });
   }
 }
 

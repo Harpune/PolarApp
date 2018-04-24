@@ -1,10 +1,12 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {NavParams} from 'ionic-angular';
+import {AlertController, Events, NavController, NavParams} from 'ionic-angular';
 import {parse, toSeconds} from 'iso8601-duration';
 import {Chart} from 'chart.js';
 import leaflet from 'leaflet';
 import toGeoJson from '@mapbox/togeojson'
 import {environment} from '../../assets/data/environment';
+import {datatypes} from "../../assets/data/datatypes";
+import {LocalDataProvider} from "../../providers/local-data/local-data";
 
 let apiToken = environment.mapbox_id;
 
@@ -29,7 +31,11 @@ export class ExercisePage {
   gpx: any;
   tcx: any;
 
-  constructor(public navParams: NavParams) {
+  constructor(public navParams: NavParams,
+              private localData: LocalDataProvider,
+              private events: Events,
+              private alertCtrl: AlertController,
+              private navCtrl: NavController) {
     this.exercise = navParams.get('exe');
 
     this.summary = this.exercise['summary'];
@@ -197,5 +203,37 @@ export class ExercisePage {
         }
       });
     }
+  }
+
+  removeExercise() {
+    this.alertCtrl.create({
+      title: 'Löschen?',
+      message: `Wollen Sie dieses Training wirklich löschen? Das kann nicht rückgängig gemacht werden!`,
+      buttons: [
+        {
+          text: 'Nein',
+          role: 'cancel',
+          handler: () => {
+            console.log('Delete Activity', 'Cancel clicked');
+          }
+        }, {
+          text: 'Ja',
+          handler: () => {
+            console.log('Delete Activity', 'Ok clicked');
+            this.localData.delete(this.exercise, datatypes['exercise']).then(success => {
+              console.log('Delete Exercise', 'Success', success);
+
+              // Notify the Tab.
+              this.events.publish('exercise:data', true);
+
+              // Pop to tabs page.
+              this.navCtrl.pop();
+            }, error => {
+              console.log('Delete Activity', 'Error', error);
+            });
+          }
+        }
+      ]
+    }).present();
   }
 }

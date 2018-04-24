@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {InAppBrowser} from '@ionic-native/in-app-browser';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {environment} from "../../assets/data/environment";
+import {LocalDataProvider} from "../local-data/local-data";
 
 let polar_id = environment.polar_id;
 
@@ -12,6 +13,7 @@ export class PolarDataProvider {
   id: string;
 
   constructor(private http: HttpClient,
+              private localData: LocalDataProvider,
               private iab: InAppBrowser) {
     console.log('Hello PolarDataProvider Provider');
 
@@ -22,10 +24,6 @@ export class PolarDataProvider {
     this.token = JSON.parse(localStorage.getItem('token'));
   }
 
-  /**
-   *
-   * @returns {Promise<any>}
-   */
   create(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let headers = new HttpHeaders();

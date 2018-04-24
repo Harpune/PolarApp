@@ -45,6 +45,7 @@ export class DailyActivityPage {
       this.localData.getUser(),
       this.localData.get(datatypes['activity'])
     ).subscribe(success => {
+      console.log('Activity', success);
       this.user = success[0];
       this.activity = success[1].sort((a, b) => {
         return new Date(b['summary']['date']).getTime() - new Date(a['summary']['date']).getTime();

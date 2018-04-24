@@ -12,13 +12,11 @@ export class UserPage {
 
   constructor(public localData: LocalDataProvider,
               public polarData: PolarDataProvider) {
-    let token = JSON.parse(localStorage.getItem('token'));
-    if (token) {
-      let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
-      this.user = json['user'];
-    } else{
-      console.log('UserPage', 'token', token);
-    }
+    localData.getUser().then(user => {
+      this.user = user;
+    }, error => {
+      console.log(error);
+    });
   }
 
   ionViewDidLoad() {
