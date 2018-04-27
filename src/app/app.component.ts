@@ -8562,10 +8562,10 @@ abase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">
 
     this.localData.save(datatypes['exercise'], trainingData).then(success => {
       console.log("Dummy ExerciseData", 'success', success);
-
     }, error => {
       console.log("Dummy ExerciseData", 'error', error);
     });
+
     this.localData.save(datatypes['activity'], activityData).then(success => {
       console.log("Dummy ActivityData", 'success', success);
     }, error => {

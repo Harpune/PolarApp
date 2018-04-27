@@ -31,15 +31,13 @@ export class LocalDataProvider {
     return this.storage.set(String(token['x_user_id']), json);
   }
 
-  /**
-   * Get User data.
-   * @returns {Promise<JSON>}
-   */
   getUser(): Promise<any> {
-    return new Promise(((resolve) => {
+    return new Promise(((resolve, reject) => {
       this.getMasterJson().then(json => {
         console.log('get User', 'json', json);
         resolve(json['user']);
+      }, error => {
+        reject(error);
       })
     }))
   }
@@ -99,6 +97,7 @@ export class LocalDataProvider {
     }
 
     return new Promise<any>(((resolve, reject) => {
+
       this.getMasterJson().then(json => {
         console.log('Save', 'json', json);
 
@@ -152,21 +151,13 @@ export class LocalDataProvider {
           }, error => {
             reject(error);
           });
+        }, error => {
+          reject(error);
         });
+      }, error => {
+        reject(error);
       });
     }));
-  }
-
-  async getTransaction(transaction: string) {
-    return await this.storage.get(transaction);
-  }
-
-  async setTransaction(transactionID: string, list:any) {
-    return await this.storage.set(transactionID, list);
-  }
-
-  async removeTransaction(transaction: string) {
-    return await this.storage.remove(transaction);
   }
 
   get(type: any): Promise<any> {
@@ -244,6 +235,8 @@ export class LocalDataProvider {
 
               this.storage.set(String(transactionID), list).then(() => {
                 resolve();
+              }, error => {
+                reject(error);
               });
 
             } else {
