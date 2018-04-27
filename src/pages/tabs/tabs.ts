@@ -80,7 +80,6 @@ export class TabsPage {
               this.loadData(success).then(success => {
                 let urls = success.map(a => a['available-user-data']);
                 console.log('Refresh', 'Success', success, 'URLs', urls);
-                Observable.forkJoin(urls).
                 this.refreshing = false;
               }, error => {
                 console.error('Refresh', 'Error', error);
@@ -146,6 +145,7 @@ export class TabsPage {
                   let sampleLength = Object.keys(get[4]['samples']).length;
                   let samples = [];
 
+                  // TODO samples mit forkjoin holen
                   // Get all the samples.
                   get[4]['samples'].forEach((sample, sampleIndex) => {
                     this.polarData.get(sample).then(s => {

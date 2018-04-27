@@ -1,8 +1,7 @@
 import {Injectable, Injector} from '@angular/core';
-import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpHeaders} from '@angular/common/http';
+import {HttpRequest, HttpHandler, HttpEvent, HttpInterceptor} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {environment} from "../../assets/data/environment";
-import {LocalDataProvider} from "../local-data/local-data";
 
 let polar_id = environment.polar_id;
 let polar_secret = environment.polar_secret;
@@ -43,19 +42,11 @@ export class TokenInterceptor implements HttpInterceptor {
 
     } else { // If the pathname is neither add the Basic header.
       console.log('Interceptor for v3 not user!');
-
-      // Update the headers.
-      let basic = btoa(polar_id + ':' + polar_secret);
-      request = request.clone({
-        setHeaders: {
-          Authorization: `Basic ${basic}`
-        }
-      });
     }
 
     console.log('Interceptor', request.body, request.headers);
 
     // Send updated request.
-    return next.handle(request).timeoutWith(20000, Observable.throw('Timeout'));
+    return next.handle(request).timeoutWith(30000, Observable.throw('Timeout'));
   }
 }
