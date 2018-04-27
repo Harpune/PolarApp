@@ -41,19 +41,11 @@ export class TokenInterceptor implements HttpInterceptor {
       });
     } else { // If the pathname is neither add the Basic header.
       console.log('Interceptor for v3 not user!');
-
-      // Update the headers.
-      let basic = btoa(polar_id + ':' + polar_secret);
-      request = request.clone({
-        setHeaders: {
-          Authorization: `Basic ${basic}`
-        }
-      });
     }
 
     console.log('Interceptor', request.body, request.headers);
 
     // Send updated request.
-    return next.handle(request).timeoutWith(15000, Observable.throw('Timeout'));
+    return next.handle(request).timeoutWith(30000, Observable.throw('Timeout'));
   }
 }
