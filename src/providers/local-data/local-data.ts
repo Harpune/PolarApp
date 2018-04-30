@@ -48,11 +48,11 @@ export class LocalDataProvider {
 
         break;
       case 1: // activity
-              // Change duration format.
+        // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         break;
       case 2: // exercise
-        // Change duration format.
+              // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         data[0]['detailed-sport-info'] = dictionary[data[0]['detailed-sport-info']];
 
@@ -72,6 +72,100 @@ export class LocalDataProvider {
           console.log('TCX', data[3]);
         }
 
+        // Parse sample data to be readable for chart.js.
+        if (data[4]) {
+          let datasets = [];
+          for (let sample of data[4]) {
+            let data = sample['data'].split(',');
+            console.log('UpdateCharts', data, sample);
+            switch (sample['sample-type']) {
+              case 0://Heart rate	bpm
+                datasets.push({
+                  label: 'Herzfrequenz',
+                  data: data,
+                  borderColor: '#009de1',
+                });
+                break;
+              case 1://Speed  km/h
+                datasets.push({
+                  label: 'Geschwindigkeit',
+                  data: data,
+                  borderColor: '#cf102f',
+                });
+                break;
+              case 2://Cadence	rpm
+                datasets.push({
+                  label: 'Kandenz',
+                  data: data,
+                  borderColor: '#f0ad4e',
+                });
+                break;
+              case 3://Altitude	m
+                datasets.push({
+                  label: 'Höhe',
+                  data: data,
+                  borderColor: '#0EC639',
+                });
+                break;
+              case 4://Power	W
+                datasets.push({
+                  label: 'Kraft',
+                  data: data,
+                  borderColor: '#009de1',
+                });
+                break;
+              case 5://Power pedaling index	%
+                datasets.push({
+                  label: 'Power pedaling index',
+                  data: data,
+                  borderColor: '#009de1',
+                });
+                break;
+              case 6://Power left-right balance	%
+                datasets.push({
+                  label: 'Power left-right balance',
+                  data: data,
+                  borderColor: '#009de1',
+                });
+                break;
+              case 7://Air pressure	hpa
+                datasets.push({
+                  label: 'Luftdruck',
+                  data: data,
+                  borderColor: '#009de1',
+                });
+                break;
+              case 8://Running cadence	spm
+                datasets.push({
+                  label: 'Laufkadenz',
+                  data: data,
+                  borderColor: '#009de1',
+                });
+                break;
+              case 9://Temperature	ºC
+                datasets.push({
+                  label: 'Temperatur',
+                  data: data,
+                  borderColor: '#009de1',
+                });
+                break;
+              case 10://Distance	m
+                datasets.push({
+                  label: 'Distanz',
+                  data: data,
+                  borderColor: '#0EC639',
+                });
+                break;
+              case 11://RR Interval	ms
+
+                break;
+              default:
+            }
+          }
+
+          console.log('Save', 'datasets', datasets);
+          data[4] = datasets;
+        }
         break;
       default:
         console.log('Save', 'Default', 'Something went wrong');

@@ -1,7 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavParams} from 'ionic-angular';
+import {NavParams, PopoverController} from 'ionic-angular';
 import {Chart} from 'chart.js';
 import {parse, toSeconds} from 'iso8601-duration';
+import {PopoverPage} from "../popover/popover";
+import {datatypes} from "../../assets/data/datatypes";
 
 @Component({
   selector: 'page-activity',
@@ -19,7 +21,8 @@ export class ActivityPage {
   stepsChart: any;
   zonesChart: any;
 
-  constructor(private navParams: NavParams) {
+  constructor(private navParams: NavParams,
+              private popoverCtrl: PopoverController) {
     this.activity = navParams.get('act');
 
     this.summary = this.activity['summary'];
@@ -100,5 +103,16 @@ export class ActivityPage {
         }
       });
     }
+  }
+
+  presentPopover(myEvent) {
+    console.log('popover');
+    let popover = this.popoverCtrl.create(PopoverPage, {
+      'data': this.activity,
+      'type': datatypes.activity
+    });
+    popover.present({
+      ev: myEvent
+    });
   }
 }

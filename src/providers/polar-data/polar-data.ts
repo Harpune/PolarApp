@@ -108,7 +108,7 @@ export class PolarDataProvider {
     return new Promise((resolve, reject) => {
 
       let headers = new HttpHeaders()
-        .set('Accept', ' application/gpx+xml')
+        .set('Accept', 'application/gpx+xml')
         .set('Content-Type', 'application/gpx+xml');
 
       this.http.get(url, {
@@ -128,7 +128,7 @@ export class PolarDataProvider {
   getTCX(url: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let headers = new HttpHeaders()
-        .set('Accept', ' application/vnd.garmin.tcx+xml')
+        .set('Accept', 'application/vnd.garmin.tcx+xml')
         .set('Content-Type', 'application/vnd.garmin.tcx+xml');
 
       this.http.get(url, {
@@ -154,7 +154,8 @@ export class PolarDataProvider {
       this.http.put(url, null, {
         headers: headers,
         responseType: 'text',
-        observe: 'response'}).subscribe(success => {
+        observe: 'response'
+      }).subscribe(success => {
         switch (success.status) {
           case 200:
             resolve(success);
@@ -241,9 +242,6 @@ export class PolarDataProvider {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      console.log('Register User Body:', body);
-      console.log('Register User Header:', headers);
-
       this.http.post(url, body, {
         headers: headers
       }).subscribe(success => {
@@ -322,13 +320,10 @@ export class PolarDataProvider {
         `scope=accesslink.read_all&` +
         `client_id=${polar_id}`;
 
-      console.log(authUrl);
-
       // Open InAppBrowser to Login user.
       const browser = this.iab.create(authUrl, '_self', 'location=no');
       browser.on('loadstart').subscribe(event => {
-        console.log('In App Browser', 'Event \'Loadstart\' is called');
-        console.log(event.url);
+        console.log('Login', 'Loadstart', event.url);
 
         // Check if URL contains callback url.
         if ((event.url).indexOf('https://www.getpostman.com/oauth2/callback') === 0) {

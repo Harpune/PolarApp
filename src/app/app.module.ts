@@ -20,10 +20,12 @@ import {TrainingDataPage} from '../pages/training-data/training-data';
 import {ActivityPage} from "../pages/activity/activity";
 import {ExercisePage} from "../pages/exercise/exercise";
 import {SettingsPage} from "../pages/settings/settings";
+import {PopoverPage} from "../pages/popover/popover";
 
 import {PolarDataProvider} from '../providers/polar-data/polar-data';
 import {LocalDataProvider} from '../providers/local-data/local-data';
 import {TokenInterceptor} from '../providers/auth/interceptor';
+
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import {TokenInterceptor} from '../providers/auth/interceptor';
     TrainingDataPage,
     ActivityPage,
     ExercisePage,
-    SettingsPage
+    SettingsPage,
+    PopoverPage
   ],
   imports: [
     BrowserModule,
@@ -55,7 +58,8 @@ import {TokenInterceptor} from '../providers/auth/interceptor';
     TrainingDataPage,
     ActivityPage,
     ExercisePage,
-    SettingsPage
+    SettingsPage,
+    PopoverPage
   ],
   providers: [
     StatusBar,
