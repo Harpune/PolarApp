@@ -17,7 +17,7 @@ export class TokenInterceptor implements HttpInterceptor {
     let url = new URL(request.url);
 
     if (~url.pathname.indexOf('/v3/users')) { // If the pathname includes /v3/user add the Bearer header.
-      console.log('Interceptor for v3 user!');
+      console.log('Interceptor', '/v3/users');
 
       // Get the token of current user.
       let token = JSON.parse(localStorage.getItem('token'));
@@ -29,7 +29,7 @@ export class TokenInterceptor implements HttpInterceptor {
         }
       });
     } else { // If the pathname includes /v2/oauth2 add the Basic header.
-      console.log('Interceptor for v2!');
+      console.log('Interceptor', '/v3/pull-notifications or v2');
 
       // Update the headers.
       let basic = btoa(polar_id + ':' + polar_secret);
