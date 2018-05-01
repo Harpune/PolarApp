@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {LocalDataProvider} from "../../providers/local-data/local-data";
 import {Observable} from 'rxjs/Observable';
-import {AlertController, App, Events} from "ionic-angular";
+import {AlertController, App, Events, Loading, LoadingController} from "ionic-angular";
 import {ExercisePage} from "../exercise/exercise";
 import {datatypes} from "../../assets/data/datatypes";
 import 'rxjs/Rx'
@@ -18,8 +18,11 @@ export class TrainingDataPage {
   exercise: any = [];
   summary: any = [];
 
+  loading: Loading;
+
   constructor(private localData: LocalDataProvider,
               private alertCtrl: AlertController,
+              public loadingCtrl: LoadingController,
               private events: Events,
               private app: App) {
   }
@@ -63,7 +66,17 @@ export class TrainingDataPage {
   showExercise(index: number) {
     let exe = this.exercise[index];
     console.log('Show Exercise', exe);
-    this.app.getRootNav().push(ExercisePage, {exe: exe});
+
+    this.loading = this.loadingCtrl.create({
+      content: 'Trainingseinheit wird abgerufen',
+      dismissOnPageChange: true
+    });
+
+    this.loading.present().then(() => {
+      this.app.getRootNav().push(ExercisePage, {exe: exe});
+    });
+
+
   }
 
   removeExercise(index: number) {
