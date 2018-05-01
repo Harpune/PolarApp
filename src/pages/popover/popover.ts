@@ -68,13 +68,13 @@ export class PopoverPage {
             this.localData.delete(this.data.data, this.data.type).then(success => {
               switch (this.data['type']['id']) {
                 case 0:
-                  this.events.publish('exercise:data', true);
+                  this.events.publish('physical:data', true);
                   break;
                 case 1:
                   this.events.publish('activity:data', true);
                   break;
                 case 2:
-                  this.events.publish('physical:data', true);
+                  this.events.publish('exercise:data', true);
                   break;
               }
 
