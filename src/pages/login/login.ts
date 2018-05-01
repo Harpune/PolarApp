@@ -97,7 +97,7 @@ export class LoginPage {
     this.polarData.getAuthorizationCode().then(code => {
 
       this.loading = this.loadingCtrl.create({
-        content: 'Micro momentito...',
+        content: 'Bitte warten...',
         dismissOnPageChange: true
       });
 

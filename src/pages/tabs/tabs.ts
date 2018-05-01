@@ -25,14 +25,21 @@ import {parse, end, toSeconds, pattern} from 'iso8601-duration';
 export class TabsPage {
   @ViewChild('myTabs') tabs: Tabs;
 
+  // Side menu Array.
   menuPages: Array<{ id: number, title: string, icon: string, component: any }>;
+
+  // Pages of the tabs.
   page1: any = TrainingDataPage;
   page2: any = DailyActivityPage;
   page3: any = PhysicalInfoPage;
 
+  // Loading.
   loading: Loading;
+
+  // Current User.
   user: any;
 
+  // Boolean to visualize the refreshing.
   refreshing: boolean = false;
 
   constructor(private navCtrl: NavController,
@@ -41,14 +48,18 @@ export class TabsPage {
               private events: Events,
               private loadingCtrl: LoadingController,
               private alertCtrl: AlertController) {
+
+    // Data of sideMenu.
     this.menuPages = [
       {id: 0, title: 'Mein Profil', icon: 'person', component: UserPage},
-      {id: 1, title: 'Über geiler JSON', icon: 'bug', component: null},
       {id: 2, title: 'Einstellungen', icon: 'settings', component: SettingsPage},
-      {id: 3, title: 'Bye Bye', icon: 'exit', component: LoginPage}
+      {id: 3, title: 'Logout', icon: 'exit', component: LoginPage}
     ];
   }
 
+  /**
+   * When page did load, check every 10 minutes for new data.
+   */
   ionViewDidLoad() {
     Observable.interval(1000 * 60 * 10).startWith(0).subscribe(trigger => {
       console.log('No. ' + trigger + ': 10 minutes more');
@@ -56,12 +67,17 @@ export class TabsPage {
     });
   }
 
+  /**
+   * Refresh when icon clicked, app has started or 10 minutes are over.
+   */
   refresh() {
     this.refreshing = true;
 
+    // Check if new data is available.
     this.polarData.listAvailableData().then(success => {
       console.log('Refresh', 'Neue Daten', success);
 
+      // If data is available, ask user if download should start.
       let alert = this.alertCtrl.create({
         title: 'Neue Daten!',
         message: 'Wollen Sie die neuen Daten herunterladen?',
@@ -92,6 +108,8 @@ export class TabsPage {
     }, error => {
       this.refreshing = false;
       console.log('Refresh', 'Keine neue Daten', error);
+
+      // Catch Timeout.
       if (error == 'Timeout') {
         alert('Das hat zu lange gedauert. Bitte überprüfe deine Internetverbingung.')
       }
@@ -116,7 +134,6 @@ export class TabsPage {
           // List the transaction.
           this.polarData.list(create['resource-uri']).then(list => {
             console.log('Get new data', 'List', list);
-            // TODO change duration format in save method.
 
             //////////////////////////////////////////////////////////////////////
             // Get the exercise of the available data                           //
@@ -208,12 +225,7 @@ export class TabsPage {
 
                     // Commit the transaction.
                     this.polarData.commit(create['resource-uri']).then(success => {
-                      /*
-                      TODO firgure out when to publish
-                      - after commit
-                      - before commit after done with requests
-                      - after every save
-                       */
+
                       // Notify the Tab.
                       this.events.publish('activity:data', true);
 
@@ -274,40 +286,13 @@ export class TabsPage {
     }))
   }
 
+  /**
+   * Implements logic for the side menu..
+   * @param page Page to go to. Null otherwise.
+   */
   goToPage(page) {
-    this.menuPages = [
-      {id: 0, title: 'Mein Profil', icon: 'person', component: UserPage},
-      {id: 1, title: 'Über geiler JSON', icon: 'bug', component: null},
-      {id: 2, title: 'Einstellungen', icon: 'settings', component: SettingsPage},
-      {id: 3, title: 'Bye Bye', icon: 'exit', component: LoginPage}
-    ];
-
     console.log('Page', page);
     switch (page.id) {
-      case 1:
-        let token = JSON.parse(localStorage.getItem('token'));
-        let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
-
-        console.log('Da hast du ihn', json);
-
-        this.localData.get(datatypes['physical']).then(success => {
-          console.log('Das auch noch', 'Physical', 'Success', success);
-        }, error => {
-          console.log('Das nicht', 'Physical', 'Error', error);
-        });
-
-        this.localData.get(datatypes['activity']).then(success => {
-          console.log('Das auch noch', 'Activity', 'Success', success);
-        }, error => {
-          console.log('Das nicht', 'Activity', 'Error', error);
-        });
-
-        this.localData.get(datatypes['exercise']).then(success => {
-          console.log('Das auch noch', 'Exercise', 'Success', success);
-        }, error => {
-          console.log('Das nicht', 'Exercise', 'Error', error);
-        });
-        break;
       case 3:
         this.navCtrl.setRoot(LoginPage).then(() => {
           this.navCtrl.popToRoot().then(() => {

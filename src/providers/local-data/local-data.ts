@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
 import {parse, end, toSeconds, pattern} from 'iso8601-duration';
 import {dictionary} from "../../assets/data/dictionary";
 import {datatypes} from "../../assets/data/datatypes";
@@ -8,16 +7,10 @@ import parseTcx from 'tcx';
 import 'rxjs/add/operator/map';
 import {Observable} from "rxjs/Observable";
 
-
-function sortByDate(a, b) {
-  console.log('a: ', a, 'b: ', b);
-  return new Date(a['summary']['start-time']).getTime() - new Date(b['summary']['start-time']).getTime();
-}
-
 @Injectable()
 export class LocalDataProvider {
 
-  constructor(public http: HttpClient) {
+  constructor() {
     console.log('Hello LocalDataProvider Provider');
     console.dir(parseTcx);
     // TODO save with token: user-id:id und user-id:transaction-id
@@ -39,16 +32,23 @@ export class LocalDataProvider {
     }))
   }
 
+  /**
+   * Save data with given type-configuration.
+   * @param type Type of the data to save.
+   * @param data Data to savve.
+   */
   static save(type: any, data: any) {
     console.log('Save', 'type', type);
 
-    // Parse data.
+    /**
+     * Parse the data before saving it.
+     */
     switch (type['id']) {
       case 0: // physical
-
+              // Nothing
         break;
       case 1: // activity
-        // Change duration format.
+              // Change duration format.
         data[0]['duration'] = parse(data[0]['duration']);
         break;
       case 2: // exercise
@@ -58,7 +58,6 @@ export class LocalDataProvider {
 
         // Parse GPX to geoJSON.
         if (data[2]) {
-          // Remove GPX.
           let gpx = new DOMParser().parseFromString(data[2], 'text/xml');
           data[2] = parseGPX.gpx(gpx);
           console.log('GPX', data[2]);
@@ -66,7 +65,6 @@ export class LocalDataProvider {
 
         // Parse TCX to geoJSON.
         if (data[3]) {
-          // Remove TCX.
           let tcx = new DOMParser().parseFromString(data[3], 'text/xml');
           data[3] = parseTcx(tcx);
           console.log('TCX', data[3]);
@@ -171,91 +169,100 @@ export class LocalDataProvider {
         console.log('Save', 'Default', 'Something went wrong');
     }
 
-    // Save data.
+    /**
+     * Save Data locally with LocalStorage.
+     */
+      // Token.
     let token = JSON.parse(localStorage.getItem('token'));
     if (token) {
       // Master-JSON.
       let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
-      console.log('Save', 'json', json);
-
 
       // Setup data.
-      let userID = json['user']['polar-user-id'];
       let transactionID = data[0]['transaction-id'];
       let listID = data[0]['id'];
-      console.log('Save', 'userId', userID, 'transactionID', transactionID, 'listID', listID);
 
-      // Save the transactionID.
+      // Add the transactionID to Master-JSON if it doesn't exists already.
       let jsonType = json[type['name']];
       if (!(jsonType.indexOf(transactionID) > -1)) {
         json[type['name']].push(transactionID);
       }
-      console.log('Save', type['name'], 'json', json);
+
+      // Save updated Master-JSON.
       localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
 
-      // Saving the exercise under the transaction id.
+      // Get item stored under transaction-ID.
       let log = JSON.parse(localStorage.getItem(String(transactionID)));
-      console.log('Save', type['name'], 'log', log);
-      if (log) {
+
+      // Check if Transaction-ID already exits.
+      if (log) { // entry exists.
+        // Check if ID already exits.
         if (!(log.indexOf(listID) > -1)) {
-          console.log('Save', 'log', 'doesn\'t exists');
           log.push(listID);
-        } else {
-          console.log('Save', 'log', 'exists');
         }
-      } else {
+      } else { // New entry.
         log = [];
         log.push(listID);
       }
-      console.log('Save', type['name'], 'log', log);
+
+      // Save IDs under the transaction-ID.
       localStorage.setItem(String(transactionID), JSON.stringify(log));
 
-      // Save the data to given exercise.
+      // Dynamically ave the data to given exercise.
       let temp = {};
       type['types'].forEach((item, index) => {
         temp[item] = data[index];
       });
-      console.log('Save', type['name'], 'temp', temp);
+
+      // Save data under ID.
       localStorage.setItem(listID, JSON.stringify(temp));
     }
   }
 
+  /**
+   * Get all the data of given type.
+   * @param type Type to return.
+   * @returns {Promise<any>} Returns all data in Promise.
+   */
   get(type: any): Promise<any> {
-    return new Promise((resolve => {
-
-      console.log('Get', 'type', type);
+    return new Promise((resolve, reject) => {
       let token = JSON.parse(localStorage.getItem('token'));
       if (token) {
         // Master-JSON.
         let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
 
-        // Physical transactionId.
+        // Type transaction-ID.
         let transactions = json[type['name']];
-        console.log('Get', 'transactions', transactions);
 
+        // Initialize data to return.
         let data = [];
 
-        // Go through all physical transactionIds.
+        // Go through all transaction-IDs.
         for (let transaction of transactions) {
-          console.log('Get', 'transaction', transaction);
 
-          // Get the ListId.
+          // Get the ID.
           let list = JSON.parse(localStorage.getItem(String(transaction)));
-          console.log('Get', 'list', list);
 
           // Get all physical data save under the listID.
           for (let item of list) {
-            console.log('Get', 'item', item);
             data.push(JSON.parse(localStorage.getItem(String(item))));
           }
         }
 
         console.log('Get', 'data', data);
         resolve(data);
+      } else {
+        reject();
       }
-    }))
+    });
   }
 
+  /**
+   * Delete data of given type.
+   * @param data Data to delete.
+   * @param type Type of data to delete.
+   * @returns {Promise<any>}
+   */
   delete(data: any, type: any): Promise<any> {
     console.log('Delete', 'data', data, 'type', type);
     return new Promise(((resolve, reject) => {
@@ -263,33 +270,25 @@ export class LocalDataProvider {
       if (token) {
         // Master-JSON.
         let json = JSON.parse(localStorage.getItem(String(token['x_user_id'])));
-        console.log('Delete', 'json', json);
 
         // Setup data.
-        let userID = json['user']['polar-user-id'];
         let transactionID = data['summary']['transaction-id'];
         let listID = data['summary']['id'];
-        console.log('Delete', type['name'], 'userId', userID, 'transactionID', transactionID, 'listID', listID);
 
-        // Delete activityID from its transactionID array.
+        // Delete ID from its transaction-ID array.
         let list = JSON.parse(localStorage.getItem(String(transactionID)));
-        console.log('Delete', type['name'], 'list', list);
 
         let listIndex = list.indexOf(listID);
         if (listIndex > -1) {
           list.splice(listIndex, 1);
 
-          console.log('Delete', 'list', list);
+          // Check if more data is saved under this transaction-ID.
           if (list.length != 0) {
             // More activities are saved under this transactionID.
-            console.log('Delete', 'length', '> 0');
-
             localStorage.setItem(String(transactionID), JSON.stringify(list));
-
             resolve();
           } else {
-            console.log('Delete', 'length', '== 0');
-            // No more activities are saved under this transactionID.
+            // No more data is saved under this transaction-ID.
             localStorage.removeItem(String(transactionID));
 
             // Delete transactionID from Master-JSON.
@@ -301,7 +300,7 @@ export class LocalDataProvider {
               transactions.splice(transactionIndex, 1);
               json[type['name']] = transactions;
 
-              console.log('Delete', 'transactions', transactions);
+              // Save updated Masster-JSON.
               localStorage.setItem(String(token['x_user_id']), JSON.stringify(json));
 
               resolve();
@@ -318,10 +317,19 @@ export class LocalDataProvider {
     }))
   }
 
+  /**
+   * Deletes all data of given type.
+   * @param type Type to delete.
+   * @returns {Promise<any>} Resolves on success.
+   */
   deleteAll(type: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
+
+      // Get all data of given type.
       this.get(type).then(success => {
         let length = Object.keys(success).length;
+
+        // Loop through every item to delete each.
         success.forEach((data, index) => {
           this.delete(data, type).then(done => {
             if (index >= length - 1) {
@@ -337,6 +345,10 @@ export class LocalDataProvider {
     });
   }
 
+  /**
+   * Resets all data.
+   * @returns {Promise<any>}
+   */
   reset(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       Observable.forkJoin([
