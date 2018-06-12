@@ -78,6 +78,7 @@ export class LoginPage {
               this.loading.present().then(() => {
                 this.polarData.deleteCurrentUser().then(success => {
                   console.log('tryLogin', 'Success', success);
+                  localStorage.removeItem('token');
                   this.dismissLoading();
                   this.login();
                 }, error => {
