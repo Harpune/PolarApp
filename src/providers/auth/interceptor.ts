@@ -41,7 +41,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
     }
 
-    console.log('Interceptor', request.body, request.headers);
+    console.log('Interceptor', request.url, request.body, request.headers);
 
     // Send updated request.
     return next.handle(request).timeoutWith(30000, Observable.throw('Timeout'));

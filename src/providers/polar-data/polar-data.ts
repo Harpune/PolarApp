@@ -232,11 +232,13 @@ export class PolarDataProvider {
 
       this.token = token;
 
-      let member_id = '' + performance.now() + Math.random() + token.access_token;
+      let member_id = Guid.newGuid();
+      //let member_id = 123456;
+      //let member_id = '' + performance.now() + Math.random() + token.access_token;
       console.log('Register User MemberId', member_id);
 
       let body = {};
-      body['members-id'] = member_id;
+      body['member-id'] = member_id;
 
       let headers = new HttpHeaders()
         .set('Accept', 'application/json')
@@ -315,10 +317,13 @@ export class PolarDataProvider {
   getAuthorizationCode(): Promise<any> {
     return new Promise((resolve, reject) => {
       // Url to authorization.
+
       let authUrl = `https://flow.polar.com/oauth2/authorization?` +
         `response_type=code&` +
         `scope=accesslink.read_all&` +
         `client_id=${polar_id}`;
+
+      //authUrl = "https://flow.polar.com";
 
       // Open InAppBrowser to Login user.
       const browser = this.iab.create(authUrl, '_self', 'location=no');
@@ -378,6 +383,18 @@ export class PolarDataProvider {
       }, () => {
         console.log('Register user complete');
       });
+    });
+  }
+}
+
+/**
+ * https://stackoverflow.com/questions/26501688/a-typescript-guid-class - Fenton
+ */
+class Guid {
+  static newGuid() {
+    return 'xxxxxx'.replace(/[xy]/g, function(c) {
+      let r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
     });
   }
 }
