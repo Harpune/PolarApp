@@ -351,6 +351,18 @@ export class PolarDataProvider {
         }
       });
 
+      // User switched.
+      browser.on('loadstop').subscribe(event => {
+
+        let url_string = event.url;
+        let url = new URL(url_string);
+
+        if (url.pathname === "/") {
+          console.log('User switched');
+          browser.close();
+        }
+      });
+
       browser.on('exit').subscribe(() => {
         console.log('In App Browser', 'Event \'Exit\' is called');
         reject("Exit");
@@ -392,8 +404,8 @@ export class PolarDataProvider {
  */
 class Guid {
   static newGuid() {
-    return 'xxxxxx'.replace(/[xy]/g, function(c) {
-      let r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return 'xxxxxx'.replace(/[xy]/g, function (c) {
+      let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   }

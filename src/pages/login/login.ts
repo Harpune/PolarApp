@@ -38,6 +38,7 @@ export class LoginPage {
       this.user = temp['user'];
     } else {
       console.log('Login Page', 'No token');
+      this.user = null;
     }
   }
 
@@ -79,6 +80,7 @@ export class LoginPage {
                 this.polarData.deleteCurrentUser().then(success => {
                   console.log('tryLogin', 'Success', success);
                   localStorage.removeItem('token');
+                  this.ionViewDidLoad();
                   this.dismissLoading();
                   this.login();
                 }, error => {
