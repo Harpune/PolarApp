@@ -179,7 +179,7 @@ export class PolarDataProvider {
   Pull notifications
    */
   /**
-   * Get list of available exercises and activities for users.
+   * et list of available exercises and activities for users.
    * @returns {Promise<any>}
    */
   listAvailableData(): Promise<any> {
@@ -232,7 +232,7 @@ export class PolarDataProvider {
 
       this.token = token;
 
-      let member_id = Guid.newGuid();
+      let member_id = GUID.newGuid();
       //let member_id = 123456;
       //let member_id = '' + performance.now() + Math.random() + token.access_token;
       console.log('Register User MemberId', member_id);
@@ -402,7 +402,7 @@ export class PolarDataProvider {
 /**
  * https://stackoverflow.com/questions/26501688/a-typescript-guid-class - Fenton
  */
-class Guid {
+class GUID {
   static newGuid() {
     return 'xxxxxx'.replace(/[xy]/g, function (c) {
       let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
